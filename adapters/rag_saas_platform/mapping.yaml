@@ -2,7 +2,7 @@ implementation: rag-saas-platform
 commit: 7d562c2
 branch: feat/context-runtime-migration
 contract: runtime-contracts/v0.1
-status: PLANNED
+status: PARTIAL_ADOPTION
 role: deployed control plane
 
 note: >-
@@ -10,7 +10,32 @@ note: >-
   and the Investigation workflow, since neither mission-runtime nor
   discovery-runtime exists as a repository.
 
+adapter_module: backend/services/investigation_workflow.py
+ledger_model: backend/models/investigation_ledger.py
+
 mappings:
-  MissionProgram:                {existing_type: null, status: NOT_IMPLEMENTED}
-  InvestigationTransitionEvent:  {existing_type: null, status: NOT_IMPLEMENTED}
-  RuntimeEvent:                  {existing_type: null, status: NOT_IMPLEMENTED}
+  MissionProgram:
+    existing_type: runtime_contracts.INVESTIGATION_PROGRAM
+    status: CONSUMED_DIRECTLY
+    note: pinned by content hash on every stored row; no second lifecycle exists
+  InvestigationTransitionEvent:
+    existing_type: models.investigation_ledger.InvestigationTransitionLedger
+    status: ROUND_TRIPPED
+    note: rows serialize the canonical event and reload to the same event hash
+  VerificationResult:
+    existing_type: JSON column on the ledger row
+    status: ROUND_TRIPPED
+  RuntimeEvent:      {existing_type: null, status: NOT_IMPLEMENTED}
+  ArtifactHandle:    {existing_type: null, status: NOT_IMPLEMENTED}
+  ContextView:       {existing_type: null, status: NOT_IMPLEMENTED}
+
+proven:
+  - the null-result workflow completes and replays without a Finding
+  - idempotent submission, conflict and refusal pass through unreinterpreted
+  - replay wins over a corrupted projection
+  - audit mode stays readable after an injected invalid event
+  - a restarted session derives the same state
+
+not_proven:
+  - reference-first evidence (ArtifactHandle -> ContextPreviewPlan -> ContextView)
+  - FINDING_PRODUCED, deliberately last

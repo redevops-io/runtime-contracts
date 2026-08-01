@@ -66,17 +66,32 @@ implementations:
       ceec853. One of them is not what runs.
 
   rag-saas-platform:
-    implementation_adoption: NOT_STARTED
-    predecessor_mapping: not-started
+    implementation_adoption: PARTIAL_ADOPTION
+    predecessor_mapping: documented
     repository: redevops-io/rag-saas-platform
     commit: 7d562c2
     branch: feat/context-runtime-migration
-    status: PLANNED
+    status: PARTIAL_ADOPTION
+    adopted_contracts:
+      - MissionProgram
+      - InvestigationTransitionEvent
+      - VerificationResult
+      - submission idempotency
+      - replay
+      - finding routing
+    not_adopted:
+      - ArtifactHandle
+      - ContextPreviewPlan
+      - ContextView
+      - CapabilityDescriptor
     adapter: adapters/rag_saas_platform
     role: deployed control plane
     note: >-
-      The only component actually deployed. Candidate host for MissionProgram
-      and the Investigation workflow.
+      The only component actually deployed, and now the first real consumer:
+      the Investigation lifecycle is persisted and replayed through the
+      canonical contracts. One lifecycle does not prove the package, so the
+      gate stays below CONFORMANT. Context Runtime and ReDevOps RAG do not move
+      because this application imports them — adoption is per implementation.
 
   mission-runtime:
     status: NOT_LOCATED
