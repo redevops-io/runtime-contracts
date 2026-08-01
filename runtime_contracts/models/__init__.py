@@ -23,10 +23,32 @@ from .capability import (
     TypedPort,
 )
 from .handle import ArtifactHandle, Freshness
+from .investigation import (
+    InvestigationTransitionEvent,
+    OwnershipChange,
+    replay_states,
+)
+from .mission import (
+    INVESTIGATION_PROGRAM,
+    NO_APPROVAL,
+    ApprovalGate,
+    ApproverType,
+    Disposition,
+    MissionProgram,
+    State,
+    Supports,
+    TerminalOutcome,
+    Transition,
+    TransitionRefused,
+)
 from .verification import Check, Completion, Determinism, VerificationResult, Verdict
 from .visibility import AuthorizationOutcome, Tenancy, Visibility
 
 __all__ = [
+    "INVESTIGATION_PROGRAM", "NO_APPROVAL", "ApprovalGate", "ApproverType",
+    "Disposition", "Supports", "TerminalOutcome",
+    "InvestigationTransitionEvent", "MissionProgram", "OwnershipChange",
+    "State", "Transition", "TransitionRefused", "replay_states",
     "ArtifactHandle", "CapabilityDescriptor", "Check", "Completion",
     "Determinism", "Estimate", "Idempotency", "RetrySafety", "SecurityProfile",
     "SideEffect", "TypedPort", "Verdict", "VerificationResult", "AuthorizationOutcome", "ContextPreviewPlan", "ContextView",

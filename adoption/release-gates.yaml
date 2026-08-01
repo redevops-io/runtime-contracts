@@ -6,7 +6,7 @@ release_gate:
   quantify:          {minimum: CONFORMANT}
   context-runtime:   {minimum: CONFORMANT}
   redevops-rag:      {minimum: CONFORMANT}
-  rag-saas-platform: {minimum: PARTIAL}
+  rag-saas-platform: {minimum: PARTIAL_ADOPTION}
   mission-runtime:   {minimum: NOT_LOCATED}
   discovery-runtime: {minimum: NOT_LOCATED}
   sidekick:          {minimum: NOT_LOCATED}

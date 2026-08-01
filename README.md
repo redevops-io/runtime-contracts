@@ -83,8 +83,14 @@ component that has *claimed* a level does not meet it. A component below its
 release gate fails; a component whose gate is `NOT_LOCATED` is a visible roadmap
 gap, not a red build.
 
-See [adoption/implementations.yaml](adoption/implementations.yaml) and
-[IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+Maturity runs `NOT_LOCATED → PLANNED → SPECIFIED → ADAPTER_STARTED →
+ROUND_TRIP_PROVEN → PARTIAL_ADOPTION → CONFORMANT → DEPLOYED_CONFORMANT`.
+Reproducing a golden hash earns `ADAPTER_STARTED`, not conformance: it proves
+translation, not adoption.
+
+See [adoption/implementations.yaml](adoption/implementations.yaml),
+[IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) and
+[docs/release-discipline.md](docs/release-discipline.md).
 
 ---
 

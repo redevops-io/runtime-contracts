@@ -19,8 +19,9 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
-ORDER = ["NOT_LOCATED", "PLANNED", "SPECIFIED", "ADAPTER_STARTED", "PARTIAL",
-         "CONFORMANT", "DEPLOYED_CONFORMANT"]
+ORDER = ["NOT_LOCATED", "PLANNED", "SPECIFIED", "ADAPTER_STARTED",
+         "ROUND_TRIP_PROVEN", "PARTIAL_ADOPTION", "CONFORMANT",
+         "DEPLOYED_CONFORMANT"]
 
 
 def _load(name: str) -> Dict[str, Any]:

@@ -13,10 +13,15 @@ maturity_states:
   - NOT_LOCATED          # no code found anywhere
   - PLANNED              # named as in scope, nothing written
   - SPECIFIED            # contract written, no adapter
-  - ADAPTER_STARTED
-  - PARTIAL              # adapter exists, some contracts unmapped
+  - ADAPTER_STARTED      # an adapter exists and produces contract objects
+  - ROUND_TRIP_PROVEN    # a complete round trip through the adapter boundary
+  - PARTIAL_ADOPTION     # application code consumes at least one contract
   - CONFORMANT           # all claimed contracts pass golden fixtures
   - DEPLOYED_CONFORMANT  # and the deployed commit is observable and matches
+
+# ADAPTER_STARTED to ROUND_TRIP_PROVEN is the honest boundary: reproducing a
+# golden hash proves translation, not adoption. PARTIAL_ADOPTION begins only
+# when application code itself consumes a canonical contract.
 
 implementations:
 

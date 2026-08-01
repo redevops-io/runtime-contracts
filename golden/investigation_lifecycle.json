@@ -1,0 +1,91 @@
+{
+  "cases": {
+    "inconclusive_journey": {
+      "emits_finding": false,
+      "event_hashes": [
+        "rcv1:23885f44c94768263045bf73b53024dd813d5c22d2df4b79fdbd8ff9610416f1",
+        "rcv1:5deb2e6ad6aa5f50eeab8d5c194c98a77b871529c623a1d5c38d2039b4dafb07",
+        "rcv1:d8d079c4e26da373ad2cd1dc88e566c59a2facb217237e1b24000a8ef3830c40",
+        "rcv1:06ce0354727acc5aa0c0647b6e8de39ccf6f069498c37251ebf4f6dd6f4cf297",
+        "rcv1:6a2164de0c7383921fce463667aa7e6458dcf117012f0f1bab9f71c57e65ca10"
+      ],
+      "final_state": "CONCLUDED",
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "terminal_outcome": "INCONCLUSIVE",
+      "why": "work that concludes without a positive finding, replayable with its history intact — Phase C's gate"
+    },
+    "invalid_workflows": {
+      "cases": {
+        "conclude_from_proposed": {
+          "reason": "mission-program/investigation/default@1 does not permit PROPOSED -> CONCLUDED as 'conclude_inconclusive'",
+          "refused": true
+        },
+        "duplicate_sequence": {
+          "reason": "two events share sequence 0; ordering is not reconstructible",
+          "refused": true
+        },
+        "finding_outcome_on_inconclusive_transition": {
+          "reason": "investigation/regime-features-leak-future-state@1: recorded outcome 'FINDING_PRODUCED' but 'conclude_inconclusive' produces 'INCONCLUSIVE'",
+          "refused": true
+        },
+        "private_evidence_on_public_event": {
+          "reason": "investigation/regime-features-leak-future-state@1: a public event cites private artifacts ['mission/my-plan@1']",
+          "refused": true
+        },
+        "resume_without_pause": {
+          "reason": "history is not contiguous: at ASSIGNED, next event moves from PAUSED",
+          "refused": true
+        },
+        "terminal_state_without_outcome": {
+          "reason": "investigation/regime-features-leak-future-state@1: entered terminal state 'CONCLUDED' with no outcome recorded",
+          "refused": true
+        },
+        "two_terminal_transitions": {
+          "reason": "a second terminal transition follows one that already ended the inquiry",
+          "refused": true
+        },
+        "wrong_program_version": {
+          "reason": "investigation/regime-features-leak-future-state@1: this event pinned program rcv1:00000000000… and was checked against rcv1:8b83560a4da…. Permission derived from the wrong program is not permission",
+          "refused": true
+        }
+      },
+      "why": "a rejection must be a typed reason, not a generic schema error — 'conclude from PROPOSED' and 'malformed payload' must not look alike"
+    },
+    "order_variation_replays_identically": {
+      "event_hashes": [
+        "rcv1:23885f44c94768263045bf73b53024dd813d5c22d2df4b79fdbd8ff9610416f1",
+        "rcv1:5deb2e6ad6aa5f50eeab8d5c194c98a77b871529c623a1d5c38d2039b4dafb07",
+        "rcv1:d8d079c4e26da373ad2cd1dc88e566c59a2facb217237e1b24000a8ef3830c40",
+        "rcv1:06ce0354727acc5aa0c0647b6e8de39ccf6f069498c37251ebf4f6dd6f4cf297",
+        "rcv1:6a2164de0c7383921fce463667aa7e6458dcf117012f0f1bab9f71c57e65ca10"
+      ],
+      "final_state": "CONCLUDED",
+      "why": "insertion order is a property of the caller, not the history"
+    },
+    "outcome_changes_identity": {
+      "differs_from_inconclusive": true,
+      "emits_finding": true,
+      "event_hash": "rcv1:622dfeb44664df7a3a58cb7d854084023a7aeb11518cb18b7b7db13dcaedf5d0",
+      "final_state": "CONCLUDED",
+      "terminal_outcome": "FINDING_PRODUCED",
+      "why": "replacing INCONCLUSIVE with FINDING_PRODUCED is a different history, and one of them emits a public artifact"
+    },
+    "program": {
+      "artifact_id": "mission-program/investigation/default@1",
+      "content_hash": "rcv1:8b83560a4da70efcbc89525b925d312e046566253030720503c43906a8e939e9",
+      "semantic_hash": "rcv1:8577dce21c3115f6bbc8c391bf3de4fcf89f425e6146c99c36760218c1c156e8",
+      "why": "the pinned lifecycle every transition is checked against"
+    },
+    "prose_and_time_excluded": {
+      "event_hash": "rcv1:23885f44c94768263045bf73b53024dd813d5c22d2df4b79fdbd8ff9610416f1",
+      "why": "the same transition, reworded or re-clocked, is the same fact"
+    }
+  },
+  "contract_version": "0.1"
+}
