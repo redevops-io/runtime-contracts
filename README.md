@@ -99,5 +99,11 @@ make adopting the wire format a licensing decision about the adopter's own code,
 which is the opposite of what a neutral contract is for. The schemas carry no
 business logic, so there is nothing here that copyleft would protect.
 
+**The licence covers this contract package only.** It does not relicense
+implementations, adapters, or underlying runtime code: `context-runtime` and
+`redevops-rag` keep AGPL-3.0, and an adapter carries whatever licence its own
+repository does. Apache-2.0 here means importing the schemas and reproducing a
+wire hash is not a licensing decision about the importer.
+
 **This is a reversible call and it is the maintainers' to make** — it is written
 down here rather than left implicit in a file header.

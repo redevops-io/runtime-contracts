@@ -84,7 +84,8 @@ class ContextPreviewPlan:
     subset without saying so claims a completeness it does not have."""
 
     findings: Sequence[str] = ()
-    contract_version: str = CONTRACT_VERSION
+    schema_id: str = "runtime-contracts/context-preview-plan"
+    schema_version: str = CONTRACT_VERSION
 
     @property
     def required(self) -> List[PlannedItem]:
@@ -108,7 +109,8 @@ class ContextPreviewPlan:
 
     def canonical_form(self) -> Dict[str, Any]:
         return {
-            "contract_version": self.contract_version,
+            "schema_id": self.schema_id,
+            "schema_version": self.schema_version,
             "items": [
                 i.canonical_form()
                 for i in sorted_unique(self.items, key=lambda i: i.sort_key)
@@ -156,11 +158,13 @@ class ContextView:
     or the view is reported as unreproducible rather than silently refreshed."""
 
     materialized_at: Optional[str] = None
-    contract_version: str = CONTRACT_VERSION
+    schema_id: str = "runtime-contracts/context-view"
+    schema_version: str = CONTRACT_VERSION
 
     def canonical_form(self) -> Dict[str, Any]:
         return {
-            "contract_version": self.contract_version,
+            "schema_id": self.schema_id,
+            "schema_version": self.schema_version,
             "plan": self.plan.canonical_form(),
             "version_pins": dict(sorted(self.version_pins.items())),
             # view_id and materialized_at are excluded. Two materializations of

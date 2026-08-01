@@ -59,7 +59,9 @@ components:
       - rag-saas-platform/backend/services/cr_media.py
       - redevops-rag/benchmarks/*
     modules: 157
-    contract_status: partial
+    contract_status: SPECIFIED
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: documented
 
   redevops-rag:
     repository: redevops-io/redevops-rag
@@ -74,7 +76,9 @@ components:
       - context-runtime/context_runtime/integrations/redevops_rag.py
       - context-runtime/context_runtime/adapters/store_{semantic,redevops,diver}.py
     modules: 9
-    contract_status: partial
+    contract_status: SPECIFIED
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: documented
 
   rag-saas-platform:
     repository: redevops-io/rag-saas-platform

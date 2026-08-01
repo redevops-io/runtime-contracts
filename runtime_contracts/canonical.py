@@ -42,16 +42,23 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import unicodedata
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Any, Mapping, Sequence
 
-CONTRACT_VERSION = "0.1"
+#: **Runtime Canonicalization Version.** The rules in this module, not the shape
+#: of any contract. A digest reading `rcv1:` was computed under these rules.
+#:
+#: Deliberately independent of schema version: a contract can move to
+#: `context-view/0.2` and stay on `rcv1`, and a change to *how things are
+#: hashed* becomes `rcv2` without renumbering every schema. Collapsing the two
+#: would make every schema bump look like a hashing change and vice versa.
+CANONICALIZATION_VERSION = "rcv1"
+HASH_PREFIX = CANONICALIZATION_VERSION
 
-#: Prefix on every hash, so a digest carries the rules that produced it. A hash
-#: with no algorithm label is unversionable — the day the rules change, nothing
-#: distinguishes an old digest from a wrong one.
-HASH_PREFIX = "rcv1"
+#: Retained for callers that used it before the split.
+CONTRACT_VERSION = "0.1"
 
 
 class CanonicalizationError(ValueError):
@@ -64,6 +71,66 @@ class CanonicalizationError(ValueError):
 
 def _text(value: str) -> str:
     return unicodedata.normalize("NFC", value)
+
+
+#: A decimal string, in the only form this contract accepts.
+#:
+#: Every rule below removes a way two implementations can write the same number
+#: differently. Left undecided, the first fractional cost estimate would produce
+#: hashes that differ between a Python producer and a Go one for no reason
+#: anybody could see.
+_DECIMAL = re.compile(r"^-?(0|[1-9][0-9]*)(\.[0-9]*[1-9])?$")
+
+
+def decimal_string(value: "str | int | Decimal") -> str:
+    """Normalize a fractional value into the canonical decimal form.
+
+    ===========  ==========  ================================================
+    Input        Output      Rule
+    ===========  ==========  ================================================
+    ``"1.0"``    ``"1"``     trailing zeros removed — one value, one spelling
+    ``"1.500"``  ``"1.5"``   same
+    ``"-0"``     ``"0"``     negative zero is zero; two spellings, one number
+    ``"-0.0"``   ``"0"``     same
+    ``"1e-3"``   ``"0.001"`` exponent notation expanded; ``1E-3`` would differ
+    ``"+1"``     ``"1"``     leading plus removed
+    ``"007"``    ``"7"``     leading zeros removed
+    ``"1."``     *error*     an empty fraction is a typo, not a number
+    ===========  ==========  ================================================
+
+    Raises rather than guessing on anything else.
+    """
+    raw = str(value).strip()
+    if raw.endswith(".") or raw.startswith("."):
+        raise CanonicalizationError(
+            f"{value!r} has an empty integer or fraction part. Decimal accepts "
+            "it, which is exactly why it is refused here: a typo that parses is "
+            "a typo that reaches production."
+        )
+
+    try:
+        number = Decimal(raw)
+    except (InvalidOperation, ValueError) as exc:
+        raise CanonicalizationError(
+            f"{value!r} is not a decimal. Fractional contract values are decimal "
+            "strings; floats and free text are both refused."
+        ) from exc
+
+    if not number.is_finite():
+        raise CanonicalizationError(
+            f"{value!r} is not finite. NaN and infinity have no canonical form "
+            "and no agreed cross-language spelling."
+        )
+
+    if number == 0:
+        return "0"          # collapses -0, -0.0, 0.000
+
+    text = format(number.normalize(), "f")
+    if not _DECIMAL.match(text):  # pragma: no cover - defensive
+        raise CanonicalizationError(
+            f"{value!r} normalized to {text!r}, which is not canonical decimal form"
+        )
+    return text
 
 
 def canonicalize(value: Any) -> Any:
@@ -85,7 +152,7 @@ def canonicalize(value: Any) -> Any:
             "Carry fractional values as decimal strings."
         )
     if isinstance(value, Decimal):
-        return format(value.normalize(), "f")
+        return decimal_string(value)
     if isinstance(value, str):
         return _text(value)
     if isinstance(value, Mapping):

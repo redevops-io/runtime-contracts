@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import unicodedata
 
 from runtime_contracts import (
     ArtifactHandle,
@@ -19,6 +20,7 @@ from runtime_contracts import (
     Tenancy,
     Visibility,
     content_hash,
+    decimal_string,
 )
 
 HERE = pathlib.Path(__file__).parent
@@ -121,6 +123,57 @@ def cases() -> dict:
         "why": "observation time and ids describe the run, not the working set",
         "view_hash": ContextView("v-h", base_plan, base_pins,
                                  materialized_at="2026-07-31T12:00:00Z").view_hash,
+    }
+
+    # 10. Everything that has ever differed between languages, in one payload.
+    #     The first parity check a Go or TypeScript port runs.
+    out["cross_language_torture_case"] = {
+        "why": (
+            "every known cross-language divergence in one object: composed and "
+            "decomposed Unicode, decimal spellings, map insertion order, "
+            "duplicate handles, multiple projections, denied and omitted "
+            "entries, null against absent, and version pins out of order"
+        ),
+        "decimals": {
+            spelling: decimal_string(spelling)
+            for spelling in ("1.0", "1.500", "-0", "-0.0", "1e-3", "+1", "007",
+                             "0.001", "-2.50", "1000000")
+        },
+        "unicode_pairs_agree": (
+            content_hash({"k": "café · ñoño · 한국"})
+            == content_hash({"k": unicodedata.normalize(
+                "NFD", "café · ñoño · 한국")})
+        ),
+        "null_equals_absent": (
+            content_hash({"a": 1, "b": None, "c": {"d": None}})
+            == content_hash({"a": 1, "c": {}})
+        ),
+        "view_hash": ContextView(
+            "v-torture",
+            ContextPreviewPlan(
+                "plan-torture",
+                [
+                    PlannedItem(handle(1, projections=("full", "summary")),
+                                Necessity.REQUIRED, "full"),
+                    PlannedItem(handle(1, projections=("summary", "full")),
+                                Necessity.REQUIRED, "full"),   # exact duplicate
+                    PlannedItem(handle(1), Necessity.OPTIONAL, "diagnostics"),
+                    PlannedItem(handle(2, visibility=Visibility.PRIVATE,
+                                       tenant="acme"),
+                                Necessity.OPTIONAL, "summary",
+                                authorization=AuthorizationOutcome.DENIED_TENANT),
+                    PlannedItem(handle(3), Necessity.EXCLUDED, "summary",
+                                authorization=AuthorizationOutcome.DENIED_STALE),
+                ],
+                budget_tokens=5000,
+                omitted_count=3,
+            ),
+            {
+                "evidence/e3@1": f"rcv1:{3:064d}",
+                "evidence/e1@1": f"rcv1:{1:064d}",
+                "evidence/e2@1": f"rcv1:{2:064d}",
+            },
+        ).view_hash,
     }
     return out
 

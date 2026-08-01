@@ -39,7 +39,9 @@ def status() -> int:
         gate = gates["release_gate"].get(name, {}).get("minimum", "NOT_LOCATED")
         meets = ORDER.index(state) >= ORDER.index(gate)
         mark = "ok " if meets else "GAP"
-        print(f"  [{mark}] {name:<{width}}  {state:<20} gate {gate}")
+        adoption = spec.get("implementation_adoption")
+        print(f"  [{mark}] {name:<{width}}  {state:<14} gate {gate}"
+              + (f"   adoption {adoption}" if adoption else ""))
         if spec.get("warning"):
             print(f"        ! {' '.join(spec['warning'].split())}")
 

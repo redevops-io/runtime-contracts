@@ -63,6 +63,7 @@ class RuntimeEvent:
     tenant_id: Optional[str] = None
     evidence_refs: Sequence[str] = ()
     emitted_at: Optional[str] = None
+    schema_id: str = "runtime-contracts/runtime-event"
     schema_version: str = CONTRACT_VERSION
 
     def __post_init__(self) -> None:
@@ -71,6 +72,7 @@ class RuntimeEvent:
 
     def canonical_form(self) -> Dict[str, Any]:
         return {
+            "schema_id": self.schema_id,
             "schema_version": self.schema_version,
             "kind": self.kind.value,
             "intent": self.intent.value,

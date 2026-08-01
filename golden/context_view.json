@@ -1,31 +1,49 @@
 {
   "cases": {
     "authorization_participates": {
-      "view_hash": "rcv1:d04708526996db8a241a257c5738a2c116dc557e69c4d97df4f528980371d929",
+      "view_hash": "rcv1:dc5b7d2b819abc5d1113e4d3a98f1bc0025681be47a93a92d02ef6b461603e15",
       "why": "a redaction changes what the model was permitted to see"
     },
+    "cross_language_torture_case": {
+      "decimals": {
+        "+1": "1",
+        "-0": "0",
+        "-0.0": "0",
+        "-2.50": "-2.5",
+        "0.001": "0.001",
+        "007": "7",
+        "1.0": "1",
+        "1.500": "1.5",
+        "1000000": "1000000",
+        "1e-3": "0.001"
+      },
+      "null_equals_absent": true,
+      "unicode_pairs_agree": true,
+      "view_hash": "rcv1:75a0af9f14a22787bc2d14517a46c9cdd0bf4e824f095d188e23a463ca6d1997",
+      "why": "every known cross-language divergence in one object: composed and decomposed Unicode, decimal spellings, map insertion order, duplicate handles, multiple projections, denied and omitted entries, null against absent, and version pins out of order"
+    },
     "duplicate_handle_normalization": {
-      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "view_hash": "rcv1:925aab86153e829d822279f5ddecd1f9f5f20270c0c4df9ac34f450fad4dfccc",
       "why": "two parts of a plan may legitimately cite one artifact"
     },
     "omission_disclosure": {
-      "view_hash": "rcv1:8325c58632818c5702803bda27939c11347bc700daac745e6a233c50b392ed4e",
+      "view_hash": "rcv1:6749b9c4fc191d2174d565e4658c1c036b69fda5bdd7d888ef32f95ba90b3098",
       "why": "a view showing a subset without saying so claims completeness"
     },
     "order_variation": {
-      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "view_hash": "rcv1:925aab86153e829d822279f5ddecd1f9f5f20270c0c4df9ac34f450fad4dfccc",
       "why": "declaration order is a property of the builder, not the plan"
     },
     "projection_is_part_of_identity": {
-      "view_hash": "rcv1:94a06eaee01426d0b8754330065f76efe19a2764eb4d88d299ab83acdb38b6b1",
+      "view_hash": "rcv1:9c8c00b27eed24c209f164e28a442366be3e353e0162ca062589d0e504321885",
       "why": "the same artifact at two projections is two planned items"
     },
     "reproducible_working_set": {
-      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "view_hash": "rcv1:925aab86153e829d822279f5ddecd1f9f5f20270c0c4df9ac34f450fad4dfccc",
       "why": "same handles + same plan + same pins = same view hash"
     },
     "stale_version_pin": {
-      "view_hash": "rcv1:2991ddecc6b195ee2857e22af65ac576daf011e508a7e279e5edb15aa74ad962",
+      "view_hash": "rcv1:63ff2a0956fbab94c82ae56c72d9b0343a88419a70279098af14e3963b12885f",
       "why": "resolving a pin must return that version or report divergence"
     },
     "unicode_identity": {
@@ -34,7 +52,7 @@
       "why": "an id typed on macOS must hash as one typed on Linux"
     },
     "volatile_fields_excluded": {
-      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "view_hash": "rcv1:925aab86153e829d822279f5ddecd1f9f5f20270c0c4df9ac34f450fad4dfccc",
       "why": "observation time and ids describe the run, not the working set"
     }
   },

@@ -2,7 +2,8 @@ implementation: quantify
 repository: redevops-io/RAAAL
 commit: dd2b860
 contract: runtime-contracts/v0.1
-status: SPECIFIED
+status: ADAPTER_STARTED
+adapter_module: adapters/quantify/adapter.py
 
 # Quantify has no contract types either, but it has close analogues built to the
 # same discipline, which is why it is the first adapter to write.
@@ -24,3 +25,16 @@ mappings:
   ContextPreviewPlan: {existing_type: null, status: NOT_IMPLEMENTED}
   ContextView:        {existing_type: null, status: NOT_IMPLEMENTED}
   MissionProgram:     {existing_type: null, status: NOT_IMPLEMENTED}
+
+proven_by_adapter:
+  - public/private visibility maps without loss
+  - a Quantify content hash and a ContextView hash never collide
+  - projections are explicit rather than implied by artifact type
+  - denied and omitted entries change view identity
+  - replay reproduces the golden digests
+  - no source artifact is copied into a handle
+
+not_proven:
+  - Quantify has adopted nothing internally; this is a boundary translation
+  - no MissionProgram, ContextPreviewPlan or VerificationResult is produced by
+    application code

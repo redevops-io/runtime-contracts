@@ -2,6 +2,13 @@
 # See docs/deployment-inventory.md for how each fact was established.
 contract_version: "0.1"
 
+# Three axes, kept apart. Conflating them lets a gap analysis imply code
+# adoption: "PARTIAL" reads as "some of it is wired up" when what exists is a
+# document saying it is not.
+#
+#   contract_status         does the contract exist for this component
+#   implementation_adoption is any code producing contract objects
+#   predecessor_mapping     has the existing code been mapped against it
 maturity_states:
   - NOT_LOCATED          # no code found anywhere
   - PLANNED              # named as in scope, nothing written
@@ -14,16 +21,22 @@ maturity_states:
 implementations:
 
   quantify:
+    implementation_adoption: ADAPTER_ONLY
+    predecessor_mapping: documented
     repository: redevops-io/RAAAL
     commit: dd2b860
-    status: SPECIFIED
+    status: ADAPTER_STARTED
     adapter: adapters/quantify
     role: canonical-consumer
     note: >-
       Imports neither runtime today. Contributes fixtures and discipline; it is
-      the incubator, not the owner.
+      the incubator, not the owner. The adapter translates at the boundary and
+      Quantify has adopted nothing internally — `ADAPTER_ONLY` says exactly that,
+      where `PARTIAL` would imply application code produces contract objects.
 
   context-runtime:
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: documented
     repository: redevops-io/context-runtime
     commit: 8fe5f3a
     describe: v7.0-2-g8fe5f3a
@@ -35,6 +48,8 @@ implementations:
       predecessor is context_runtime.registry.Capability. See its mapping.
 
   redevops-rag:
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: documented
     repository: redevops-io/redevops-rag
     commit: e3e37df
     describe: v0.2.0-31-ge3e37df
@@ -46,6 +61,8 @@ implementations:
       ceec853. One of them is not what runs.
 
   rag-saas-platform:
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: not-started
     repository: redevops-io/rag-saas-platform
     commit: 7d562c2
     branch: feat/context-runtime-migration
