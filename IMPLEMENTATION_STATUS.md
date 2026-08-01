@@ -30,10 +30,15 @@ build. It becomes a failure the day it is declared part of the release.
 `ContextPreviewPlan` · `ContextView` · `RuntimeEvent` · `DereferenceEvent` ·
 canonical hashing · golden fixtures · adoption manifest
 
-## Specified in v0.1, not yet modelled
+## Also modelled
 
-`CapabilityDescriptor` · `MissionProgram` · `InvestigationTransitionEvent` ·
-`VerificationResult` — the remaining Phase B subset.
+`VerificationResult` · `CapabilityDescriptor` · `MissionProgram` ·
+`InvestigationTransitionEvent` · submission semantics · replay engine ·
+finding routing.
+
+The v0.1 subset Phase B needs is complete. What remains is a **consumer**: the
+control-plane adapter, an append-only ledger, and the inconclusive journey
+persisted rather than fixtured.
 
 ## Deliberately out of v0.1
 

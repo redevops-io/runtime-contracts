@@ -34,6 +34,7 @@ hashing change.
 | Tag | Contents |
 |---|---|
 | `v0.1.0-alpha.1` | Canonicalization, `ArtifactHandle`, `ContextPreviewPlan`, `ContextView`, `RuntimeEvent`, `VerificationResult`, `CapabilityDescriptor`, `MissionProgram`, `InvestigationTransitionEvent`, golden fixtures, Quantify adapter |
+| `v0.1.0-alpha.2` | Submission idempotency, replay engine, finding routing, `permitted_then` vs `current_program_would_permit` |
 
 ## Not yet public
 

@@ -106,6 +106,42 @@ def invalid_cases():
     }
 
 
+def idempotency_cases() -> dict:
+    """The fixture retries, queues and Discovery delivery all depend on."""
+    import dataclasses
+
+    from runtime_contracts import submit
+
+    first = inconclusive_journey()[0]
+    stored = {}
+
+    accepted = submit(first, event_id="evt-0", existing=stored, program=P)
+    stored["evt-0"] = first.event_hash
+
+    retried = submit(first, event_id="evt-0", existing=stored, program=P)
+
+    # Same id, different body. A redelivery that changed content is not a retry.
+    tampered = dataclasses.replace(first, actor="someone-else")
+    conflicted = submit(tampered, event_id="evt-0", existing=stored, program=P)
+
+    # Same id, reworded only. Prose is not part of the fact, so it is a retry.
+    reworded = dataclasses.replace(first, reason="reworded after review")
+    absorbed = submit(reworded, event_id="evt-0", existing=stored, program=P)
+
+    forbidden = submit(
+        event("conclude_inconclusive", "PROPOSED", "CONCLUDED", 0,
+              outcome="INCONCLUSIVE"),
+        event_id="evt-9", existing=stored, program=P)
+
+    return {
+        "first_submission": accepted.to_json(),
+        "identical_retry": retried.to_json(),
+        "same_id_different_body": conflicted.to_json(),
+        "same_id_reworded_only": absorbed.to_json(),
+        "forbidden_transition": forbidden.to_json(),
+    }
+
+
 def cases() -> dict:
     journey = inconclusive_journey()
     reversed_journey = list(reversed(journey))
@@ -153,6 +189,13 @@ def cases() -> dict:
             "event_hash": InvestigationTransitionEvent(
                 **{**journey[0].__dict__, "reason": "reworded after review",
                    "occurred_at": "2026-07-31T09:00:00Z"}).event_hash,
+        },
+        "idempotent_submission": {
+            "why": ("the same transition arrives twice the moment retries, "
+                    "queues or Discovery delivery exist. An identical body is a "
+                    "no-op; the same id with a different body is a hard conflict, "
+                    "because a redelivery must not rewrite an append-only history"),
+            "cases": idempotency_cases(),
         },
         "invalid_workflows": {
             "why": ("a rejection must be a typed reason, not a generic schema "

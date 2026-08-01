@@ -1,5 +1,40 @@
 {
   "cases": {
+    "idempotent_submission": {
+      "cases": {
+        "first_submission": {
+          "event_id": "evt-0",
+          "outcome": "ACCEPTED",
+          "reason": "",
+          "stored": true
+        },
+        "forbidden_transition": {
+          "event_id": "evt-9",
+          "outcome": "REFUSED",
+          "reason": "mission-program/investigation/default@1 does not permit PROPOSED -> CONCLUDED as 'conclude_inconclusive'",
+          "stored": false
+        },
+        "identical_retry": {
+          "event_id": "evt-0",
+          "outcome": "DUPLICATE",
+          "reason": "identical body already stored; retry absorbed",
+          "stored": false
+        },
+        "same_id_different_body": {
+          "event_id": "evt-0",
+          "outcome": "CONFLICT",
+          "reason": "event evt-0 is already stored with a different body. A redelivery that changed content is not a retry, and accepting it would rewrite an append-only history",
+          "stored": false
+        },
+        "same_id_reworded_only": {
+          "event_id": "evt-0",
+          "outcome": "DUPLICATE",
+          "reason": "identical body already stored; retry absorbed",
+          "stored": false
+        }
+      },
+      "why": "the same transition arrives twice the moment retries, queues or Discovery delivery exist. An identical body is a no-op; the same id with a different body is a hard conflict, because a redelivery must not rewrite an append-only history"
+    },
     "inconclusive_journey": {
       "emits_finding": false,
       "event_hashes": [

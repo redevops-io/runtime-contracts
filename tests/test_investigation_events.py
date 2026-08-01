@@ -120,3 +120,140 @@ class TestAnEventCannotVouchForItself:
         wrapped = inconclusive_journey()[0].as_runtime_event(
             event_id="e1", stream_id="inv-1", emitted_by="control-plane")
         assert wrapped.kind is EventKind.INVESTIGATION_TRANSITION
+
+
+class TestIdempotentSubmission:
+    """Essential the moment retries, queues or Discovery delivery exist."""
+
+    CASES = GOLDEN["idempotent_submission"]["cases"]
+
+    def test_a_first_submission_is_accepted(self):
+        assert self.CASES["first_submission"]["outcome"] == "ACCEPTED"
+        assert self.CASES["first_submission"]["stored"] is True
+
+    def test_an_identical_retry_is_a_no_op(self):
+        assert self.CASES["identical_retry"]["outcome"] == "DUPLICATE"
+        assert self.CASES["identical_retry"]["stored"] is False
+
+    def test_the_same_id_with_a_different_body_is_a_hard_conflict(self):
+        """Accepting it would let a redelivery rewrite an append-only history."""
+        case = self.CASES["same_id_different_body"]
+        assert case["outcome"] == "CONFLICT"
+        assert "rewrite an append-only history" in case["reason"]
+
+    def test_rewording_alone_is_still_a_retry(self):
+        """Prose is not part of the fact, so it does not make a new event."""
+        assert self.CASES["same_id_reworded_only"]["outcome"] == "DUPLICATE"
+
+    def test_a_forbidden_transition_is_refused_not_conflicted(self):
+        """Different failure, different answer — the caller acts on each
+        differently."""
+        assert self.CASES["forbidden_transition"]["outcome"] == "REFUSED"
+
+
+class TestReplayIsTheSourceOfTruth:
+    def test_it_derives_state_outcome_and_assignment(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, replay_ledger
+
+        result = replay_ledger(inconclusive_journey(), INVESTIGATION_PROGRAM)
+
+        assert result.current_state == "CONCLUDED"
+        assert result.terminal_outcome == "INCONCLUSIVE"
+        assert result.active_assignment == "pilot"
+        assert result.is_consistent
+
+    def test_a_concluded_inquiry_cannot_transition_again(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, replay_ledger
+
+        assert not replay_ledger(inconclusive_journey(),
+                                 INVESTIGATION_PROGRAM).can_transition
+
+    def test_verification_history_survives(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, replay_ledger
+
+        [check] = replay_ledger(inconclusive_journey(),
+                                INVESTIGATION_PROGRAM).verification_history
+        assert check["verdict"] == "PASS"
+        assert check["transition_id"] == "conclude_inconclusive"
+
+    def test_non_strict_replay_collects_rather_than_stops(self):
+        """One bad event must not make the rest of a history unreadable."""
+        from runtime_contracts import INVESTIGATION_PROGRAM, replay_ledger
+
+        broken = inconclusive_journey() + [
+            event("start", "PAUSED", "ACTIVE", 9)]
+        result = replay_ledger(broken, INVESTIGATION_PROGRAM, strict=False)
+
+        assert result.invalid_events
+        assert result.current_state == "CONCLUDED"
+        assert not result.is_consistent
+
+    def test_a_program_mismatch_is_reported_separately(self):
+        import dataclasses
+
+        from runtime_contracts import INVESTIGATION_PROGRAM, replay_ledger
+
+        wrong = [dataclasses.replace(e, program_hash="rcv1:" + "0" * 64)
+                 for e in inconclusive_journey()]
+        result = replay_ledger(wrong, INVESTIGATION_PROGRAM, strict=False)
+
+        assert result.program_mismatches
+        assert result.current_state == INVESTIGATION_PROGRAM.initial_state
+
+
+class TestHistoryAndAuditAreDifferentQuestions:
+    def test_permitted_then_uses_the_pinned_program(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, permitted_then
+
+        assert permitted_then(inconclusive_journey()[0], INVESTIGATION_PROGRAM)
+
+    def test_a_narrowed_current_program_does_not_rewrite_history(self):
+        """A False here means the rules changed, not that the transition was
+        wrong when it was made."""
+        import dataclasses
+
+        from runtime_contracts import (
+            INVESTIGATION_PROGRAM, current_program_would_permit, permitted_then)
+
+        from runtime_contracts import Transition
+
+        # `start` no longer resumes from PAUSED. Dropping `pause` outright would
+        # have left PAUSED unreachable, which the program validator refuses —
+        # a narrowing has to remain a valid lifecycle.
+        narrowed = dataclasses.replace(
+            INVESTIGATION_PROGRAM,
+            program_version="2",
+            transitions=tuple(
+                t for t in INVESTIGATION_PROGRAM.transitions
+                if t.transition_id != "start")
+            + (Transition("start", ("ASSIGNED",), "ACTIVE"),))
+        [resumed] = [e for e in inconclusive_journey()
+                     if e.from_state == "PAUSED"]
+
+        assert permitted_then(resumed, INVESTIGATION_PROGRAM)
+        assert not current_program_would_permit(resumed, narrowed)
+
+
+class TestFindingRoutingIsDerivedFromTheProgram:
+    def test_a_null_outcome_forbids_findings(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, check_finding_routing
+
+        for outcome in ("INCONCLUSIVE", "NO_MATERIAL_IMPACT"):
+            assert check_finding_routing(INVESTIGATION_PROGRAM, outcome, []) is None
+            assert "mislabelled its own outcome" in check_finding_routing(
+                INVESTIGATION_PROGRAM, outcome, ["finding/x@1"])
+
+    def test_a_finding_outcome_requires_at_least_one(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, check_finding_routing
+
+        assert "cannot be reviewed" in check_finding_routing(
+            INVESTIGATION_PROGRAM, "FINDING_PRODUCED", [])
+        assert check_finding_routing(
+            INVESTIGATION_PROGRAM, "FINDING_PRODUCED", ["finding/x@1"]) is None
+
+    def test_the_rule_is_read_from_the_program_not_hardcoded(self):
+        from runtime_contracts import INVESTIGATION_PROGRAM, finding_requirement
+
+        assert finding_requirement(INVESTIGATION_PROGRAM, "INCONCLUSIVE") == "FORBIDDEN"
+        assert finding_requirement(
+            INVESTIGATION_PROGRAM, "FINDING_PRODUCED") == "REQUIRED"

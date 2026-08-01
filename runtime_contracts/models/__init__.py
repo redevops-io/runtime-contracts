@@ -28,6 +28,17 @@ from .investigation import (
     OwnershipChange,
     replay_states,
 )
+from .ledger import (
+    ReplayResult,
+    SubmissionOutcome,
+    SubmissionResult,
+    check_finding_routing,
+    current_program_would_permit,
+    finding_requirement,
+    permitted_then,
+    replay_ledger,
+    submit,
+)
 from .mission import (
     INVESTIGATION_PROGRAM,
     NO_APPROVAL,
@@ -49,6 +60,9 @@ __all__ = [
     "Disposition", "Supports", "TerminalOutcome",
     "InvestigationTransitionEvent", "MissionProgram", "OwnershipChange",
     "State", "Transition", "TransitionRefused", "replay_states",
+    "ReplayResult", "SubmissionOutcome", "SubmissionResult", "submit",
+    "replay_ledger", "permitted_then", "current_program_would_permit",
+    "finding_requirement", "check_finding_routing",
     "ArtifactHandle", "CapabilityDescriptor", "Check", "Completion",
     "Determinism", "Estimate", "Idempotency", "RetrySafety", "SecurityProfile",
     "SideEffect", "TypedPort", "Verdict", "VerificationResult", "AuthorizationOutcome", "ContextPreviewPlan", "ContextView",
