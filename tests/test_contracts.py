@@ -131,3 +131,97 @@ class TestEventsOrderPhysically:
                                  AuthorizationOutcome.DENIED_TENANT).as_event(
             event_id="e", stream_id="s", sequence=0, emitted_by="cr")
         assert event.intent is Intent.FAILED
+
+
+class TestTheEvidenceCandidateBoundary:
+    """RAG finds candidates; Context Runtime decides what enters."""
+
+    def _candidate(self, **kw):
+        from runtime_contracts import EvidenceCandidate, Freshness
+
+        spec = dict(candidate_id="c1", source_artifact_id="evidence/e1@1",
+                    artifact_kind="evidence", artifact_content_hash="rcv1:aaa",
+                    projection="summary", authority="redevops-rag",
+                    visibility=Visibility.PUBLIC, freshness=Freshness.CURRENT,
+                    retrieval_score="0.87", estimated_tokens=120)
+        spec.update(kw)
+        return EvidenceCandidate(**spec)
+
+    def test_retrieval_score_is_not_part_of_handle_identity(self):
+        """Re-ranking changes what is chosen, never what evidence is."""
+        from runtime_contracts import candidate_to_handle
+
+        high = candidate_to_handle(self._candidate(retrieval_score="0.99"))
+        low = candidate_to_handle(self._candidate(retrieval_score="0.01"))
+        assert high.handle_hash == low.handle_hash
+
+    def test_the_retrieval_reason_is_not_either(self):
+        from runtime_contracts import candidate_to_handle
+
+        a = candidate_to_handle(self._candidate(retrieval_reason="semantic"))
+        b = candidate_to_handle(self._candidate(retrieval_reason="exact id"))
+        assert a.handle_hash == b.handle_hash
+
+    def test_projection_is(self):
+        from runtime_contracts import candidate_to_handle
+
+        summary = candidate_to_handle(self._candidate(projection="summary"))
+        full = candidate_to_handle(self._candidate(projection="full"))
+        assert summary.handle_hash != full.handle_hash
+
+    @pytest.mark.parametrize("field", [
+        "artifact_content_hash", "artifact_kind", "authority", "projection"])
+    def test_a_candidate_missing_a_required_field_is_refused(self, field):
+        from runtime_contracts import CandidateRejected, candidate_to_handle
+
+        with pytest.raises(CandidateRejected, match="cannot be replayed"):
+            candidate_to_handle(self._candidate(**{field: ""}))
+
+    def test_an_unpinned_artifact_is_refused(self):
+        from runtime_contracts import CandidateRejected, candidate_to_handle
+
+        with pytest.raises(CandidateRejected, match="latest at the time"):
+            candidate_to_handle(self._candidate(source_artifact_id="evidence/e1"))
+
+    def test_a_private_candidate_carries_its_tenant(self):
+        from runtime_contracts import candidate_to_handle
+
+        handle = candidate_to_handle(self._candidate(
+            visibility=Visibility.PRIVATE, tenant_id="acme"))
+        assert handle.tenancy.tenant_id == "acme"
+
+
+class TestDeclarationAndMaterializationAreSeparate:
+    def test_cost_and_cache_do_not_reach_identity(self):
+        """Two runs that assembled the same working set are the same view."""
+        from runtime_contracts import (
+            MaterializationOutcome, MaterializationRecord, MaterializedItem)
+
+        slow = MaterializationRecord(
+            view_hash="rcv1:same", latency_ms=4000,
+            items=(MaterializedItem("h", "evidence/e1@1", "summary",
+                                    MaterializationOutcome.MATERIALIZED,
+                                    from_cache=False),))
+        cached = MaterializationRecord(
+            view_hash="rcv1:same", latency_ms=12,
+            items=(MaterializedItem("h", "evidence/e1@1", "summary",
+                                    MaterializationOutcome.MATERIALIZED,
+                                    from_cache=True),))
+
+        assert slow.view_hash == cached.view_hash
+
+    def test_failures_are_enumerated_not_summarised(self):
+        from runtime_contracts import (
+            MaterializationOutcome, MaterializationRecord, MaterializedItem)
+
+        record = MaterializationRecord(view_hash="rcv1:x", items=(
+            MaterializedItem("h1", "a@1", "summary",
+                             MaterializationOutcome.MATERIALIZED),
+            MaterializedItem("h2", "b@1", "summary",
+                             MaterializationOutcome.STALE_PIN),
+            MaterializedItem("h3", "c@1", "summary",
+                             MaterializationOutcome.DENIED)))
+
+        assert record.dereference_count == 3
+        assert {f.outcome for f in record.failures} == {
+            MaterializationOutcome.STALE_PIN, MaterializationOutcome.DENIED}

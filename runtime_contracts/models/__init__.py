@@ -22,6 +22,15 @@ from .capability import (
     SideEffect,
     TypedPort,
 )
+from .evidence import (
+    REQUIRED_CANDIDATE_FIELDS,
+    CandidateRejected,
+    EvidenceCandidate,
+    MaterializationOutcome,
+    MaterializationRecord,
+    MaterializedItem,
+    candidate_to_handle,
+)
 from .handle import ArtifactHandle, Freshness
 from .investigation import (
     InvestigationTransitionEvent,
@@ -56,6 +65,9 @@ from .verification import Check, Completion, Determinism, VerificationResult, Ve
 from .visibility import AuthorizationOutcome, Tenancy, Visibility
 
 __all__ = [
+    "REQUIRED_CANDIDATE_FIELDS", "CandidateRejected", "EvidenceCandidate",
+    "MaterializationOutcome", "MaterializationRecord", "MaterializedItem",
+    "candidate_to_handle",
     "INVESTIGATION_PROGRAM", "NO_APPROVAL", "ApprovalGate", "ApproverType",
     "Disposition", "Supports", "TerminalOutcome",
     "InvestigationTransitionEvent", "MissionProgram", "OwnershipChange",
