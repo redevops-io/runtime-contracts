@@ -1,0 +1,16 @@
+implementation: rag-saas-platform
+commit: 7d562c2
+branch: feat/context-runtime-migration
+contract: runtime-contracts/v0.1
+status: PLANNED
+role: deployed control plane
+
+note: >-
+  The only component observed to be deployed. Candidate host for MissionProgram
+  and the Investigation workflow, since neither mission-runtime nor
+  discovery-runtime exists as a repository.
+
+mappings:
+  MissionProgram:                {existing_type: null, status: NOT_IMPLEMENTED}
+  InvestigationTransitionEvent:  {existing_type: null, status: NOT_IMPLEMENTED}
+  RuntimeEvent:                  {existing_type: null, status: NOT_IMPLEMENTED}

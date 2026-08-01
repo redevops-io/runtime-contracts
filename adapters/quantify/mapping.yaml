@@ -1,0 +1,26 @@
+implementation: quantify
+repository: redevops-io/RAAAL
+commit: dd2b860
+contract: runtime-contracts/v0.1
+status: SPECIFIED
+
+# Quantify has no contract types either, but it has close analogues built to the
+# same discipline, which is why it is the first adapter to write.
+mappings:
+  ArtifactHandle:
+    existing_type: "versioned artifact ids: methodology/hrp@3, calendar/nyse@1"
+    status: ANALOGUE
+    note: >-
+      Already version-pinned and content-hashed with a family/version/instance
+      split. Missing tenancy, projections and expansion estimates.
+  RuntimeEvent:
+    existing_type: src.ledger run records
+    status: ANALOGUE
+    note: Persisted historical facts; no canonical envelope or stream ordering.
+  VerificationResult:
+    existing_type: src.methodology.verify
+    status: ANALOGUE
+    note: Realization checks exist; result type is not the contract shape.
+  ContextPreviewPlan: {existing_type: null, status: NOT_IMPLEMENTED}
+  ContextView:        {existing_type: null, status: NOT_IMPLEMENTED}
+  MissionProgram:     {existing_type: null, status: NOT_IMPLEMENTED}

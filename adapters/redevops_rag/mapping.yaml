@@ -1,0 +1,25 @@
+implementation: redevops-rag
+commit: e3e37df
+describe: v0.2.0-31-ge3e37df
+contract: runtime-contracts/v0.1
+status: SPECIFIED
+
+mappings:
+  ArtifactHandle:          {existing_type: null, status: NOT_IMPLEMENTED}
+  EvidenceSpanHandle:      {existing_type: null, status: NOT_IMPLEMENTED}
+  GraphNeighborhoodHandle: {existing_type: null, status: NOT_IMPLEMENTED}
+  RuntimeEvent:            {existing_type: null, status: NOT_IMPLEMENTED}
+
+boundary_requirement:
+  id: RAG_RETURNS_CANDIDATES
+  detail: >-
+    RAG finds candidates; Context Runtime decides what enters the model. A
+    consumer treating top-k text chunks as final context violates the contract
+    even if every type conforms.
+  currently_verified: false
+
+risks:
+  - id: DUPLICATE_CHECKOUT
+    detail: >-
+      Submodule pins e3e37df; the standalone checkout is ceec853. An adapter
+      passing against one says nothing about the other.

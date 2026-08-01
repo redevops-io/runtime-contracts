@@ -1,0 +1,49 @@
+# An implementation gap map, not a failed compatibility test. Nothing here is
+# broken — the contract simply describes something not yet built.
+implementation: context-runtime
+commit: 8fe5f3a
+describe: v7.0-2-g8fe5f3a
+contract: runtime-contracts/v0.1
+status: SPECIFIED
+
+mappings:
+
+  CapabilityDescriptor:
+    existing_type: context_runtime.registry.capabilities.Capability
+    status: INCOMPATIBLE_PREDECESSOR
+    note: >-
+      The existing type is a planner *selection token* — what to pick — where
+      the contract describes an *invocation descriptor* — what it does, needs,
+      guarantees and how it is verified. Not a rename; a different object with
+      an overlapping name.
+    supported:
+      - identity          # Capability.key
+      - kind              # Capability.kind
+      - value_or_provider # Capability.value (partial)
+      - cost_prior        # Capability.cost_prior
+    missing:
+      - typed_inputs
+      - typed_outputs
+      - preconditions
+      - postconditions
+      - failure_modes
+      - side_effects
+      - required_runtimes
+      - security_profile
+      - verification
+      - idempotency
+      - retry_safety
+
+  ArtifactHandle:      {existing_type: null, status: NOT_IMPLEMENTED}
+  ContextPreviewPlan:  {existing_type: null, status: NOT_IMPLEMENTED}
+  ContextView:         {existing_type: null, status: NOT_IMPLEMENTED}
+  DereferenceEvent:    {existing_type: null, status: NOT_IMPLEMENTED}
+  RuntimeEvent:        {existing_type: null, status: NOT_IMPLEMENTED}
+  MissionProgram:      {existing_type: null, status: NOT_IMPLEMENTED}
+
+risks:
+  - id: PLANNER_PARALLEL_TABLE
+    detail: >-
+      The contract requires the planner to read capability descriptors directly.
+      If a parallel hardcoded route table exists, that is the same drift Quantify
+      spent a release eliminating. Unverified — needs a read of the planner.

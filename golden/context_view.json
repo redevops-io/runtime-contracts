@@ -1,0 +1,42 @@
+{
+  "cases": {
+    "authorization_participates": {
+      "view_hash": "rcv1:d04708526996db8a241a257c5738a2c116dc557e69c4d97df4f528980371d929",
+      "why": "a redaction changes what the model was permitted to see"
+    },
+    "duplicate_handle_normalization": {
+      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "why": "two parts of a plan may legitimately cite one artifact"
+    },
+    "omission_disclosure": {
+      "view_hash": "rcv1:8325c58632818c5702803bda27939c11347bc700daac745e6a233c50b392ed4e",
+      "why": "a view showing a subset without saying so claims completeness"
+    },
+    "order_variation": {
+      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "why": "declaration order is a property of the builder, not the plan"
+    },
+    "projection_is_part_of_identity": {
+      "view_hash": "rcv1:94a06eaee01426d0b8754330065f76efe19a2764eb4d88d299ab83acdb38b6b1",
+      "why": "the same artifact at two projections is two planned items"
+    },
+    "reproducible_working_set": {
+      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "why": "same handles + same plan + same pins = same view hash"
+    },
+    "stale_version_pin": {
+      "view_hash": "rcv1:2991ddecc6b195ee2857e22af65ac576daf011e508a7e279e5edb15aa74ad962",
+      "why": "resolving a pin must return that version or report divergence"
+    },
+    "unicode_identity": {
+      "nfc": "rcv1:548e6c23920d3e450d2949502742e2b0bb9965b7559454d8e4f95107aa857edd",
+      "nfd": "rcv1:548e6c23920d3e450d2949502742e2b0bb9965b7559454d8e4f95107aa857edd",
+      "why": "an id typed on macOS must hash as one typed on Linux"
+    },
+    "volatile_fields_excluded": {
+      "view_hash": "rcv1:9d93e4905f9a923f6b700a5df6194ed8183aabd0e0fffcd287d9371a945b4c27",
+      "why": "observation time and ids describe the run, not the working set"
+    }
+  },
+  "contract_version": "0.1"
+}

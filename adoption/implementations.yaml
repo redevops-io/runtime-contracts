@@ -1,0 +1,77 @@
+# Observed 2026-07-31 from the filesystem, not inferred from architecture docs.
+# See docs/deployment-inventory.md for how each fact was established.
+contract_version: "0.1"
+
+maturity_states:
+  - NOT_LOCATED          # no code found anywhere
+  - PLANNED              # named as in scope, nothing written
+  - SPECIFIED            # contract written, no adapter
+  - ADAPTER_STARTED
+  - PARTIAL              # adapter exists, some contracts unmapped
+  - CONFORMANT           # all claimed contracts pass golden fixtures
+  - DEPLOYED_CONFORMANT  # and the deployed commit is observable and matches
+
+implementations:
+
+  quantify:
+    repository: redevops-io/RAAAL
+    commit: dd2b860
+    status: SPECIFIED
+    adapter: adapters/quantify
+    role: canonical-consumer
+    note: >-
+      Imports neither runtime today. Contributes fixtures and discipline; it is
+      the incubator, not the owner.
+
+  context-runtime:
+    repository: redevops-io/context-runtime
+    commit: 8fe5f3a
+    describe: v7.0-2-g8fe5f3a
+    status: SPECIFIED
+    adapter: adapters/context_runtime
+    deployed: unknown
+    note: >-
+      At v7.0. None of the v0.1 contract types exist in it; the nearest
+      predecessor is context_runtime.registry.Capability. See its mapping.
+
+  redevops-rag:
+    repository: redevops-io/redevops-rag
+    commit: e3e37df
+    describe: v0.2.0-31-ge3e37df
+    status: SPECIFIED
+    adapter: adapters/redevops_rag
+    deployed: unknown
+    warning: >-
+      Checked out twice at different commits — submodule e3e37df, standalone
+      ceec853. One of them is not what runs.
+
+  rag-saas-platform:
+    repository: redevops-io/rag-saas-platform
+    commit: 7d562c2
+    branch: feat/context-runtime-migration
+    status: PLANNED
+    adapter: adapters/rag_saas_platform
+    role: deployed control plane
+    note: >-
+      The only component actually deployed. Candidate host for MissionProgram
+      and the Investigation workflow.
+
+  mission-runtime:
+    status: NOT_LOCATED
+    evidence: zero occurrences in code, docs or config
+
+  discovery-runtime:
+    status: NOT_LOCATED
+    evidence: zero occurrences in code, docs or config
+
+  sidekick:
+    status: NOT_LOCATED
+    evidence: >-
+      Not a repository. An integration module at
+      context_runtime/integrations/sidekick.py.
+
+  agentic-os:
+    status: NOT_LOCATED
+    evidence: >-
+      No directory on this machine and no import reference from any located
+      repository. Possibly the private umbrella repo holding the v8/v10 work.

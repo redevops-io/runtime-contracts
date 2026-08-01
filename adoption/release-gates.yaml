@@ -1,0 +1,45 @@
+# A component below its gate fails the release.
+# A component whose gate is NOT_LOCATED is a visible roadmap gap, not a red build.
+contract_version: "0.1"
+
+release_gate:
+  quantify:          {minimum: CONFORMANT}
+  context-runtime:   {minimum: CONFORMANT}
+  redevops-rag:      {minimum: CONFORMANT}
+  rag-saas-platform: {minimum: PARTIAL}
+  mission-runtime:   {minimum: NOT_LOCATED}
+  discovery-runtime: {minimum: NOT_LOCATED}
+  sidekick:          {minimum: NOT_LOCATED}
+  agentic-os:        {minimum: NOT_LOCATED}
+
+additional_gates:
+
+  - id: RAG_COMMIT_OBSERVABLE
+    applies_to: redevops-rag
+    requirement: >-
+      The deployed ReDevOps RAG commit must be observable and must match the
+      commit against which its contract adapter passed.
+    currently_met: false
+    blocking_reason: >-
+      Two checkouts at different commits, and no running service discloses which
+      one it was built from.
+
+  - id: BUILD_MANIFEST_EMITTED
+    applies_to: rag-saas-platform
+    requirement: >-
+      A runtime build manifest is emitted at build time and exposed by an
+      authenticated diagnostics endpoint or startup log.
+    currently_met: false
+    proposed_shape:
+      application_commit: "7d562c2"
+      embedded_components:
+        context-runtime: "8fe5f3a"
+        redevops-rag: "e3e37df"
+      contracts:
+        runtime-contracts: "0.1.0"
+        artifact-handle: "0.1"
+        context-view: "0.1"
+        runtime-event: "0.1"
+    note: >-
+      Until this exists, "deployed" is a claim rather than an observation, and
+      no conformance result can be attributed to what is running.
