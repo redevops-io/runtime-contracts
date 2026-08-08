@@ -373,3 +373,50 @@ class TestWhatMissionMayAnswer:
         """Mission's gate asks "may I do this?"; Discovery's asks "what did you
         mean?". Merging them merges authorising with authoring."""
         assert MissionOutcome.NEEDS_APPROVAL is not MissionOutcome.UNSUPPORTED_CAPABILITY
+
+
+class TestTwoIdentitiesAnswerTwoQuestions:
+    """`intent_hash` — is this the same request? `artifact_digest` — is this
+    the same object? Carrying only the first makes a draft and a sealed intent
+    interchangeable in storage; carrying only the second makes every re-read
+    look like a new request."""
+
+    def test_sealing_keeps_the_request_and_changes_the_object(self):
+        i = intent()
+        sealed = i.seal()
+        assert sealed.intent_hash == i.intent_hash
+        assert sealed.artifact_digest != i.artifact_digest
+
+    def test_a_different_reader_changes_the_object_only(self):
+        a = intent(produced_by="discovery-runtime@0.4.2")
+        b = intent(produced_by="discovery-runtime@0.5.0")
+        assert a.intent_hash == b.intent_hash
+        assert a.artifact_digest != b.artifact_digest
+
+    def test_confidence_and_evidence_change_the_object_only(self):
+        bare = intent(fields={"cadence": field("annual", Author.USER)})
+        rich = intent(fields={"cadence": field(
+            "annual", Author.USER, confidence="0.6", source_span="every year",
+            evidence=[DecisionEvidence("r1", ReaderKind.RULE, "annual")])})
+        assert bare.intent_hash == rich.intent_hash
+        assert bare.artifact_digest != rich.artifact_digest
+
+    def test_a_changed_request_changes_both(self):
+        """The discriminating half: a digest that ignored the request would
+        make two different plans look like one cached object."""
+        a = intent(fields={"cadence": field("annual", Author.USER)})
+        b = intent(fields={"cadence": field("monthly", Author.USER)})
+        assert a.intent_hash != b.intent_hash
+        assert a.artifact_digest != b.artifact_digest
+
+    def test_both_are_stable_and_prefixed(self):
+        i = intent()
+        assert i.artifact_digest == intent().artifact_digest
+        assert i.artifact_digest.startswith("rcv1:")
+
+    def test_the_serialized_form_carries_both(self):
+        """So a consumer never has to recompute one to tell them apart."""
+        out = intent().seal().to_json()
+        assert out["intent_hash"] and out["artifact_digest"]
+        assert out["intent_hash"] != out["artifact_digest"]
+        assert out["state"] == "VERIFIED"
