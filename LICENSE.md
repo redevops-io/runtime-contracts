@@ -48,16 +48,27 @@ not an open standard anyone may implement commercially. A third party who wants
 the semantics without the terms has to write their own types, and the golden
 fixtures in `golden/` are what would let them prove equivalence.
 
-**One in-family consequence.** `mission-sdk` is Apache-2.0, deliberately — it is
-the permissive developer boundary over the Mission Runtime, and its
-`program.py` already anticipates that "the serialization becomes a thin adapter
-once `runtime-contracts` freezes the canonical `MissionProgram`". When that
-adapter is written, `mission-sdk` becomes a work based on an AGPL +
-Commons-Clause package, and its own Apache-2.0 grant stops describing what a
-downstream user actually receives. Either that dependency is kept out of
-`mission-sdk` proper — an adapter package, or contract types re-declared there
-from the fixtures — or `mission-sdk`'s licence should be changed to match, so
-its stated terms and its effective terms agree.
+**One in-family consequence, and it is a design question before it is a legal
+one.** `mission-sdk` is Apache-2.0 deliberately, and its `program.py` already
+anticipates that "the serialization becomes a thin adapter once
+`runtime-contracts` freezes the canonical `MissionProgram`". When that adapter
+exists, `mission-sdk` becomes a work based on an AGPL + Commons-Clause package
+and its own Apache-2.0 grant stops describing what a downstream user receives.
 
-Nothing in this repository can decide that. It is recorded here because the
-first person to hit it should not have to rediscover it.
+The licence follows from what the package *is*, which is not yet settled:
+
+    MissionProgram -> adapter -> runtime-contracts
+        mission-sdk owns runtime semantics. It is another runtime component,
+        and AGPL + Commons-Clause is the honest label.
+
+    MissionProgram DTO <-> serialization helpers
+        mission-sdk only translates. It owns no semantics, needs no dependency
+        on this package, and Apache-2.0 still describes it correctly.
+
+So the question is whether `mission-sdk` eventually *owns* runtime semantics or
+merely *translates* them. That is worth deciding on its own terms rather than
+having a licence decide it by accident — which is what happens if the adapter
+is written before anyone asks.
+
+Nothing in this repository can settle it. It is recorded here because the first
+person to hit it should not have to rediscover it.
