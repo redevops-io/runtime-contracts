@@ -35,10 +35,12 @@ from .handle import ArtifactHandle, Freshness
 from .intent import (
     Amendment,
     Author,
+    IntentRelation,
     IntentState,
     MissionOutcome,
     MissionProposal,
     NotSealable,
+    RelationMember,
     CapabilityRefusal,
     DecisionEvidence,
     Derivation,
@@ -83,7 +85,8 @@ from .visibility import AuthorizationOutcome, Tenancy, Visibility
 
 __all__ = [
     "Amendment", "Author", "CapabilityRefusal", "DecisionEvidence",
-    "Derivation", "IntentField", "IntentState", "MissionOutcome",
+    "Derivation", "IntentField", "IntentRelation", "IntentState",
+    "MissionOutcome", "RelationMember",
     "MissionProposal", "NotSealable", "OpenReason", "ReaderKind",
     "RefusalKind", "Unresolved", "VerifiedIntent",
     "REQUIRED_CANDIDATE_FIELDS", "CandidateRejected", "EvidenceCandidate",

@@ -420,3 +420,111 @@ class TestTwoIdentitiesAnswerTwoQuestions:
         assert out["intent_hash"] and out["artifact_digest"]
         assert out["intent_hash"] != out["artifact_digest"]
         assert out["state"] == "VERIFIED"
+
+
+# ── relationships that a scalar or a set cannot hold ───────────────────────
+
+from runtime_contracts import IntentRelation, RelationMember  # noqa: E402
+
+
+def sleeves():
+    return IntentRelation(kind="portfolio_sleeves", author=Author.USER, members=(
+        RelationMember(role="core", subject="core index fund"),
+        RelationMember(role="satellite", subject="US value ETF",
+                       qualifiers={"allocation": "30%"})))
+
+
+def conversion():
+    return IntentRelation(kind="account_transition", author=Author.USER,
+                          attributes={"action": "convert"}, members=(
+        RelationMember(role="from", subject="traditional_ira"),
+        RelationMember(role="to", subject="roth_ira")))
+
+
+class TestFlatteningARelationshipDestroysTheIntent:
+    """Two sentences found this within a day of each other:
+
+        "a core index fund and 30% into a US value ETF"
+        "convert my traditional IRA to a Roth"
+
+    Both readers read both correctly, and the schema forced them to disagree
+    because it made them answer with one value where the sentence had two
+    entities in named roles. A representational failure, not a reading one.
+    """
+
+    def test_an_allocation_belongs_to_a_member_not_to_a_position(self):
+        """A separate `stated_weights` list beside a separate `assets` list can
+        only say which weight is whose by position, and position is exactly
+        what the readers disagreed about."""
+        satellite = sleeves().member("satellite")
+        assert satellite.qualifiers["allocation"] == "30%"
+        assert sleeves().member("core").qualifiers == {}
+
+    def test_the_same_entities_in_swapped_roles_are_a_different_request(self):
+        """`from`/`to` reversed is the opposite transaction. If roles did not
+        participate in identity, the two would hash alike."""
+        forward = VerifiedIntent(objective="o", relations=(conversion(),))
+        backward = VerifiedIntent(objective="o", relations=(IntentRelation(
+            kind="account_transition", attributes={"action": "convert"},
+            members=(RelationMember(role="from", subject="roth_ira"),
+                     RelationMember(role="to", subject="traditional_ira"))),))
+        assert forward.intent_hash != backward.intent_hash
+
+    def test_an_attribute_of_the_whole_relation_is_not_on_either_end(self):
+        """A transition's action belongs to neither account."""
+        assert conversion().attributes == {"action": "convert"}
+        assert all(not m.qualifiers for m in conversion().members)
+
+    def test_relations_participate_in_identity(self):
+        bare = VerifiedIntent(objective="o")
+        with_sleeves = VerifiedIntent(objective="o", relations=(sleeves(),))
+        assert bare.intent_hash != with_sleeves.intent_hash
+
+    def test_a_relation_with_no_members_is_refused(self):
+        """A relationship with nothing in it is a claim about nothing."""
+        with pytest.raises(ValueError):
+            IntentRelation(kind="portfolio_sleeves", members=())
+
+    def test_repeated_roles_are_allowed(self):
+        """Three satellites is a real portfolio. Only a domain schema knows
+        that two `from` accounts is not a real transition, and enforcing
+        cardinality here would need this package to learn every vocabulary."""
+        three = IntentRelation(kind="portfolio_sleeves", members=(
+            RelationMember(role="satellite", subject="A"),
+            RelationMember(role="satellite", subject="B"),
+            RelationMember(role="satellite", subject="C")))
+        assert len(three.members_in("satellite")) == 3
+
+    def test_subjects_are_not_resolved(self):
+        """"a core index fund" stays that. Turning it into VTI is a
+        substitution nobody asked for."""
+        assert sleeves().member("core").subject == "core index fund"
+
+
+class TestRelationsAreNotStuffedIntoFields:
+    def test_they_live_in_their_own_place(self):
+        """A polymorphic `fields` value means every consumer branches on type
+        before it can read anything, and the first one to forget reads a sleeve
+        list as an asset name."""
+        i = VerifiedIntent(objective="o", relations=(sleeves(),))
+        assert "portfolio_sleeves" not in i.fields
+        assert i.relation("portfolio_sleeves") is not None
+
+    def test_an_unknown_kind_reads_as_absent_not_as_an_error(self):
+        i = VerifiedIntent(objective="o", relations=(sleeves(),))
+        assert i.relation("account_transition") is None
+
+    def test_the_contract_carries_no_finance_vocabulary(self):
+        """`kind` and `role` are strings the domain schema defines. Putting
+        'satellite' in this package would make every other consumer carry it."""
+        import runtime_contracts.models.intent as module
+
+        source = open(module.__file__).read()
+        for domain_word in ("PORTFOLIO_SLEEVES =", "class Sleeve",
+                            "class PortfolioIntent", "class AccountTransition"):
+            assert domain_word not in source
+
+    def test_they_reach_the_artifact_digest_too(self):
+        bare = VerifiedIntent(objective="o")
+        with_sleeves = VerifiedIntent(objective="o", relations=(sleeves(),))
+        assert bare.artifact_digest != with_sleeves.artifact_digest
