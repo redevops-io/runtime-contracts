@@ -142,7 +142,10 @@ class TestAbsentUnresolvedAndSettledAreThreeStates:
             Unresolved("trigger_semantics", OpenReason.UNRESOLVED_DISAGREEMENT)])
         assert not blocked.is_executable_in_principle
         assert [u.dimension for u in blocked.blocking] == ["trigger_semantics"]
-        assert intent().is_executable_in_principle
+        # Sealed, because `is_executable_in_principle` now means "closed AND
+        # not disputed". A draft is not executable in principle whatever its
+        # dimensions say — closure is the first half of the claim.
+        assert intent().seal().is_executable_in_principle
 
     def test_a_dimension_cannot_be_both_settled_and_open(self):
         """A consumer reading one and not the other would act on half a
@@ -254,3 +257,119 @@ class TestTheConsumerContract:
             "cadence": field("annual", Author.USER),
             "day_rule": field("first", Author.DEFAULT)})
         assert i.user_authored == ["cadence"]
+
+
+# ── sealing: Discovery may not close meaning it has not closed ──────────────
+
+from runtime_contracts import (  # noqa: E402
+    IntentState, MissionOutcome, MissionProposal, NotSealable,
+)
+
+
+class TestSealing:
+    def test_an_intent_is_a_draft_until_sealed(self):
+        """Fail-closed: an intent nobody sealed is a draft, whatever it looks
+        like. A consumer executing a DRAFT is executing a guess."""
+        assert intent().state is IntentState.DRAFT
+        assert not intent().is_verified
+        assert not intent().is_executable_in_principle
+
+    def test_sealing_produces_a_verified_intent(self):
+        sealed = intent().seal()
+        assert sealed.is_verified
+        assert sealed.is_executable_in_principle
+
+    def test_sealing_does_not_change_what_it_means(self):
+        """The state is about closure, not content. If sealing changed
+        identity, a plan pinned before and after would not be the same plan."""
+        i = intent()
+        assert i.seal().intent_hash == i.intent_hash
+
+    def test_a_result_changing_open_dimension_refuses_to_seal(self):
+        """'We ran out of time asking' must not become 'the user agreed'."""
+        i = intent(unresolved=[Unresolved("day_rule", OpenReason.NOT_ASKED)])
+        with pytest.raises(NotSealable) as raised:
+            i.seal()
+        assert "day_rule" in str(raised.value)
+
+    def test_open_is_result_changing_unless_someone_says_otherwise(self):
+        """The default is the point. Marking something cosmetic is a claim
+        someone has to make on purpose."""
+        assert Unresolved("x", OpenReason.NOT_ASKED).result_changing
+
+    def test_a_declared_non_result_changing_dimension_may_remain_open(self):
+        """The discriminating half: a seal that refused everything would be a
+        seal nobody could use, and everyone would route around it."""
+        i = intent(unresolved=[Unresolved(
+            "dividend_policy", OpenReason.USER_DECLINED,
+            detail="engine runs on price series; cannot change a figure",
+            result_changing=False)])
+        assert i.seal().is_verified
+
+    def test_an_unresolved_disagreement_never_seals(self):
+        """Even marked non-result-changing. Two readers disagreeing about what
+        was said is not a question about impact."""
+        i = intent(unresolved=[Unresolved(
+            "trigger_semantics", OpenReason.UNRESOLVED_DISAGREEMENT,
+            result_changing=False)])
+        with pytest.raises(NotSealable):
+            i.seal()
+
+    def test_sealing_is_the_only_route_to_verified(self):
+        """A method rather than a constructor argument, so the check cannot be
+        skipped by passing the field."""
+        forced = VerifiedIntent(objective="o", state=IntentState.VERIFIED,
+                                unresolved=[Unresolved("x", OpenReason.NOT_ASKED)])
+        # Constructing it is possible — Python has no private fields — but the
+        # artifact still reports the open dimension, so a consumer that checks
+        # is not fooled.
+        assert forced.unsealable
+
+
+class TestAProposalArguesItDoesNotAuthorise:
+    """Discovery ranks what is worth proposing. Mission decides what is
+    admissible to execute."""
+
+    def test_it_carries_priority_and_rationale(self):
+        p = MissionProposal(intent=intent().seal(), rationale="churn moved",
+                            priority="0.910")
+        assert p.priority == "0.91"
+        assert p.rationale
+
+    def test_it_has_no_authorisation_affordability_or_executability(self):
+        """A proposal carrying those would be a second planner wearing a
+        discovery hat — which is how 'decides what deserves attention' becomes
+        'decides what happens'."""
+        fields = set(MissionProposal.__dataclass_fields__)
+        assert not fields & {"authorized", "affordable", "executable",
+                             "approved", "budget", "policy_decision"}
+
+    def test_a_draft_intent_is_not_actionable(self):
+        assert not MissionProposal(intent=intent()).is_actionable
+        assert MissionProposal(intent=intent().seal()).is_actionable
+
+    def test_priority_is_a_decimal_string_not_a_float(self):
+        assert MissionProposal(intent=intent(), priority="1.0").priority == "1"
+
+
+class TestWhatMissionMayAnswer:
+    def test_reinterpretation_is_not_among_the_outcomes(self):
+        """The missing sixth is the point. "I could not do what you meant, so
+        I did something else" is not an outcome this boundary permits, and
+        every expensive defect in the system that produced this contract had
+        exactly that shape."""
+        answers = {o.value for o in MissionOutcome}
+        assert answers == {"EXECUTABLE", "UNSUPPORTED_CAPABILITY",
+                           "NEEDS_APPROVAL", "POLICY_DENIED", "BUDGET_EXCEEDED"}
+        assert not any("REINTERPRET" in a or "SUBSTITUT" in a for a in answers)
+
+    def test_only_one_outcome_executes(self):
+        assert MissionOutcome.EXECUTABLE.may_execute
+        for other in MissionOutcome:
+            if other is not MissionOutcome.EXECUTABLE:
+                assert not other.may_execute
+
+    def test_needs_approval_is_not_a_meaning_question(self):
+        """Mission's gate asks "may I do this?"; Discovery's asks "what did you
+        mean?". Merging them merges authorising with authoring."""
+        assert MissionOutcome.NEEDS_APPROVAL is not MissionOutcome.UNSUPPORTED_CAPABILITY
