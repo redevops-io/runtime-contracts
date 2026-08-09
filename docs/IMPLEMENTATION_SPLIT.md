@@ -83,7 +83,16 @@ Existing core types remain here, including:
 - `CapabilityDescriptor`;
 - `MissionProgram` wire representation;
 - `InvestigationTransitionEvent`;
-- `VerificationResult`.
+- `VerificationResult`;
+- `VerifiedIntent` and its parts — `IntentField`, `IntentRelation`,
+  `RelationMember`, `DecisionEvidence`, `Unresolved`, `Amendment`;
+- `MissionProposal`, `MissionOutcome`, `CapabilityRefusal`, `Derivation`.
+
+`VerifiedIntent` is the Discovery → Mission boundary and belongs here for the
+same reason as the rest: two runtimes exchange it, so neither may own it. It
+carries what a user meant, who asserted each value, which reader produced it,
+and what remains open — and its consumer's contract is to read it, refuse what
+it cannot execute by name, and never edit it.
 
 The following reusable contracts should also live here when implemented:
 
@@ -272,10 +281,23 @@ The SDK exposes one stable artifact, `MissionProgram`, and one stable operationa
 
 ### Owns
 
-Discovery Runtime decides **what work should be proposed**.
+Discovery Runtime decides **what work should be proposed**, from either
+direction.
+
+Two entry modes, one runtime. A world observation — "churn moved" — and a human
+sentence — "evaluate this SPY strategy" — are the same kind of thing at this
+boundary: a candidate for work whose meaning has been made explicit and whose
+merit has been argued. Neither is execution. The proactive list below was
+written first; the reactive mode adds natural-language interpretation, source
+spans, competing readings, disambiguation and user amendment, and produces the
+same artifact.
 
 It owns:
 
+- natural-language interpretation of a user's request;
+- ambiguity detection, and asking a human "what did you mean?";
+- per-reader evidence, with no reader type privileged over another;
+- sealing a `VerifiedIntent` once no result-changing ambiguity remains;
 - world-state and signal intake;
 - opportunity and anomaly detection;
 - candidate investigation or mission proposals;
@@ -289,6 +311,10 @@ It owns:
 ### Does not own
 
 - executing the mission;
+- deciding whether the engine *can* execute what was understood — Discovery may
+  legitimately state an intent no runtime can run, and constraining its
+  vocabulary to what is executable makes a reader render the rest as the
+  nearest runnable thing rather than refuse it;
 - assembling the final context;
 - directly mutating application state;
 - general cron infrastructure;
