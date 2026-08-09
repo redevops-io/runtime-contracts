@@ -528,3 +528,77 @@ class TestRelationsAreNotStuffedIntoFields:
         bare = VerifiedIntent(objective="o")
         with_sleeves = VerifiedIntent(objective="o", relations=(sleeves(),))
         assert bare.artifact_digest != with_sleeves.artifact_digest
+
+
+# ── replay: a pinned intent must be readable back ──────────────────────────
+
+from runtime_contracts import CorruptIntent, intent_from_json  # noqa: E402
+
+
+class TestAPinnedIntentCanBeRestored:
+    """Every type here could be written and none could be read back, which
+    meant a plan could pin an intent and never recompile from it — "re-run from
+    the pinned intent, never from the sentence" was a rule with no mechanism."""
+
+    def test_the_round_trip_preserves_identity(self):
+        """If it did not, a plan pinned before storage would not be the plan
+        that ran after it, and every replay would look like a new request."""
+        original = intent(produced_by="discovery-runtime@0.4.2").seal()
+        assert intent_from_json(original.to_json()).intent_hash == \
+            original.intent_hash
+
+    def test_it_preserves_the_artifact_too(self):
+        original = intent(produced_by="d@1").seal()
+        assert intent_from_json(original.to_json()).artifact_digest == \
+            original.artifact_digest
+
+    def test_relations_survive_with_their_roles_and_qualifiers(self):
+        original = VerifiedIntent(objective="o", relations=(sleeves(),)).seal()
+        back = intent_from_json(original.to_json())
+        satellite = back.relation("portfolio_sleeves").member("satellite")
+        assert satellite.qualifiers["allocation"] == "30%"
+        assert back.intent_hash == original.intent_hash
+
+    def test_authors_survive(self):
+        """The distinction the whole contract exists for. A restored intent
+        whose USER fields came back as DEFAULT would let a consumer offer the
+        user's own words back as an assumption."""
+        original = intent(fields={
+            "cadence": field("annual", Author.USER),
+            "day_rule": field("first", Author.DEFAULT)}).seal()
+        back = intent_from_json(original.to_json())
+        assert back.author_of("cadence") is Author.USER
+        assert back.author_of("day_rule") is Author.DEFAULT
+
+    def test_a_draft_comes_back_a_draft(self):
+        assert intent_from_json(intent().to_json()).state is IntentState.DRAFT
+
+
+class TestReadingDetectsCorruption:
+    """The seal is re-checked on read. `seal()` is one route to VERIFIED and
+    this is the other, so it runs the same check rather than trusting a flag."""
+
+    def test_a_verified_intent_with_open_meaning_is_refused(self):
+        payload = intent().seal().to_json()
+        payload["unresolved"] = [{"dimension": "day_rule",
+                                  "reason": "NOT_ASKED",
+                                  "result_changing": True}]
+        with pytest.raises(CorruptIntent) as raised:
+            intent_from_json(payload)
+        assert "seal" in str(raised.value)
+
+    def test_a_hash_that_disagrees_with_the_record_is_refused(self):
+        """One of the two has been edited, and repairing either would produce
+        an intent whose author is unknown."""
+        payload = intent().seal().to_json()
+        payload["fields"]["cadence"]["value"] = "monthly"
+        with pytest.raises(CorruptIntent) as raised:
+            intent_from_json(payload)
+        assert "disagree" in str(raised.value)
+
+    def test_a_payload_with_no_recorded_hash_is_accepted(self):
+        """The discriminating half: a reader that refused everything would make
+        the contract unusable by any producer that did not write the field."""
+        payload = intent().seal().to_json()
+        payload.pop("intent_hash")
+        assert intent_from_json(payload).intent_hash
