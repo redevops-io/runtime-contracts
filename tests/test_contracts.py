@@ -225,3 +225,19 @@ class TestDeclarationAndMaterializationAreSeparate:
         assert record.dereference_count == 3
         assert {f.outcome for f in record.failures} == {
             MaterializationOutcome.STALE_PIN, MaterializationOutcome.DENIED}
+
+
+def test_the_module_version_matches_the_package_version():
+    """v0.2.0 shipped a module reporting 0.1.0. Anyone pinning the tag and
+    asking the package what it was got the wrong answer — and a version string
+    that lies is worse than none, because it is checked."""
+    import re
+    from pathlib import Path
+
+    import runtime_contracts
+
+    declared = re.search(
+        r'^version = "([^"]+)"',
+        (Path(__file__).resolve().parent.parent / "pyproject.toml").read_text(),
+        re.M).group(1)
+    assert runtime_contracts.__version__ == declared
