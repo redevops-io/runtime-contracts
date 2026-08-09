@@ -237,10 +237,30 @@ class Unresolved:
     which account it is" is not, whatever the pressure to ship."""
 
     def canonical_form(self) -> Dict[str, Any]:
+        """What this open dimension *is*, for hashing.
+
+        `result_changing` is deliberately absent: it describes the consequence
+        of leaving the dimension open, not the fact that it is open, and two
+        intents that differ only in that judgement are the same request.
+        """
         return {"dimension": self.dimension, "reason": self.reason.value}
 
     def to_json(self) -> Dict[str, Any]:
+        """The storage form, which must be lossless — unlike `canonical_form`.
+
+        `result_changing` was missing here while `intent_from_json` read it
+        with a `True` default, so a sealed intent carrying a
+        not-result-changing open dimension could be written and never read
+        back: the restore rebuilt it as result-changing, the seal check
+        refused, and `CorruptIntent` was raised on a perfectly valid artifact.
+
+        Found by the first consumer to store and reopen a real plan. The two
+        sides had disagreed since the type was written, and every existing
+        replay fixture happened to have either no open dimensions or only
+        result-changing ones — so nothing exercised the gap.
+        """
         return {**self.canonical_form(), "detail": self.detail,
+                "result_changing": self.result_changing,
                 "evidence": [e.to_json() for e in self.evidence]}
 
 

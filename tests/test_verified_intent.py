@@ -5,6 +5,9 @@ a property that seemed nice. The comments say which.
 """
 from __future__ import annotations
 
+import json
+from dataclasses import replace
+
 import pytest
 
 from runtime_contracts import (
@@ -602,3 +605,54 @@ class TestReadingDetectsCorruption:
         payload = intent().seal().to_json()
         payload.pop("intent_hash")
         assert intent_from_json(payload).intent_hash
+
+
+class TestAnOpenDimensionSurvivesStorage:
+    """`to_json` must be lossless where `canonical_form` is deliberately not.
+
+    A sealed intent carrying a not-result-changing open dimension could be
+    written and never read back: `to_json` omitted `result_changing`,
+    `intent_from_json` defaulted it to True, the seal check then refused, and a
+    valid artifact raised `CorruptIntent`. The two sides had disagreed since
+    the type was written; every replay fixture happened to have no open
+    dimensions or only result-changing ones, so nothing reached it.
+    """
+
+    def sealed(self, *, result_changing: bool):
+        return VerifiedIntent(
+            objective="evaluate_investment_strategy",
+            produced_by="reader@1", utterance_ref="utt-1",
+            fields={"assets": IntentField(value="VTI", author=Author.USER)},
+            unresolved=(Unresolved(dimension="dividend_policy",
+                                   reason=OpenReason.USER_DECLINED,
+                                   detail="the engine runs on price series",
+                                   result_changing=result_changing),))
+
+    def test_a_cosmetic_open_dimension_round_trips(self):
+        intent = self.sealed(result_changing=False).seal()
+        restored = intent_from_json(json.loads(json.dumps(intent.to_json())))
+        assert restored.is_verified
+        assert restored.unresolved[0].result_changing is False
+
+    def test_and_the_intent_is_the_same_request(self):
+        intent = self.sealed(result_changing=False).seal()
+        restored = intent_from_json(json.loads(json.dumps(intent.to_json())))
+        assert restored.intent_hash == intent.intent_hash
+
+    def test_a_result_changing_one_still_cannot_be_sealed(self):
+        """The discriminating opposite. Without it, "carry the flag through"
+        could have been implemented as "treat everything as cosmetic", which
+        would make every intent sealable and the seal meaningless."""
+        with pytest.raises(NotSealable):
+            self.sealed(result_changing=True).seal()
+
+    def test_the_flag_is_not_part_of_identity(self):
+        """`canonical_form` omits it on purpose: it describes the consequence
+        of leaving a dimension open, not the fact that it is open, and two
+        intents differing only in that judgement are the same request."""
+        one = self.sealed(result_changing=False)
+        other = VerifiedIntent(
+            objective=one.objective, produced_by=one.produced_by,
+            utterance_ref=one.utterance_ref, fields=dict(one.fields),
+            unresolved=(replace(one.unresolved[0], detail="a different note"),))
+        assert one.intent_hash == other.intent_hash
