@@ -96,20 +96,36 @@ See [adoption/implementations.yaml](adoption/implementations.yaml),
 
 ## Licence
 
-**Apache-2.0**, deliberately, and differing from the AGPL-3.0 used by
-`context-runtime` and `redevops-rag`.
+**AGPL-3.0-or-later WITH Commons-Clause** — source-available, not open source.
+See [LICENSE.md](LICENSE.md) for the terms and what they permit.
 
-A contract package has to be importable by every implementation that conforms to
-it, including ones whose licensing is not yet decided. AGPL on the schemas would
-make adopting the wire format a licensing decision about the adopter's own code,
-which is the opposite of what a neutral contract is for. The schemas carry no
-business logic, so there is nothing here that copyleft would protect.
+Relicensed from Apache-2.0 on 2026-08-08, and the previous rationale is kept
+below because it was correct about the trade-off and the trade-off has not
+changed — only which side of it this project has chosen.
+
+> Apache-2.0, deliberately. A contract package has to be importable by every
+> implementation that conforms to it, including ones whose licensing is not yet
+> decided. AGPL on the schemas would make adopting the wire format a licensing
+> decision about the adopter's own code, which is the opposite of what a
+> neutral contract is for. The schemas carry no business logic, so there is
+> nothing here that copyleft would protect.
+
+That reasoning still holds. Adopting these contracts *is* now a licensing
+decision about the adopter's own code, and the word "neutral" in this README's
+opening line should be read as application-neutral — it does not describe the
+licence. These are canonical **within this runtime family**, not an open
+standard anyone may implement commercially.
+
+What changed is the priority: the runtime this package serves is
+source-available and non-commercial, and a permissive contract layer under a
+copyleft runtime is a gap through which the semantics leave without the terms.
 
 **The licence covers this contract package only.** It does not relicense
-implementations, adapters, or underlying runtime code: `context-runtime` and
-`redevops-rag` keep AGPL-3.0, and an adapter carries whatever licence its own
-repository does. Apache-2.0 here means importing the schemas and reproducing a
-wire hash is not a licensing decision about the importer.
+implementations, adapters or runtime code by itself — but anything importing
+these types to speak the contracts is a work based on this package and takes on
+its terms. `LICENSE.md` records the one in-family consequence that follows,
+concerning `mission-sdk`'s Apache-2.0 grant.
 
-**This is a reversible call and it is the maintainers' to make** — it is written
+Reversible, and the maintainers'. It is written down here rather than left
+implicit in a file header.
 down here rather than left implicit in a file header.

@@ -32,6 +32,27 @@ from .evidence import (
     candidate_to_handle,
 )
 from .handle import ArtifactHandle, Freshness
+from .intent import (
+    Amendment,
+    Author,
+    CorruptIntent,
+    IntentRelation,
+    IntentState,
+    MissionOutcome,
+    MissionProposal,
+    NotSealable,
+    intent_from_json,
+    RelationMember,
+    CapabilityRefusal,
+    DecisionEvidence,
+    Derivation,
+    IntentField,
+    OpenReason,
+    ReaderKind,
+    RefusalKind,
+    Unresolved,
+    VerifiedIntent,
+)
 from .investigation import (
     InvestigationTransitionEvent,
     OwnershipChange,
@@ -65,6 +86,12 @@ from .verification import Check, Completion, Determinism, VerificationResult, Ve
 from .visibility import AuthorizationOutcome, Tenancy, Visibility
 
 __all__ = [
+    "Amendment", "Author", "CapabilityRefusal", "DecisionEvidence",
+    "CorruptIntent", "Derivation", "IntentField", "IntentRelation",
+    "IntentState", "intent_from_json",
+    "MissionOutcome", "RelationMember",
+    "MissionProposal", "NotSealable", "OpenReason", "ReaderKind",
+    "RefusalKind", "Unresolved", "VerifiedIntent",
     "REQUIRED_CANDIDATE_FIELDS", "CandidateRejected", "EvidenceCandidate",
     "MaterializationOutcome", "MaterializationRecord", "MaterializedItem",
     "candidate_to_handle",
