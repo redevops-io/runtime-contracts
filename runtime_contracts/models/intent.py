@@ -803,13 +803,21 @@ def intent_from_json(payload: Mapping[str, Any]) -> VerifiedIntent:
                   at=a.get("at"))
         for a in (payload.get("amendments") or ()))
 
-    restored = VerifiedIntent(
-        objective=str(payload.get("objective", "")),
-        fields=fields, relations=relations, unresolved=unresolved,
-        amendments=amendments,
-        produced_by=str(payload.get("produced_by", "") or ""),
-        utterance_ref=str(payload.get("utterance_ref", "") or ""),
-        created_at=payload.get("created_at"))
+    try:
+        restored = VerifiedIntent(
+            objective=str(payload.get("objective", "")),
+            fields=fields, relations=relations, unresolved=unresolved,
+            amendments=amendments,
+            produced_by=str(payload.get("produced_by", "") or ""),
+            utterance_ref=str(payload.get("utterance_ref", "") or ""),
+            created_at=payload.get("created_at"))
+    except ValueError as why:
+        # The constructor's own invariants — a dimension both settled and
+        # open, a contested field with no evidence — fire before the seal
+        # check. Wrapped so a caller needs one exception type to mean "this
+        # stored record is not usable": a reader forced to catch two will
+        # eventually catch one.
+        raise CorruptIntent(f"stored intent does not hold together: {why}") from why
 
     stated = str(payload.get("state", IntentState.DRAFT.value))
     if stated == IntentState.VERIFIED.value:
