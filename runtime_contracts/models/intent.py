@@ -580,8 +580,29 @@ class VerifiedIntent:
             # intents naming the same instruments in different roles are
             # different requests.
             "relations": [r.canonical_form() for r in self.relations],
+            # Only what leaving a dimension open would *change*.
+            #
+            # `NOT_ASKED` with `result_changing=False` is the record that a
+            # reader was asked about a dimension and did not answer. That is
+            # worth keeping — `absent` and `asked-but-unanswered` are different
+            # facts about how a reading was produced — and it is not part of
+            # what the request *is*. It stays in the serialized artifact and in
+            # provenance; it is excluded here.
+            #
+            # Demonstrated rather than assumed. Two implementations differing
+            # only in these entries were compiled on both sides across a
+            # 36-case corpus: 33 representational differences, every one
+            # producing the identical downstream outcome — byte-identical
+            # StrategySpec where a spec exists, the same refusal or the same
+            # absence of a scenario where it does not. Identity that moves
+            # while execution does not is identity measuring the wrong thing.
+            #
+            # Result-changing unresolved dimensions stay. A dimension whose
+            # openness would change the answer is part of the request, and two
+            # intents differing in one are different requests.
             "unresolved": sorted(
-                (u.canonical_form() for u in self.unresolved),
+                (u.canonical_form() for u in self.unresolved
+                 if u.result_changing or u.reason is not OpenReason.NOT_ASKED),
                 key=lambda u: u["dimension"]),
             # Ordered, not sorted: the sequence of changes is the history.
             "amendments": [a.canonical_form() for a in self.amendments],
