@@ -31,6 +31,20 @@ from .protocol import (
     content_hash,
     prepare,
     seal_hash,
+    EvidenceRef,
+    EvidenceChange,
+    CREATED,
+    UPDATED,
+    DELETED,
+    KNOWN_REF_TYPES,
+    RelationKind,
+    MemberRole,
+    LineageMember,
+    Relation,
+    member,
+    relation,
+    derived_from,
+    supersedes,
 )
 from .models import *  # noqa: F401,F403,E402
 from .models import __all__ as _model_all  # noqa: E402
@@ -43,5 +57,9 @@ __all__ = [
     # domain-facing seal (the protocol layer)
     "seal_hash", "content_hash", "canonical_form", "prepare",
     "SEAL_CONTRACT_VERSION", "SEAL_NUMBER_PLACES",
+    # evidence-native protocol primitives
+    "EvidenceRef", "EvidenceChange", "CREATED", "UPDATED", "DELETED", "KNOWN_REF_TYPES",
+    "RelationKind", "MemberRole", "LineageMember", "Relation",
+    "member", "relation", "derived_from", "supersedes",
     *_model_all,
 ]

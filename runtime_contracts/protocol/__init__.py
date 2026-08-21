@@ -10,6 +10,24 @@ from .seal import (
     prepare,
     seal_hash,
 )
+from .evidence import (
+    CREATED,
+    UPDATED,
+    DELETED,
+    KNOWN_REF_TYPES,
+    EvidenceRef,
+    EvidenceChange,
+)
+from .lineage import (
+    RelationKind,
+    MemberRole,
+    LineageMember,
+    Relation,
+    member,
+    relation,
+    derived_from,
+    supersedes,
+)
 
 __all__ = [
     "seal_hash",
@@ -18,4 +36,20 @@ __all__ = [
     "prepare",
     "SEAL_CONTRACT_VERSION",
     "SEAL_NUMBER_PLACES",
+    # evidence identity (versioned, content-addressed) + typed change delta
+    "EvidenceRef",
+    "EvidenceChange",
+    "CREATED",
+    "UPDATED",
+    "DELETED",
+    "KNOWN_REF_TYPES",
+    # canonical lineage edge vocabulary
+    "RelationKind",
+    "MemberRole",
+    "LineageMember",
+    "Relation",
+    "member",
+    "relation",
+    "derived_from",
+    "supersedes",
 ]
