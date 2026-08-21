@@ -1,0 +1,48 @@
+{
+  "canonicalization_version": "rcv1",
+  "evidence_ref_cases": [
+    {
+      "name": "chunk-ref",
+      "ref": "crm/acct/42",
+      "content_hash": "rcv1:deadbeef",
+      "version": "7",
+      "ref_type": "chunk",
+      "modality": "text",
+      "expected_identity": "rcv1:d265432a61a2a777e3d3dc7ca5b78fc5c24bc9963a838c9fa66d1e31ace6e466"
+    },
+    {
+      "name": "embedding-ref",
+      "ref": "doc.md::0",
+      "content_hash": "rcv1:c0ffee",
+      "ref_type": "embedding",
+      "media_type": "application/json",
+      "expected_identity": "rcv1:5da2243820485ef3556d43820e97b2cdf0cad32181513c55ad5e0289850a8215"
+    }
+  ],
+  "evidence_change_cases": [
+    {
+      "name": "updated",
+      "ref": "crm/acct/42",
+      "change_type": "UPDATED",
+      "expected_identity": "rcv1:e3a26614121975e672ebdd4c09e174a040aad8d826beba69a3edf20e2f3344fb"
+    },
+    {
+      "name": "deleted",
+      "ref": "crm/acct/42",
+      "change_type": "DELETED",
+      "expected_identity": "rcv1:a4164503b9f368e120b0a1dba7c3412a13bdda4a9ed578f8e6a296be243a5f5d"
+    }
+  ],
+  "lineage_cases": [
+    {
+      "name": "derived_from",
+      "kind": "DERIVED_FROM",
+      "expected_identity": "rcv1:aa422e23f78ae474710a1fb18248ab5666c307af7361e92e12df05f8be0b969c"
+    },
+    {
+      "name": "supersedes",
+      "kind": "SUPERSEDES",
+      "expected_identity": "rcv1:ae759ec46c1920f9493aa4076d013f6e2fb01322eb9a0c3c0149eb388fea9365"
+    }
+  ]
+}

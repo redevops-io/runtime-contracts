@@ -419,6 +419,16 @@ class IntentState(str, Enum):
     """Sealed. Every result-changing ambiguity is settled, and nothing
     downstream may change what it means — only decide whether it may run."""
 
+    STALE = "STALE"
+    """Was VERIFIED, but a dependency it rested on moved — an evidence revision it
+    used was updated, or the policy/capability version in force changed. The
+    conclusion *may* no longer be trustworthy and must be re-evaluated; it is not
+    known to be wrong. The intent-level analogue of ``Freshness.SUPERSEDED``."""
+
+    INVALIDATED = "INVALIDATED"
+    """Was VERIFIED, but its basis was removed — an evidence it depended on was
+    deleted, or a re-evaluation disproved it. Known no longer to hold."""
+
 
 class NotSealable(ValueError):
     """An intent was offered as VERIFIED with meaning still open.
@@ -475,6 +485,18 @@ class VerifiedIntent:
     recovered from prose is a value nobody stored."""
 
     created_at: Optional[str] = None
+
+    capability_version: str = ""
+    """The reader/capability set that produced this conclusion, e.g.
+    ``discovery-readers@3``. Recorded, not hashed — like ``produced_by``: it is
+    dependency provenance, not part of what was asked. A runtime compares it
+    against the current capability set to decide STALE, but the request is the
+    same request whichever version read it."""
+
+    policy_version: str = ""
+    """The policy in force when this conclusion was produced. Recorded, not
+    hashed — a policy bump can mark the conclusion STALE for re-evaluation
+    without changing what it means."""
 
     def __post_init__(self) -> None:
         overlap = {u.dimension for u in self.unresolved} & set(self.fields)
@@ -672,6 +694,8 @@ class VerifiedIntent:
             "produced_by": self.produced_by,
             "utterance_ref": self.utterance_ref,
             "created_at": self.created_at,
+            "capability_version": self.capability_version,
+            "policy_version": self.policy_version,
             "fields": {k: v.to_json() for k, v in self.fields.items()},
             "relations": [r.to_json() for r in self.relations],
             "unresolved": [u.to_json() for u in self.unresolved],
@@ -851,7 +875,9 @@ def intent_from_json(payload: Mapping[str, Any]) -> VerifiedIntent:
             amendments=amendments,
             produced_by=str(payload.get("produced_by", "") or ""),
             utterance_ref=str(payload.get("utterance_ref", "") or ""),
-            created_at=payload.get("created_at"))
+            created_at=payload.get("created_at"),
+            capability_version=str(payload.get("capability_version", "") or ""),
+            policy_version=str(payload.get("policy_version", "") or ""))
     except ValueError as why:
         # The constructor's own invariants — a dimension both settled and
         # open, a contested field with no evidence — fire before the seal
@@ -861,13 +887,19 @@ def intent_from_json(payload: Mapping[str, Any]) -> VerifiedIntent:
         raise CorruptIntent(f"stored intent does not hold together: {why}") from why
 
     stated = str(payload.get("state", IntentState.DRAFT.value))
-    if stated == IntentState.VERIFIED.value:
+    # STALE / INVALIDATED are sealed conclusions whose dependency later moved: they must still satisfy
+    # the seal (they were VERIFIED), then carry their transitioned state. intent_hash is unchanged by
+    # the transition, so the hash check below still holds.
+    _sealed_states = {IntentState.VERIFIED.value, IntentState.STALE.value, IntentState.INVALIDATED.value}
+    if stated in _sealed_states:
         try:
             restored = restored.seal()
         except NotSealable as why:
             raise CorruptIntent(
-                f"stored as VERIFIED and does not satisfy the seal: {why}"
+                f"stored as {stated} and does not satisfy the seal: {why}"
             ) from why
+        if stated != IntentState.VERIFIED.value:
+            restored = replace(restored, state=IntentState(stated))
 
     recorded = payload.get("intent_hash")
     if recorded and recorded != restored.intent_hash:

@@ -1,0 +1,87 @@
+{
+  "canonicalization_version": "rcv1",
+  "seal_contract_version": "1.0.0",
+  "seal_number_places": 9,
+  "seal_cases": [
+    {
+      "name": "empty",
+      "interpreted": {},
+      "evidence": [],
+      "unresolved": [],
+      "payload_schema": "wealth-manager/client-policy",
+      "payload_schema_version": "0.2.0",
+      "expected_seal_hash": "rcv1:a2e45145ae548e9cac24925b82f35e8891bdfb019e32f5c11a7f2917c4e80e65"
+    },
+    {
+      "name": "risk_parity",
+      "interpreted": {
+        "objective": "target_allocation",
+        "target_allocation": {
+          "SPY": 0.6,
+          "TLT": 0.4
+        }
+      },
+      "evidence": [
+        {
+          "field": "objective",
+          "source_ref": "raaal:sha256:x"
+        }
+      ],
+      "unresolved": [],
+      "payload_schema": "wealth-manager/client-policy",
+      "payload_schema_version": "0.2.0",
+      "expected_seal_hash": "rcv1:63cece712fe8ec9d72bab16197572b3ab1726ce6b9b5dcaed4b6cb24270fa57e"
+    },
+    {
+      "name": "with_unresolved",
+      "interpreted": {
+        "objective": "reduce_volatility"
+      },
+      "evidence": [],
+      "unresolved": [
+        {
+          "field": "time_horizon",
+          "question": "how long?",
+          "result_changing": true
+        }
+      ],
+      "payload_schema": "wealth-manager/client-policy",
+      "payload_schema_version": "0.2.0",
+      "expected_seal_hash": "rcv1:493d1d2be0f9f7291e26390df3c485283fc5be99e4fcdd76515f79c18b453d35"
+    }
+  ],
+  "content_cases": [
+    {
+      "name": "proposal_like",
+      "value": {
+        "orders": [
+          {
+            "symbol": "SPY",
+            "side": "BUY",
+            "quantity": 10.5
+          },
+          {
+            "symbol": "TLT",
+            "side": "BUY",
+            "quantity": 5.25
+          }
+        ],
+        "assumptions": {
+          "SPY": 600.0
+        },
+        "tolerances": {
+          "price_drift": 0.01
+        }
+      },
+      "expected_content_hash": "rcv1:e7af7aa85138e4de3e7a93751a4b898aec68df5df109bd9ba2d9f13f4d59adab"
+    },
+    {
+      "name": "money_int_cents",
+      "value": {
+        "portfolio_value_minor": 6500000,
+        "gross_notional_minor": 2490000
+      },
+      "expected_content_hash": "rcv1:0d9418941369c1072976f1b263fe70d580f3dc948609ae3eea4d17ff50ba0f9e"
+    }
+  ]
+}
