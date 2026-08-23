@@ -36,6 +36,13 @@ canonical hashing · golden fixtures · adoption manifest
 `InvestigationTransitionEvent` · submission semantics · replay engine ·
 finding routing.
 
+## Added in 0.3.x (additive)
+
+`TopologyKind` · `JoinPolicy` · `ConcurrencyGroup` (concurrency-topology
+vocabulary) · partial-order events (`InvestigationTransitionEvent.parents` +
+`causal_order()`). Backward-compatible: a parent-less event hashes exactly as in
+v0.1, so golden fixtures are unchanged.
+
 The v0.1 subset Phase B needs is complete. What remains is a **consumer**: the
 control-plane adapter, an append-only ledger, and the inconclusive journey
 persisted rather than fixtured.
