@@ -28,8 +28,17 @@ from .lineage import (
     derived_from,
     supersedes,
 )
+from .topology import (
+    TopologyKind,
+    JoinPolicy,
+    ConcurrencyGroup,
+)
 
 __all__ = [
+    # concurrency topology vocabulary
+    "TopologyKind",
+    "JoinPolicy",
+    "ConcurrencyGroup",
     "seal_hash",
     "content_hash",
     "canonical_form",

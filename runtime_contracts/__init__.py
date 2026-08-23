@@ -45,6 +45,9 @@ from .protocol import (
     relation,
     derived_from,
     supersedes,
+    TopologyKind,
+    JoinPolicy,
+    ConcurrencyGroup,
 )
 from .models import *  # noqa: F401,F403,E402
 from .models import __all__ as _model_all  # noqa: E402
@@ -61,5 +64,6 @@ __all__ = [
     "EvidenceRef", "EvidenceChange", "CREATED", "UPDATED", "DELETED", "KNOWN_REF_TYPES",
     "RelationKind", "MemberRole", "LineageMember", "Relation",
     "member", "relation", "derived_from", "supersedes",
+    "TopologyKind", "JoinPolicy", "ConcurrencyGroup",
     *_model_all,
 ]

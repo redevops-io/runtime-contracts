@@ -64,6 +64,11 @@ class InvestigationTransitionEvent:
     ownership_change: Optional[OwnershipChange] = None
     verification_result_ref: Optional[str] = None
     parent_event_id: Optional[str] = None
+    parents: Sequence[str] = ()
+    """Partial-order causal parents (transition_ids this event follows). Empty = the classic total order
+    by ``sequence``. Concurrent branches record multiple parents so a fan-out/join history is
+    reconstructible without a single global sequence — see ``causal_order``. Additive: an event with no
+    parents serialises and hashes exactly as before."""
     visibility: Visibility = Visibility.INTERNAL
     tenant_id: Optional[str] = None
     occurred_at: Optional[str] = None
@@ -165,7 +170,7 @@ class InvestigationTransitionEvent:
         return self.verification.verdict is Verdict.PASS
 
     def canonical_form(self) -> Dict[str, Any]:
-        return {
+        d = {
             "schema_id": self.SCHEMA_ID,
             "schema_version": self.schema_version,
             "investigation_id": self.investigation_id,
@@ -191,6 +196,11 @@ class InvestigationTransitionEvent:
             # `reason` and `occurred_at` are excluded: prose and a clock reading.
             # The same transition, reworded, is the same transition.
         }
+        # Only serialise partial-order parents when present, so an event with none hashes exactly as it
+        # did before this field existed (backward-compatible event_hash).
+        if self.parents:
+            d["parents"] = list(self.parents)
+        return d
 
     @property
     def event_hash(self) -> str:
@@ -216,6 +226,38 @@ class InvestigationTransitionEvent:
     def to_json(self) -> Dict[str, Any]:
         return {**self.canonical_form(), "event_hash": self.event_hash,
                 "reason": self.reason, "occurred_at": self.occurred_at}
+
+
+def causal_order(events: Sequence[InvestigationTransitionEvent]) -> list:
+    """A linearization that respects partial-order ``parents`` (each event follows all of its declared
+    parents), tie-broken by ``sequence``. When no event declares parents this is exactly the sequence
+    order — so a concurrent fan-out/join history and a classic total-order history both replay
+    deterministically through the same function. Raises on a cycle or a dangling parent reference.
+    """
+    import heapq
+    from collections import defaultdict
+
+    by_id = {e.transition_id: e for e in events}
+    indeg = {e.transition_id: 0 for e in events}
+    children: dict = defaultdict(list)
+    for e in events:
+        for p in e.parents:
+            if p in by_id:                     # only edges among this event set constrain the order
+                indeg[e.transition_id] += 1
+                children[p].append(e.transition_id)
+    ready = [(by_id[i].sequence, i) for i, deg in indeg.items() if deg == 0]
+    heapq.heapify(ready)
+    out: list = []
+    while ready:
+        _, i = heapq.heappop(ready)
+        out.append(by_id[i])
+        for c in children[i]:
+            indeg[c] -= 1
+            if indeg[c] == 0:
+                heapq.heappush(ready, (by_id[c].sequence, c))
+    if len(out) != len(events):
+        raise TransitionRefused("causal_order: parents form a cycle or reference a missing event")
+    return out
 
 
 def replay_states(events: Sequence[InvestigationTransitionEvent],
