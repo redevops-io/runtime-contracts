@@ -69,6 +69,20 @@ from .protocol import (
     CredentialGrant,
     redact,
     lease_decision,
+    SecretRef,
+    SecretDescriptor,
+    SecretMaterial,
+    SECRET_CLASSIFICATIONS,
+    CredentialRequirement,
+    CredentialRequest,
+    CredentialLease,
+    LeaseStatus,
+    SecretStore,
+    CredentialBroker,
+    KeyService,
+    DenyReason,
+    authorize_request,
+    admit_credentials,
     TraceContext,
     span_of,
     GeoRef,
@@ -97,6 +111,19 @@ from .store import (  # noqa: E402
     register_backend,
     available_backends,
 )
+from .secrets_local import (  # noqa: E402
+    EnvironmentSecretStore,
+    FileSecretStore,
+    LocalCredentialBroker,
+    CredentialDenied,
+    SecretAccessError,
+    open_secret_store,
+    open_broker,
+    register_secret_store,
+    register_broker,
+    available_secret_stores,
+    available_brokers,
+)
 
 __version__ = "0.3.0"
 __all__ = [
@@ -124,5 +151,14 @@ __all__ = [
     "EvidenceStore", "EvidenceEnvelope", "EVIDENCE_FAMILIES", "project_evidence",
     "FileEvidenceStore", "InMemoryEvidenceStore",
     "open_store", "register_backend", "available_backends",
+    # secret references + credential brokerage (contracts) and the AGPL local providers/broker
+    "SecretRef", "SecretDescriptor", "SecretMaterial", "SECRET_CLASSIFICATIONS",
+    "CredentialRequirement", "CredentialRequest", "CredentialLease", "LeaseStatus",
+    "SecretStore", "CredentialBroker", "KeyService", "DenyReason",
+    "authorize_request", "admit_credentials",
+    "EnvironmentSecretStore", "FileSecretStore", "LocalCredentialBroker",
+    "CredentialDenied", "SecretAccessError",
+    "open_secret_store", "open_broker", "register_secret_store", "register_broker",
+    "available_secret_stores", "available_brokers",
     *_model_all,
 ]

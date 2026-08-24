@@ -59,6 +59,11 @@ class SecurityEventType(str, Enum):
     SANDBOX_VIOLATION = "SANDBOX_VIOLATION"
     CONTAINMENT = "CONTAINMENT"
     RECOVERY = "RECOVERY"
+    # credential brokerage — authority to use a secret was granted/redeemed/revoked/denied (never the secret)
+    CREDENTIAL_GRANT_ISSUED = "CREDENTIAL_GRANT_ISSUED"
+    CREDENTIAL_REDEEMED = "CREDENTIAL_REDEEMED"
+    CREDENTIAL_GRANT_REVOKED = "CREDENTIAL_GRANT_REVOKED"
+    CREDENTIAL_GRANT_DENIED = "CREDENTIAL_GRANT_DENIED"
 
 
 class GovernanceDisposition(str, Enum):
