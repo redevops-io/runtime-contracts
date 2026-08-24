@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from typing import Any
 
 from .seal import content_hash
 from .security import AuthorityContext, SecurityDecision, SecurityVerdict
@@ -81,6 +82,14 @@ class CredentialGrant:
     authority_ref: str = ""              # chain_ref of the AuthorityContext that leased it
     material_hash: str = ""              # content_hash of the secret material (verify on redeem)
     handle: str = ""                     # opaque broker handle to redeem out of band
+    # --- lease/lifecycle metadata (optional; additive — empty values stay out of the canonical form) ---
+    request_id: str = ""                 # the CredentialRequest this grant answers
+    credential_ref: Any = None           # a SecretRef naming the exact secret (location + version)
+    lease_id: str = ""                   # backend lease id (renew/revoke handle)
+    issued_at: str = ""
+    expires_at: str = ""
+    renewable: bool = False
+    revocable: bool = True
 
     def canonical_form(self) -> dict:
         d = {"grant_id": self.grant_id, "principal": self.principal, "resource": self.resource,
@@ -91,8 +100,19 @@ class CredentialGrant:
             d["authority_ref"] = self.authority_ref
         if self.material_hash:
             d["material_hash"] = self.material_hash
+        if self.request_id:
+            d["request_id"] = self.request_id
+        if self.credential_ref is not None:
+            d["credential_ref"] = self.credential_ref.canonical_form()
+        if self.lease_id:
+            d["lease_id"] = self.lease_id
+        if self.issued_at:
+            d["issued_at"] = self.issued_at
+        if self.expires_at:
+            d["expires_at"] = self.expires_at
         # NOTE: `handle` is intentionally OMITTED from the canonical form — it is a live redemption token,
-        # not identity, and must not enter any fingerprint/seal.
+        # not identity, and must not enter any fingerprint/seal. renewable/revocable are lifecycle flags,
+        # also excluded from identity.
         return d
 
     @property

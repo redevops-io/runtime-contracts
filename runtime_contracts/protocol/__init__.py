@@ -60,6 +60,22 @@ from .credentials import (
     redact,
     lease_decision,
 )
+from .secrets import (
+    SecretRef,
+    SecretDescriptor,
+    SecretMaterial,
+    SECRET_CLASSIFICATIONS,
+    CredentialRequirement,
+    CredentialRequest,
+    CredentialLease,
+    LeaseStatus,
+    SecretStore,
+    CredentialBroker,
+    KeyService,
+    DenyReason,
+    authorize_request,
+    admit_credentials,
+)
 from .trace import (
     TraceContext,
     span_of,
@@ -110,6 +126,11 @@ __all__ = [
     "CredentialGrant",
     "redact",
     "lease_decision",
+    # secret references + authority-scoped credential brokerage seams
+    "SecretRef", "SecretDescriptor", "SecretMaterial", "SECRET_CLASSIFICATIONS",
+    "CredentialRequirement", "CredentialRequest", "CredentialLease", "LeaseStatus",
+    "SecretStore", "CredentialBroker", "KeyService", "DenyReason",
+    "authorize_request", "admit_credentials",
     # mission-native trace identity (OTel semantic source of truth)
     "TraceContext",
     "span_of",
