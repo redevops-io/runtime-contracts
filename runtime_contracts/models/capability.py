@@ -194,6 +194,41 @@ class CapabilityDescriptor:
         g = set(granted)
         return all(p in g or "*" in g for p in self.required_authority)
 
+    def admit(self, *, pinned_digests: Optional[Mapping[str, str]] = None,
+              trusted_publishers: Sequence[str] = (), min_trust: Optional[Decimal] = None):
+        """Supply-chain admission gate: decide whether *this exact* capability may run.
+
+        Consumes the pinning/provenance/trust the descriptor declares (deny-wins):
+          * **digest pinning** — if ``pinned_digests`` names this capability, its ``content_digest`` must
+            match the pin exactly; a mismatch (or a missing digest against a pin) is DENY. This is how a
+            model / tool substitution or a poisoned rebuild is caught: what runs is not what was admitted.
+          * **provenance** — if ``trusted_publishers`` is given, the descriptor's ``provenance`` must be one
+            of them, else DENY (unsigned / unknown origin).
+          * **trust floor** — if ``min_trust`` is given, an unrated or below-floor ``trust`` is
+            REQUIRE_REVIEW (a human decides), not a silent pass.
+
+        Returns a ``SecurityDecision``. With no constraints supplied it ALLOWs — admission is opt-in, but
+        once a pin/publisher/floor is declared it is enforced fail-closed."""
+        from ..protocol.security import SecurityDecision, SecurityVerdict   # noqa: PLC0415 — models→protocol
+        res = self.artifact_id
+        pins = pinned_digests or {}
+        pinned = pins.get(self.capability_id) or pins.get(self.artifact_id)
+        if pinned is not None and self.content_digest != pinned:
+            return SecurityDecision(SecurityVerdict.DENY, resource=res,
+                                    reason=f"content digest {self.content_digest or '∅'} ≠ pinned {pinned} "
+                                           "(substituted or rebuilt artifact)",
+                                    obligations=("quarantine_capability",), decided_by="supplychain:digest")
+        if trusted_publishers and self.provenance not in set(trusted_publishers):
+            return SecurityDecision(SecurityVerdict.DENY, resource=res,
+                                    reason=f"provenance {self.provenance or '∅'} not in trusted publishers",
+                                    decided_by="supplychain:provenance")
+        if min_trust is not None and (self.trust is None or self.trust < min_trust):
+            return SecurityDecision(SecurityVerdict.REQUIRE_REVIEW, resource=res,
+                                    reason=f"trust {self.trust if self.trust is not None else 'unrated'} "
+                                           f"below floor {decimal_string(min_trust)}",
+                                    decided_by="supplychain:trust")
+        return SecurityDecision(SecurityVerdict.ALLOW, resource=res, decided_by="supplychain:admit")
+
     def canonical_form(self) -> Dict[str, Any]:
         """Exact identity — everything declared."""
         return {

@@ -2,6 +2,7 @@
 a lease can never widen authority; and nothing that leaves the runtime carries a raw secret."""
 from runtime_contracts import (
     AuthorityContext,
+    PrincipalRef,
     CredentialGrant,
     SecurityVerdict,
     lease_decision,
@@ -10,7 +11,8 @@ from runtime_contracts import (
 
 
 def _authority(scope):
-    return AuthorityContext(authority_id="a1", principal="svc:reel", purpose="render", scope=tuple(scope))
+    return AuthorityContext(authority_id="a1", principal=PrincipalRef(id="svc:reel", kind="service"),
+                            purpose="render", scope=tuple(scope))
 
 
 def test_lease_within_authority_is_allowed():

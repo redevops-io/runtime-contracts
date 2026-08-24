@@ -164,3 +164,25 @@ def test_child_records_parent_vector_is_consistent():
     c = GOLDEN["cases"]["child_records_parent"]
     assert c["parent_digest"] == c["root_digest"]
     assert GOLDEN["cases"]["decision_combine_deny_wins"]["verdict"] == "DENY"
+
+
+# ── supply-chain admission gate (Slice 4) ──
+
+def test_admit_denies_a_substituted_digest():
+    from runtime_contracts import SecurityVerdict
+    d = CapabilityDescriptor(capability_id="render", version="1", kind="tool", content_digest="sha256:aaa")
+    good = d.admit(pinned_digests={"render": "sha256:aaa"})
+    bad = d.admit(pinned_digests={"render": "sha256:bbb"})     # what runs ≠ what was admitted
+    assert good.verdict is SecurityVerdict.ALLOW
+    assert bad.verdict is SecurityVerdict.DENY and "quarantine_capability" in bad.obligations
+
+
+def test_admit_enforces_provenance_and_trust_floor():
+    from runtime_contracts import SecurityVerdict
+    unsigned = CapabilityDescriptor(capability_id="c", version="1", kind="tool", provenance="unknown")
+    assert unsigned.admit(trusted_publishers=("attested",)).verdict is SecurityVerdict.DENY
+    low = CapabilityDescriptor(capability_id="c", version="1", kind="tool", provenance="attested",
+                               trust=Decimal("0.2"))
+    assert low.admit(trusted_publishers=("attested",),
+                     min_trust=Decimal("0.8")).verdict is SecurityVerdict.REQUIRE_REVIEW
+    assert low.admit().verdict is SecurityVerdict.ALLOW      # admission is opt-in; no constraints → allow
