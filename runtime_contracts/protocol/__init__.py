@@ -54,6 +54,11 @@ from .security import (
     DelegationRefused,
     verify_chain,
 )
+from .credentials import (
+    CredentialGrant,
+    redact,
+    lease_decision,
+)
 from .adversarial import (
     validate_evidence,
     check_injection,
@@ -89,6 +94,10 @@ __all__ = [
     "AuthorityContext",
     "DelegationRefused",
     "verify_chain",
+    # just-in-time credentials + redaction
+    "CredentialGrant",
+    "redact",
+    "lease_decision",
     # adversarial evidence validators (epistemic layer)
     "validate_evidence",
     "check_injection",
