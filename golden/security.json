@@ -46,6 +46,10 @@
     "principal_role_order_invariant": {
       "hash": "rcv1:22a59aeafa5e9ecfdf8f5ec24fea9cb3b574ab4749de5ab3a32ad5ef12f5ce92",
       "why": "reordered roles hash identically (sets sorted into lists)"
+    },
+    "runtime_security_event_hash": {
+      "hash": "rcv1:124d2a82f7bdf87e92524b678038283d07a488efca0d3671f59a0e74b83c0e43",
+      "why": "canonical telemetry event identity"
     }
   },
   "contract_version": "0.3.x"

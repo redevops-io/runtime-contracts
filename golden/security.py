@@ -78,6 +78,15 @@ def cases() -> dict:
     # 4. Context identity — the security-keyed cache key (Context Fabric composition, canonicalized).
     out["context_id"] = {"why": "prompt prefix bound to model + security posture", "hash": _CTX.context_id()}
     out["context_policy_fingerprint"] = {"why": "posture without the prompt", "hash": _CTX.policy_fingerprint()}
+    # 5. RuntimeSecurityEvent — a canonical security-telemetry event (hashes, not raw payloads).
+    from runtime_contracts.protocol.telemetry import RuntimeSecurityEvent, TelemetryKind, SecurityEventType
+    _EVT = RuntimeSecurityEvent(
+        event_id="evt-1", kind=TelemetryKind.SECURITY, event_type=SecurityEventType.DATA_MOVEMENT.value,
+        sequence=3, mission_id="m-1", capability="storage.upload", parent_event_id="evt-0",
+        data_classifications=("pii",), network=("s3.external.com",), input_hash="rcv1:aa", output_hash="rcv1:bb",
+        side_effects=("records_read=2000",), decision="DENY")
+    out["runtime_security_event_hash"] = {"why": "canonical telemetry event identity", "hash": _EVT.event_hash}
+
     out["context_cross_tenant_differs"] = {
         "why": "same prompt/model, different tenant → different context_id (no cross-tenant reuse)",
         "same_tenant": _CTX.context_id(),

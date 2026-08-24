@@ -33,6 +33,15 @@ from .topology import (
     JoinPolicy,
     ConcurrencyGroup,
 )
+from .telemetry import (
+    TelemetryKind,
+    SecurityEventType,
+    GovernanceDisposition,
+    RuntimeSecurityEvent,
+    SecurityTrajectory,
+    correlate,
+    CausalCycle,
+)
 from .security import (
     SecurityVerdict,
     ContextIdentity,
@@ -48,6 +57,12 @@ __all__ = [
     "TopologyKind",
     "JoinPolicy",
     "ConcurrencyGroup",
+    # security telemetry protocol
+    "TelemetryKind",
+    "SecurityEventType",
+    "Disposition",
+    "RuntimeSecurityEvent",
+    "CausalCycle",
     # canonical security contracts
     "SecurityVerdict",
     "ContextIdentity",
