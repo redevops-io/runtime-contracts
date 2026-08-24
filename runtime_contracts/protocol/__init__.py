@@ -40,6 +40,9 @@ from .telemetry import (
     RuntimeSecurityEvent,
     SecurityTrajectory,
     correlate,
+    ContainmentState,
+    Containment,
+    ContainmentRefused,
     CausalCycle,
 )
 from .security import (

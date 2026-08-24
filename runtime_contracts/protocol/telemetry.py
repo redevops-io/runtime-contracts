@@ -305,3 +305,76 @@ def correlate(traj: SecurityTrajectory, *, planned_capabilities: "tuple[str, ...
         return GovernanceDisposition.ALLOW, []
     worst = max(reasons, key=lambda r: r[0].rank)[0]
     return worst, [msg for _, msg in reasons]
+
+
+# ──────────────────────────── containment state machine ────────────────────────────
+
+
+class ContainmentState(str, Enum):
+    """Explicit trajectory containment. A correlated disposition drives the state; transitions are
+    monotonic toward containment (deny-wins) and only relax through an explicit review/recovery."""
+    RUNNING = "RUNNING"
+    CONTAINING = "CONTAINING"           # containment initiated (revoke authority, stop new side effects)
+    CONTAINED = "CONTAINED"             # confined; no further consequential action proceeds
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    RECOVERED = "RECOVERED"
+
+
+_CONTAINMENT_TRANSITIONS: dict[ContainmentState, set[ContainmentState]] = {
+    ContainmentState.RUNNING: {ContainmentState.RUNNING, ContainmentState.REVIEW_REQUIRED,
+                               ContainmentState.CONTAINING},
+    ContainmentState.REVIEW_REQUIRED: {ContainmentState.REVIEW_REQUIRED, ContainmentState.RUNNING,
+                                       ContainmentState.CONTAINING},
+    ContainmentState.CONTAINING: {ContainmentState.CONTAINED},
+    ContainmentState.CONTAINED: {ContainmentState.CONTAINED, ContainmentState.RECOVERED},
+    ContainmentState.RECOVERED: {ContainmentState.RECOVERED, ContainmentState.RUNNING},
+}
+
+
+class ContainmentRefused(ValueError):
+    """An invalid containment transition, or an attempt to recover a NO_OVERRIDE containment."""
+
+
+@dataclass
+class Containment:
+    """Drives containment from correlated dispositions. ``on_disposition`` is the runtime hook: ALLOW keeps
+    RUNNING; REQUIRE_REVIEW parks at REVIEW_REQUIRED; DENY contains; NO_OVERRIDE contains and refuses any
+    later recovery. ``history`` records every transition for the audit/replay trail."""
+    state: ContainmentState = ContainmentState.RUNNING
+    no_override: bool = False
+    history: list[tuple[str, str]] = field(default_factory=list)   # (from, to)
+
+    def _to(self, target: ContainmentState) -> None:
+        if target != self.state and target not in _CONTAINMENT_TRANSITIONS[self.state]:
+            raise ContainmentRefused(f"{self.state.value} → {target.value} is not a valid transition")
+        if target != self.state:
+            self.history.append((self.state.value, target.value))
+            self.state = target
+
+    def on_disposition(self, disposition: GovernanceDisposition) -> ContainmentState:
+        if disposition is GovernanceDisposition.ALLOW:
+            return self.state                                     # nothing to contain
+        if disposition is GovernanceDisposition.REQUIRE_REVIEW:
+            self._to(ContainmentState.REVIEW_REQUIRED)
+        else:                                                     # DENY or NO_OVERRIDE → contain
+            if disposition is GovernanceDisposition.NO_OVERRIDE:
+                self.no_override = True
+            self._to(ContainmentState.CONTAINING)
+            self._to(ContainmentState.CONTAINED)
+        return self.state
+
+    def resolve_review(self, *, approved: bool) -> ContainmentState:
+        if self.state is not ContainmentState.REVIEW_REQUIRED:
+            raise ContainmentRefused("no review is pending")
+        if approved:
+            self._to(ContainmentState.RUNNING)
+        else:
+            self._to(ContainmentState.CONTAINING)
+            self._to(ContainmentState.CONTAINED)
+        return self.state
+
+    def recover(self) -> ContainmentState:
+        if self.no_override:
+            raise ContainmentRefused("a NO_OVERRIDE containment cannot be recovered by a human gate")
+        self._to(ContainmentState.RECOVERED)
+        return self.state

@@ -104,3 +104,40 @@ def test_deny_wins_over_review():
     traj.add(_ev("2", capability="unplanned.upload", network=("x.com",)))
     disp, reasons = correlate(traj, planned_capabilities=("crm.read",), max_external_records=100)
     assert disp is GovernanceDisposition.DENY and len(reasons) >= 2
+
+
+# ── containment state machine ──
+
+from runtime_contracts import Containment, ContainmentState, ContainmentRefused  # noqa: E402
+
+
+def test_containment_contains_on_deny_and_recovers():
+    c = Containment()
+    assert c.on_disposition(GovernanceDisposition.ALLOW) is ContainmentState.RUNNING
+    assert c.on_disposition(GovernanceDisposition.DENY) is ContainmentState.CONTAINED
+    assert c.history == [("RUNNING", "CONTAINING"), ("CONTAINING", "CONTAINED")]
+    assert c.recover() is ContainmentState.RECOVERED
+
+
+def test_no_override_cannot_be_recovered():
+    c = Containment()
+    c.on_disposition(GovernanceDisposition.NO_OVERRIDE)
+    assert c.state is ContainmentState.CONTAINED and c.no_override
+    with pytest.raises(ContainmentRefused):
+        c.recover()
+
+
+def test_review_parks_and_resolves_both_ways():
+    c = Containment()
+    assert c.on_disposition(GovernanceDisposition.REQUIRE_REVIEW) is ContainmentState.REVIEW_REQUIRED
+    assert c.resolve_review(approved=True) is ContainmentState.RUNNING
+    c2 = Containment()
+    c2.on_disposition(GovernanceDisposition.REQUIRE_REVIEW)
+    assert c2.resolve_review(approved=False) is ContainmentState.CONTAINED   # denied review → contained
+
+
+def test_invalid_transition_is_refused():
+    c = Containment()
+    c.on_disposition(GovernanceDisposition.DENY)     # CONTAINED
+    with pytest.raises(ContainmentRefused):
+        c.resolve_review(approved=True)              # no review pending from CONTAINED
