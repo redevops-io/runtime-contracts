@@ -1,0 +1,56 @@
+{
+  "cases": {
+    "authority_child_digest": {
+      "hash": "rcv1:5778a10880cd59a58d77a3b47daf8e139819abaf4dea609953fc010b84974645",
+      "why": "narrowed child content-addressed"
+    },
+    "authority_root_digest": {
+      "hash": "rcv1:c39ae6cee708acc81278e51b890e92320b31097ddb792a412d38e02e3ce11b88",
+      "why": "root authority content-addressed"
+    },
+    "child_chain_ref": {
+      "chain_ref": "auth-child@rcv1:5778a10880cd59a58d77a3b47daf8e139819abaf4dea609953fc010b84974645",
+      "why": "the id a side effect resolves to"
+    },
+    "child_records_parent": {
+      "parent_digest": "rcv1:c39ae6cee708acc81278e51b890e92320b31097ddb792a412d38e02e3ce11b88",
+      "root_digest": "rcv1:c39ae6cee708acc81278e51b890e92320b31097ddb792a412d38e02e3ce11b88",
+      "why": "the child's parent_digest is exactly the parent's digest"
+    },
+    "context_cross_tenant_differs": {
+      "other_tenant": "rcv1:da089a829f5dceb8fb66a6d815b22d5bdb66f25f6c52bad0c85395e204e1763f",
+      "same_tenant": "rcv1:1e27c5d7bef88b30379360d05fc9662650d75a57e3895868213e78645e614452",
+      "why": "same prompt/model, different tenant → different context_id (no cross-tenant reuse)"
+    },
+    "context_id": {
+      "hash": "rcv1:1e27c5d7bef88b30379360d05fc9662650d75a57e3895868213e78645e614452",
+      "why": "prompt prefix bound to model + security posture"
+    },
+    "context_policy_fingerprint": {
+      "hash": "rcv1:e2c51e057d6c760bcd31f8123198db434ad6c424ae41c4dbc9911cd265fea1f9",
+      "why": "posture without the prompt"
+    },
+    "decision_combine_deny_wins": {
+      "hash": "rcv1:ad270b8c09062389a42cde2a99188567a5126497741a8cc9f836b9c7f20b77c8",
+      "verdict": "DENY",
+      "why": "most-severe verdict governs; obligations unioned"
+    },
+    "decision_deny_hash": {
+      "hash": "rcv1:b311b118dca0c5e95a703f51bac6b89fd6ddb60218d2b5f4add14f03d086f862",
+      "why": "a DENY decision with obligations+evidence, canonical"
+    },
+    "principal_hash": {
+      "hash": "rcv1:22a59aeafa5e9ecfdf8f5ec24fea9cb3b574ab4749de5ab3a32ad5ef12f5ce92",
+      "why": "id·kind·tenant·roles·auth_level, roles sorted, canonical"
+    },
+    "principal_role_order_invariant": {
+      "hash": "rcv1:22a59aeafa5e9ecfdf8f5ec24fea9cb3b574ab4749de5ab3a32ad5ef12f5ce92",
+      "why": "reordered roles hash identically (sets sorted into lists)"
+    },
+    "runtime_security_event_hash": {
+      "hash": "rcv1:124d2a82f7bdf87e92524b678038283d07a488efca0d3671f59a0e74b83c0e43",
+      "why": "canonical telemetry event identity"
+    }
+  },
+  "contract_version": "0.3.x"
+}

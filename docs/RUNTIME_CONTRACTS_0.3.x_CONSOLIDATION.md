@@ -1,5 +1,11 @@
 # runtime-contracts 0.3.x — consolidation plan (#5)
 
+> **✅ COMPLETED — historical design record.** This plan is done: the package is at
+> 0.3.0 on the Decimal canonical, the seal semantics were lifted onto it, and
+> wealth-manager conforms. Kept for the design rationale (why Decimal won, the
+> protocol/domain two-layer boundary), not as pending work. Current status lives in
+> [`../IMPLEMENTATION_STATUS.md`](../IMPLEMENTATION_STATUS.md).
+
 Consolidate the two divergent `runtime-contracts` lines into **one universal
 cross-runtime protocol** at 0.3.x: canonical identity/seal, provenance, versioning,
 evidence, lineage, verdicts — **not** domain models. Decision taken: the

@@ -1,0 +1,25 @@
+{
+  "cases": {
+    "geometry_hash_crs_is_identity": {
+      "differs": true,
+      "why": "same rings in a different CRS is a different geometry identity"
+    },
+    "geometry_hash_int_float_twins_equal": {
+      "equal": true,
+      "why": "int coord (0) and float twin (0.0) hash identically"
+    },
+    "geometry_hash_square": {
+      "hash": "geo:8b54d0171b5d2b89ebd2d5acc4c703a9",
+      "why": "canonical geometry identity — rounded float-normalized coords + CRS, blake2b"
+    },
+    "georef_envelope_ref": {
+      "ref": "rcv1:c82fc0182a5e31abbf511b0a7b8be20933fdd90895d6ac4b58cdebe34969b354",
+      "why": "rcv1 identity of the GeoRef envelope over its identity-bearing string fields"
+    },
+    "georef_ref_ignores_derived_metadata": {
+      "same": true,
+      "why": "bbox/centroid are derived, not identity — ref unchanged when only they differ"
+    }
+  },
+  "contract_version": "0.3.x"
+}

@@ -73,6 +73,12 @@ v10 roadmap:
 governed merge result · trajectory findings · case bundles · cache-aware session
 metadata
 
+**Added in 0.3.x (additive, backward-compatible)** — the concurrency-topology
+vocabulary (`TopologyKind` · `JoinPolicy` · `ConcurrencyGroup`) and partial-order
+events (an optional `parents` field on `InvestigationTransitionEvent` plus
+`causal_order()`). Both are additive: an event with no `parents` serialises and
+hashes exactly as before, so existing golden fixtures are unchanged.
+
 ---
 
 ## Adoption

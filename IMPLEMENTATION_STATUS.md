@@ -1,7 +1,17 @@
 # Implementation status
 
-**v0.1 — proposed canonical contract, implementation adoption pending.**
-No implementation claims conformance. That is the accurate state, not a caveat.
+**Contract identity: v0.1** (`CONTRACT_VERSION`) · **package: 0.3.0.** The canonical
+seal is stable and several implementations now conform to it (see the table below); the
+contract *spec* has not rev'd past v0.1 because the identity has not changed — the 0.3.x
+work is additive (concurrency-topology vocabulary, partial-order events) with unchanged
+hashes for existing payloads.
+
+> **This file is the single current status source.** Two earlier records —
+> [`docs/deployment-inventory.md`](docs/deployment-inventory.md) (a dated 2026-07-31
+> pre-work snapshot) and
+> [`docs/RUNTIME_CONTRACTS_0.3.x_CONSOLIDATION.md`](docs/RUNTIME_CONTRACTS_0.3.x_CONSOLIDATION.md)
+> (the now-completed 0.3.x consolidation plan) — are **historical** and may disagree on
+> version/conformance/what-exists. Where they do, this file wins.
 
 ```bash
 python -m runtime_contracts.cli status
@@ -15,11 +25,12 @@ python -m runtime_contracts.cli verify --implementation quantify
 | quantify | SPECIFIED | CONFORMANT | gap |
 | context-runtime | SPECIFIED | CONFORMANT | gap |
 | redevops-rag | SPECIFIED | CONFORMANT | gap |
+| wealth-manager | SPECIFIED | CONFORMANT | gap |
 | rag-saas-platform | PLANNED | PARTIAL | gap |
-| mission-runtime | NOT_LOCATED | NOT_LOCATED | ok |
-| discovery-runtime | NOT_LOCATED | NOT_LOCATED | ok |
-| sidekick | NOT_LOCATED | NOT_LOCATED | ok |
-| agentic-os | NOT_LOCATED | NOT_LOCATED | ok |
+| discovery-runtime | LOCATED (own repo) | seal-conformant per its README; unverified here | gap |
+| mission-runtime | agentic-os/mission (not a standalone repo) | unverified | gap |
+| sidekick | integration module in context-runtime | n/a | ok |
+| agentic-os | LOCATED (own repo) | unverified | gap |
 
 A component whose gate is `NOT_LOCATED` is a visible roadmap gap, not a red
 build. It becomes a failure the day it is declared part of the release.
@@ -35,6 +46,13 @@ canonical hashing · golden fixtures · adoption manifest
 `VerificationResult` · `CapabilityDescriptor` · `MissionProgram` ·
 `InvestigationTransitionEvent` · submission semantics · replay engine ·
 finding routing.
+
+## Added in 0.3.x (additive)
+
+`TopologyKind` · `JoinPolicy` · `ConcurrencyGroup` (concurrency-topology
+vocabulary) · partial-order events (`InvestigationTransitionEvent.parents` +
+`causal_order()`). Backward-compatible: a parent-less event hashes exactly as in
+v0.1, so golden fixtures are unchanged.
 
 The v0.1 subset Phase B needs is complete. What remains is a **consumer**: the
 control-plane adapter, an append-only ledger, and the inconclusive journey

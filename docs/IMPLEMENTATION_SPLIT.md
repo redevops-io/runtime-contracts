@@ -86,7 +86,11 @@ Existing core types remain here, including:
 - `VerificationResult`;
 - `VerifiedIntent` and its parts — `IntentField`, `IntentRelation`,
   `RelationMember`, `DecisionEvidence`, `Unresolved`, `Amendment`;
-- `MissionProposal`, `MissionOutcome`, `CapabilityRefusal`, `Derivation`.
+- `MissionProposal`, `MissionOutcome`, `CapabilityRefusal`, `Derivation`;
+- concurrency-topology vocabulary — `TopologyKind`, `JoinPolicy`,
+  `ConcurrencyGroup` — and partial-order events (`InvestigationTransitionEvent.parents`
+  + `causal_order()`): how independent work is grouped/joined is a cross-runtime
+  contract, so neither the Mission executor nor Context Runtime may own it (0.3.x, additive).
 
 `VerifiedIntent` is the Discovery → Mission boundary and belongs here for the
 same reason as the rest: two runtimes exchange it, so neither may own it. It

@@ -1,5 +1,12 @@
 # Repository and deployment inventory
 
+> **⚠️ HISTORICAL SNAPSHOT — superseded.** This is a frozen record dated 2026-07-31,
+> kept for provenance. It is **not current**: several claims below are now false (e.g.
+> `discovery-runtime` "does not exist" — it is now its own repo). For the current
+> picture see [`../IMPLEMENTATION_STATUS.md`](../IMPLEMENTATION_STATUS.md), which is the
+> single authoritative status source. Do not update this file — it is a point-in-time
+> snapshot by design.
+
 **Date:** 2026-07-31 · **Purpose:** establish what is real and running before any
 contract work begins.
 
