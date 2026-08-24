@@ -223,6 +223,43 @@ class AuthorityContext:
         )
 
 
+# ──────────────────────────── context identity (security-keyed cache key) ────────────────────────────
+
+
+@dataclass(frozen=True)
+class ContextIdentity:
+    """The canonical security identity of an assembled context — the key a cache MUST use so a computed
+    context is never reused across a tenant, permission, data-classification, or model boundary. This is
+    Context Fabric's composition lifted into one cross-runtime contract: two requests with the same prompt
+    prefix but a different tenant / permissions / sensitivity / model produce a different ``context_id``,
+    so cross-tenant or cross-permission cache reuse cannot collide.
+    """
+    tenant: str = ""
+    permissions: tuple[str, ...] = ()
+    data_classification: str = ""
+    model_revision: str = ""
+    tokenizer_revision: str = ""
+    prompt_prefix_hash: str = ""
+
+    def policy_fingerprint(self) -> str:
+        """The security posture (everything but the prompt) — tenant, permissions, classification, model."""
+        return content_hash({"kind": "policy", "tenant": self.tenant,
+                             "permissions": sorted(set(self.permissions)),
+                             "data_classification": self.data_classification,
+                             "model_revision": self.model_revision,
+                             "tokenizer_revision": self.tokenizer_revision})
+
+    def context_id(self) -> str:
+        """The full cache key: the prompt prefix bound to the model/tokenizer and the security posture."""
+        return content_hash({"kind": "ctx", "prompt_prefix_hash": self.prompt_prefix_hash,
+                             "model_tokenizer": f"{self.model_revision}/{self.tokenizer_revision}",
+                             "policy_fingerprint": self.policy_fingerprint()})
+
+    def canonical_form(self) -> dict:
+        d: dict = {"policy_fingerprint": self.policy_fingerprint(), "context_id": self.context_id()}
+        return d
+
+
 def verify_chain(chain: "list[AuthorityContext]") -> None:
     """Verify a delegation chain root→leaf: each link records the previous link's digest, and authority
     only narrows (scope ⊆, constraints ⊇, budget ≤, expiry ≤). Raises ``DelegationRefused`` on any break.

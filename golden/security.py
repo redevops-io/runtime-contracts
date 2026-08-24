@@ -11,10 +11,14 @@ from decimal import Decimal
 
 from runtime_contracts.protocol.security import (
     AuthorityContext,
+    ContextIdentity,
     PrincipalRef,
     SecurityDecision,
     SecurityVerdict,
 )
+
+_CTX = ContextIdentity(tenant="acme", permissions=("read:a", "read:b"), data_classification="pii",
+                       model_revision="gpt-x@1", tokenizer_revision="tok@1", prompt_prefix_hash="pfx")
 
 HERE = pathlib.Path(__file__).parent
 
@@ -70,6 +74,17 @@ def cases() -> dict:
         "root_digest": _ROOT.digest(),
     }
     out["child_chain_ref"] = {"why": "the id a side effect resolves to", "chain_ref": _CHILD.chain_ref}
+
+    # 4. Context identity — the security-keyed cache key (Context Fabric composition, canonicalized).
+    out["context_id"] = {"why": "prompt prefix bound to model + security posture", "hash": _CTX.context_id()}
+    out["context_policy_fingerprint"] = {"why": "posture without the prompt", "hash": _CTX.policy_fingerprint()}
+    out["context_cross_tenant_differs"] = {
+        "why": "same prompt/model, different tenant → different context_id (no cross-tenant reuse)",
+        "same_tenant": _CTX.context_id(),
+        "other_tenant": ContextIdentity(tenant="other", permissions=("read:a", "read:b"),
+                                        data_classification="pii", model_revision="gpt-x@1",
+                                        tokenizer_revision="tok@1", prompt_prefix_hash="pfx").context_id(),
+    }
     return out
 
 

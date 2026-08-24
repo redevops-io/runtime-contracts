@@ -7,14 +7,18 @@ from decimal import Decimal
 
 import pytest
 
+from decimal import Decimal
+
 from runtime_contracts import (
     AuthorityContext,
+    ContextIdentity,
     DelegationRefused,
     PrincipalRef,
     SecurityDecision,
     SecurityVerdict,
     verify_chain,
 )
+from runtime_contracts.models.capability import CapabilityDescriptor
 from golden.security import cases
 
 
@@ -106,6 +110,45 @@ def test_verify_chain_accepts_valid_and_rejects_tampered():
 def test_chain_ref_is_authority_id_at_digest():
     root = _root()
     assert root.chain_ref == f"root@{root.digest()}"
+
+
+# ── context identity (security-keyed cache key) ──
+
+def _ctx(**kw) -> ContextIdentity:
+    base = dict(tenant="acme", permissions=("read:a", "read:b"), data_classification="pii",
+                model_revision="m@1", tokenizer_revision="t@1", prompt_prefix_hash="pfx")
+    base.update(kw)
+    return ContextIdentity(**base)
+
+
+def test_context_id_is_security_keyed_and_prompt_order_independent():
+    base = _ctx().context_id()
+    assert _ctx(permissions=("read:b", "read:a")).context_id() == base   # perms order-independent
+    for boundary in (dict(tenant="other"), dict(permissions=("read:a",)),
+                     dict(data_classification="public"), dict(model_revision="m@2"),
+                     dict(tokenizer_revision="t@2"), dict(prompt_prefix_hash="other")):
+        assert _ctx(**boundary).context_id() != base                    # every boundary changes the key
+
+
+def test_within_tier_model_swap_changes_context_id():
+    # the fabric gap: same tenant/perms but a new model revision must NOT reuse the cache
+    assert _ctx(model_revision="m@1").context_id() != _ctx(model_revision="m@1-hotfix").context_id()
+
+
+# ── capability descriptor security surface ──
+
+def test_capability_security_fields_are_canonical_and_change_identity():
+    base = CapabilityDescriptor(capability_id="c", version="1", kind="tool")
+    hardened = CapabilityDescriptor(capability_id="c", version="1", kind="tool",
+                                    required_authority=("deploy:write",), isolation_class="strict",
+                                    network=("api.acme.com",), secrets=("db_password",),
+                                    provenance="attested", content_digest="sha256:abc",
+                                    trust=Decimal("0.9"))
+    assert hardened.content_hash != base.content_hash                   # security surface is identity
+    assert hardened.requires_isolation and not base.requires_isolation
+    assert hardened.authority_satisfied_by(("deploy:write", "logs:read"))
+    assert not hardened.authority_satisfied_by(("logs:read",))          # deny-by-default
+    assert hardened.authority_satisfied_by(("*",))                      # wildcard grant
 
 
 # ── golden reproduction (Python↔Go conformance hook) ──

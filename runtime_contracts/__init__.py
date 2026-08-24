@@ -49,6 +49,7 @@ from .protocol import (
     JoinPolicy,
     ConcurrencyGroup,
     SecurityVerdict,
+    ContextIdentity,
     SecurityDecision,
     PrincipalRef,
     AuthorityContext,
@@ -71,7 +72,7 @@ __all__ = [
     "RelationKind", "MemberRole", "LineageMember", "Relation",
     "member", "relation", "derived_from", "supersedes",
     "TopologyKind", "JoinPolicy", "ConcurrencyGroup",
-    "SecurityVerdict", "SecurityDecision", "PrincipalRef", "AuthorityContext",
+    "SecurityVerdict", "ContextIdentity", "SecurityDecision", "PrincipalRef", "AuthorityContext",
     "DelegationRefused", "verify_chain",
     *_model_all,
 ]

@@ -35,6 +35,7 @@ from .topology import (
 )
 from .security import (
     SecurityVerdict,
+    ContextIdentity,
     SecurityDecision,
     PrincipalRef,
     AuthorityContext,
@@ -49,6 +50,7 @@ __all__ = [
     "ConcurrencyGroup",
     # canonical security contracts
     "SecurityVerdict",
+    "ContextIdentity",
     "SecurityDecision",
     "PrincipalRef",
     "AuthorityContext",

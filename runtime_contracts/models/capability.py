@@ -20,6 +20,7 @@ difference behind a provider field.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, Mapping, Optional, Sequence
 
@@ -112,7 +113,7 @@ class CapabilityDescriptor:
 
     SCHEMA_ID: str = field(default="runtime-contracts/capability-descriptor",
                            init=False, repr=False)
-    SCHEMA_VERSION: str = field(default="0.1", init=False, repr=False)
+    SCHEMA_VERSION: str = field(default="0.3", init=False, repr=False)
 
     capability_id: str
     version: str
@@ -136,6 +137,25 @@ class CapabilityDescriptor:
     latency_estimate: Optional[Estimate] = None
     context_estimate: Optional[Estimate] = None
     locality: str = "remote"
+
+    # ── security surface (0.3.x, additive; all optional so a plain capability is unchanged in meaning) ──
+    content_digest: str = ""
+    """A stable digest pin of the capability's *implementation* artifact (image/module digest) — the
+    identity a plan binds to and admission (Slice 4) verifies. Distinct from this descriptor's own
+    content_hash: the descriptor describes the capability, content_digest pins what actually runs."""
+    required_authority: Sequence[str] = ()
+    """Permissions the caller's `AuthorityContext` must cover to invoke this — deny-by-default."""
+    network: Sequence[str] = ()
+    """Egress endpoints/hosts the capability needs (finer than SecurityProfile.may_egress). Empty = none."""
+    secrets: Sequence[str] = ()
+    """Named secret/credential refs required — issued just-in-time and scoped by the broker (Slice 3),
+    never raw values on the descriptor."""
+    isolation_class: str = ""
+    """Isolation the executor must provide: "" (unspecified) | "in_process" | "sandbox" | "strict"."""
+    provenance: str = ""
+    """Supply-chain admission state: "" (unknown) | "unverified" | "attested" | "admitted" (Slice 4)."""
+    trust: Optional[Decimal] = None
+    """Learned/assigned trust in [0,1] as a decimal (planner weight); None = unrated."""
 
     def __post_init__(self) -> None:
         if self.postconditions and not self.verification_method:
@@ -163,6 +183,17 @@ class CapabilityDescriptor:
                          SideEffect.SPENDS_MONEY, SideEffect.NOTIFIES_HUMAN}
                    for e in self.side_effects)
 
+    @property
+    def requires_isolation(self) -> bool:
+        """True when the executor must confine this capability (isolation_class sandbox/strict)."""
+        return self.isolation_class in {"sandbox", "strict"}
+
+    def authority_satisfied_by(self, granted: Sequence[str]) -> bool:
+        """Whether an authority's granted scope covers this capability's required_authority. ``"*"`` in the
+        grant is a wildcard. Deny-by-default: an unlisted required permission is not satisfied."""
+        g = set(granted)
+        return all(p in g or "*" in g for p in self.required_authority)
+
     def canonical_form(self) -> Dict[str, Any]:
         """Exact identity — everything declared."""
         return {
@@ -189,6 +220,14 @@ class CapabilityDescriptor:
                                  if self.latency_estimate else None),
             "context_estimate": (self.context_estimate.canonical_form()
                                  if self.context_estimate else None),
+            # security surface (0.3.x) — canonical, deny-by-default, sets sorted
+            "content_digest": self.content_digest,
+            "required_authority": sorted(self.required_authority),
+            "network": sorted(self.network),
+            "secrets": sorted(self.secrets),
+            "isolation_class": self.isolation_class,
+            "provenance": self.provenance,
+            "trust": (decimal_string(self.trust) if self.trust is not None else None),
         }
 
     def comparable_form(self) -> Dict[str, Any]:
