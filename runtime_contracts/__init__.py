@@ -86,6 +86,17 @@ from .protocol import (
 )
 from .models import *  # noqa: F401,F403,E402
 from .models import __all__ as _model_all  # noqa: E402
+from .store import (  # noqa: E402
+    EvidenceStore,
+    EvidenceEnvelope,
+    EVIDENCE_FAMILIES,
+    project as project_evidence,
+    FileEvidenceStore,
+    InMemoryEvidenceStore,
+    open_store,
+    register_backend,
+    available_backends,
+)
 
 __version__ = "0.3.0"
 __all__ = [
@@ -109,5 +120,9 @@ __all__ = [
     "validate_evidence", "check_injection", "check_self_granted_authority",
     "check_hidden_instructions", "check_source_spoofing", "check_poisoned_tool_metadata",
     "check_classification_escalation", "check_cross_source_contradiction",
+    # historical evidence plane — storage seam (open interface + reference floor + backend registry)
+    "EvidenceStore", "EvidenceEnvelope", "EVIDENCE_FAMILIES", "project_evidence",
+    "FileEvidenceStore", "InMemoryEvidenceStore",
+    "open_store", "register_backend", "available_backends",
     *_model_all,
 ]
