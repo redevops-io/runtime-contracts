@@ -64,6 +64,12 @@ from .trace import (
     TraceContext,
     span_of,
 )
+from .geospatial import (
+    GeoRef,
+    SpatialOp,
+    geometry_hash,
+    GEOMETRY_PRECISION,
+)
 from .adversarial import (
     validate_evidence,
     check_injection,
@@ -107,6 +113,11 @@ __all__ = [
     # mission-native trace identity (OTel semantic source of truth)
     "TraceContext",
     "span_of",
+    # canonical geospatial evidence primitive
+    "GeoRef",
+    "SpatialOp",
+    "geometry_hash",
+    "GEOMETRY_PRECISION",
     # adversarial evidence validators (epistemic layer)
     "validate_evidence",
     "check_injection",
