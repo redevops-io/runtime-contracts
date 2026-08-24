@@ -65,6 +65,14 @@ from .protocol import (
     AuthorityContext,
     DelegationRefused,
     verify_chain,
+    validate_evidence,
+    check_injection,
+    check_self_granted_authority,
+    check_hidden_instructions,
+    check_source_spoofing,
+    check_poisoned_tool_metadata,
+    check_classification_escalation,
+    check_cross_source_contradiction,
 )
 from .models import *  # noqa: F401,F403,E402
 from .models import __all__ as _model_all  # noqa: E402
@@ -85,5 +93,8 @@ __all__ = [
     "TelemetryKind", "SecurityEventType", "GovernanceDisposition", "RuntimeSecurityEvent", "SecurityTrajectory", "correlate", "ContainmentState", "Containment", "ContainmentRefused", "CausalCycle",
     "SecurityVerdict", "ContextIdentity", "SecurityDecision", "PrincipalRef", "AuthorityContext",
     "DelegationRefused", "verify_chain",
+    "validate_evidence", "check_injection", "check_self_granted_authority",
+    "check_hidden_instructions", "check_source_spoofing", "check_poisoned_tool_metadata",
+    "check_classification_escalation", "check_cross_source_contradiction",
     *_model_all,
 ]

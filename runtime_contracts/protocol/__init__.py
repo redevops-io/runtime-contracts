@@ -54,6 +54,16 @@ from .security import (
     DelegationRefused,
     verify_chain,
 )
+from .adversarial import (
+    validate_evidence,
+    check_injection,
+    check_self_granted_authority,
+    check_hidden_instructions,
+    check_source_spoofing,
+    check_poisoned_tool_metadata,
+    check_classification_escalation,
+    check_cross_source_contradiction,
+)
 
 __all__ = [
     # concurrency topology vocabulary
@@ -63,8 +73,13 @@ __all__ = [
     # security telemetry protocol
     "TelemetryKind",
     "SecurityEventType",
-    "Disposition",
+    "GovernanceDisposition",
     "RuntimeSecurityEvent",
+    "SecurityTrajectory",
+    "correlate",
+    "ContainmentState",
+    "Containment",
+    "ContainmentRefused",
     "CausalCycle",
     # canonical security contracts
     "SecurityVerdict",
@@ -74,6 +89,15 @@ __all__ = [
     "AuthorityContext",
     "DelegationRefused",
     "verify_chain",
+    # adversarial evidence validators (epistemic layer)
+    "validate_evidence",
+    "check_injection",
+    "check_self_granted_authority",
+    "check_hidden_instructions",
+    "check_source_spoofing",
+    "check_poisoned_tool_metadata",
+    "check_classification_escalation",
+    "check_cross_source_contradiction",
     "seal_hash",
     "content_hash",
     "canonical_form",
