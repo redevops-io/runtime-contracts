@@ -59,6 +59,10 @@ from .credentials import (
     redact,
     lease_decision,
 )
+from .trace import (
+    TraceContext,
+    span_of,
+)
 from .adversarial import (
     validate_evidence,
     check_injection,
@@ -98,6 +102,9 @@ __all__ = [
     "CredentialGrant",
     "redact",
     "lease_decision",
+    # mission-native trace identity (OTel semantic source of truth)
+    "TraceContext",
+    "span_of",
     # adversarial evidence validators (epistemic layer)
     "validate_evidence",
     "check_injection",
