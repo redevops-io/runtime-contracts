@@ -15,7 +15,7 @@ from runtime_contracts import (
     TelemetryKind,
     correlate,
 )
-from runtime_contracts.protocol.telemetry import causal_order
+from runtime_contracts.protocol.telemetry import causal_order_events as causal_order
 
 
 def _ev(eid, etype=SecurityEventType.CAPABILITY_INVOKED, **kw):

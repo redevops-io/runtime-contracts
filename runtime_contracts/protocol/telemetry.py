@@ -163,10 +163,14 @@ class RuntimeSecurityEvent:
         return content_hash(self.canonical_form())
 
 
-def causal_order(events: "list[RuntimeSecurityEvent]") -> "list[RuntimeSecurityEvent]":
-    """Deterministic stream order: topological by ``parent_event_id`` when present, breaking ties (and
-    ordering roots) by ``sequence`` then ``event_id``. Events whose parent is absent from the set are
-    treated as roots so a partial stream still orders."""
+def causal_order_events(events: "list[RuntimeSecurityEvent]") -> "list[RuntimeSecurityEvent]":
+    """Deterministic stream order for security-telemetry events: topological by ``parent_event_id`` when
+    present, breaking ties (and ordering roots) by ``sequence`` then ``event_id``. Events whose parent is
+    absent from the set are treated as roots so a partial stream still orders.
+
+    Named ``causal_order_events`` (not ``causal_order``) to stay distinct from the investigation-transition
+    ``causal_order`` in ``runtime_contracts.models`` — the two order different event types and both are
+    exported at the package root."""
     by_id = {e.event_id: e for e in events}
     indeg: dict[str, int] = {e.event_id: 0 for e in events}
     children: dict[str, list[str]] = {e.event_id: [] for e in events}
