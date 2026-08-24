@@ -48,6 +48,12 @@ from .protocol import (
     TopologyKind,
     JoinPolicy,
     ConcurrencyGroup,
+    SecurityVerdict,
+    SecurityDecision,
+    PrincipalRef,
+    AuthorityContext,
+    DelegationRefused,
+    verify_chain,
 )
 from .models import *  # noqa: F401,F403,E402
 from .models import __all__ as _model_all  # noqa: E402
@@ -65,5 +71,7 @@ __all__ = [
     "RelationKind", "MemberRole", "LineageMember", "Relation",
     "member", "relation", "derived_from", "supersedes",
     "TopologyKind", "JoinPolicy", "ConcurrencyGroup",
+    "SecurityVerdict", "SecurityDecision", "PrincipalRef", "AuthorityContext",
+    "DelegationRefused", "verify_chain",
     *_model_all,
 ]

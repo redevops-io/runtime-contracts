@@ -33,12 +33,27 @@ from .topology import (
     JoinPolicy,
     ConcurrencyGroup,
 )
+from .security import (
+    SecurityVerdict,
+    SecurityDecision,
+    PrincipalRef,
+    AuthorityContext,
+    DelegationRefused,
+    verify_chain,
+)
 
 __all__ = [
     # concurrency topology vocabulary
     "TopologyKind",
     "JoinPolicy",
     "ConcurrencyGroup",
+    # canonical security contracts
+    "SecurityVerdict",
+    "SecurityDecision",
+    "PrincipalRef",
+    "AuthorityContext",
+    "DelegationRefused",
+    "verify_chain",
     "seal_hash",
     "content_hash",
     "canonical_form",
