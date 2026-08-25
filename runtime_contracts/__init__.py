@@ -124,6 +124,23 @@ from .secrets_local import (  # noqa: E402
     available_secret_stores,
     available_brokers,
 )
+from .world import (  # noqa: E402
+    WorldEvent,
+    EntityRef,
+    EntityKind,
+    GroundTruth,
+    RealismClass,
+    IdentityGraph,
+    WorldDescriptor,
+    WorldRegistry,
+    default_registry,
+    BusinessBlock,
+    Capsule,
+    MilestoneKind,
+    NeedsYouReason,
+    TraceMilestone,
+    VisualTrace,
+)
 
 __version__ = "0.3.1"
 __all__ = [
@@ -160,5 +177,9 @@ __all__ = [
     "CredentialDenied", "SecretAccessError",
     "open_secret_store", "open_broker", "register_secret_store", "register_broker",
     "available_secret_stores", "available_brokers",
+    # dataset worlds — canonical entry contract (WorldEvent, identity graph, registry, visual trace)
+    "WorldEvent", "EntityRef", "EntityKind", "GroundTruth", "RealismClass",
+    "IdentityGraph", "WorldDescriptor", "WorldRegistry", "default_registry",
+    "BusinessBlock", "Capsule", "MilestoneKind", "NeedsYouReason", "TraceMilestone", "VisualTrace",
     *_model_all,
 ]
