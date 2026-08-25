@@ -125,7 +125,7 @@ from .secrets_local import (  # noqa: E402
     available_brokers,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __all__ = [
     # strict canonical identity
     "CANONICALIZATION_VERSION", "CONTRACT_VERSION", "CanonicalizationError",
