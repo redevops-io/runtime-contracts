@@ -92,10 +92,19 @@ from .execution import (
     ExecutionEnvelope,
     ExecutionReceipt,
 )
+from .verification_ladder import (
+    AssuranceTier,
+    VerificationRequirement,
+    VerifierDescriptor,
+    is_sufficient,
+    tier_rank,
+)
 
 __all__ = [
     "EXECUTION_CONTRACT_VERSION", "EnvelopeInvalid", "ExecutionConstraint",
     "ExecutionEnvelope", "ExecutionReceipt",
+    "AssuranceTier", "VerificationRequirement", "VerifierDescriptor",
+    "is_sufficient", "tier_rank",
     "Amendment", "Author", "CapabilityRefusal", "DecisionEvidence",
     "CorruptIntent", "Derivation", "IntentField", "IntentRelation",
     "IntentState", "intent_from_json",
