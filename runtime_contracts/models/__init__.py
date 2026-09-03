@@ -85,8 +85,17 @@ from .mission import (
 )
 from .verification import Check, Completion, Determinism, VerificationResult, Verdict
 from .visibility import AuthorizationOutcome, Tenancy, Visibility
+from .execution import (
+    CONTRACT_VERSION as EXECUTION_CONTRACT_VERSION,
+    EnvelopeInvalid,
+    ExecutionConstraint,
+    ExecutionEnvelope,
+    ExecutionReceipt,
+)
 
 __all__ = [
+    "EXECUTION_CONTRACT_VERSION", "EnvelopeInvalid", "ExecutionConstraint",
+    "ExecutionEnvelope", "ExecutionReceipt",
     "Amendment", "Author", "CapabilityRefusal", "DecisionEvidence",
     "CorruptIntent", "Derivation", "IntentField", "IntentRelation",
     "IntentState", "intent_from_json",
