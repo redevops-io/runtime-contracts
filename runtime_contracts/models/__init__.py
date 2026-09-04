@@ -99,12 +99,24 @@ from .verification_ladder import (
     is_sufficient,
     tier_rank,
 )
+from .kpi import (
+    CONTRACT_VERSION as KPI_CONTRACT_VERSION,
+    KPIDeclaration,
+    KPIDirection,
+    KPIKind,
+    KPIMeasurement,
+    KPIOutcome,
+    MissionKPISet,
+    judge,
+)
 
 __all__ = [
     "EXECUTION_CONTRACT_VERSION", "EnvelopeInvalid", "ExecutionConstraint",
     "ExecutionEnvelope", "ExecutionReceipt",
     "AssuranceTier", "VerificationRequirement", "VerifierDescriptor",
     "is_sufficient", "tier_rank",
+    "KPI_CONTRACT_VERSION", "KPIDeclaration", "KPIDirection", "KPIKind",
+    "KPIMeasurement", "KPIOutcome", "MissionKPISet", "judge",
     "Amendment", "Author", "CapabilityRefusal", "DecisionEvidence",
     "CorruptIntent", "Derivation", "IntentField", "IntentRelation",
     "IntentState", "intent_from_json",
