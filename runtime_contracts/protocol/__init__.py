@@ -102,6 +102,22 @@ from .compliance import (
     ControlStatus,
     RuntimeStream,
 )
+from .interaction import (
+    Channel,
+    ChannelAdapter,
+    ChannelRef,
+    ConversationRef,
+    DeliveryReceipt,
+    InteractionConfidence,
+    InteractionEvent,
+    MediaArtifact,
+    Modality,
+    SpeakerRef,
+    SpeechProvider,
+    SpeechSegment,
+    TranscriptArtifact,
+    VoiceSessionProvider,
+)
 
 __all__ = [
     # compliance evidence (base emits; Enterprise maps to frameworks)
@@ -109,6 +125,21 @@ __all__ = [
     "ControlEvidenceCollector",
     "ControlStatus",
     "RuntimeStream",
+    # multimodal customer interaction (base contracts; channel/speech SDKs live outside)
+    "InteractionEvent",
+    "ConversationRef",
+    "MediaArtifact",
+    "TranscriptArtifact",
+    "SpeechSegment",
+    "SpeakerRef",
+    "ChannelRef",
+    "DeliveryReceipt",
+    "InteractionConfidence",
+    "Channel",
+    "Modality",
+    "ChannelAdapter",
+    "VoiceSessionProvider",
+    "SpeechProvider",
     # concurrency topology vocabulary
     "TopologyKind",
     "JoinPolicy",
