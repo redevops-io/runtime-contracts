@@ -1,6 +1,6 @@
 [project]
 name = "runtime-contracts"
-version = "0.3.2"
+version = "0.3.3"
 description = "Canonical, application-neutral contracts for ReDevOps runtime interoperability"
 requires-python = ">=3.11"
 license = { text = "AGPL-3.0-or-later WITH Commons-Clause" }
