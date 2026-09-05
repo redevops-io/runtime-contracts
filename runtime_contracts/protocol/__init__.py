@@ -100,6 +100,7 @@ from .compliance import (
     ControlEvidence,
     ControlEvidenceCollector,
     ControlStatus,
+    RuntimeStream,
 )
 
 __all__ = [
@@ -107,6 +108,7 @@ __all__ = [
     "ControlEvidence",
     "ControlEvidenceCollector",
     "ControlStatus",
+    "RuntimeStream",
     # concurrency topology vocabulary
     "TopologyKind",
     "JoinPolicy",

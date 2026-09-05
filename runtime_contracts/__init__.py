@@ -36,6 +36,7 @@ from .protocol import (
     ControlEvidence,
     ControlEvidenceCollector,
     ControlStatus,
+    RuntimeStream,
     CREATED,
     UPDATED,
     DELETED,
@@ -155,7 +156,7 @@ __all__ = [
     "SEAL_CONTRACT_VERSION", "SEAL_NUMBER_PLACES",
     # evidence-native protocol primitives
     "EvidenceRef", "EvidenceChange", "CREATED", "UPDATED", "DELETED", "KNOWN_REF_TYPES",
-    "ControlEvidence", "ControlEvidenceCollector", "ControlStatus",
+    "ControlEvidence", "ControlEvidenceCollector", "ControlStatus", "RuntimeStream",
     "RelationKind", "MemberRole", "LineageMember", "Relation",
     "member", "relation", "derived_from", "supersedes",
     "TopologyKind", "JoinPolicy", "ConcurrencyGroup",
