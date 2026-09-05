@@ -43,6 +43,29 @@ class ControlStatus(str, Enum):
     UNVERIFIED = "unverified"                          # no sufficient evidence
 
 
+class RuntimeStream(str, Enum):
+    """Canonical names for the runtime streams a base producer projects into ``ControlEvidence``.
+
+    This is the shared seam between the AGPL base (which emits ``ControlEvidence`` tagged with one of
+    these on ``control_id``) and the Enterprise ``Control`` catalog (whose evidence requirements name
+    the same strings), so neither side has to hard-code the other's identifiers. These are the
+    runtime's *own* truth streams — not regulatory controls; the Enterprise engine maps a stream onto
+    whatever framework controls it bears on. The values match the runtime-truth streams called out in
+    this module's docstring plus capability inventory and model identity.
+    """
+
+    DURABLE_EVENT_LEDGER = "durable_event_ledger"          # append-only, hash-linked mission event log
+    HITL_APPROVAL = "hitl_approval"                        # human decisions on parked tasks
+    AUTHORITY_GRANT = "authority_grant"                    # governance authority grants/decisions
+    EXECUTION_ENVELOPE = "execution_envelope"              # containment envelopes/receipts (membrane)
+    VERIFICATION_RECEIPT = "verification_receipt"          # verification-ladder outcomes
+    CAPABILITY_MANIFEST = "capability_manifest"            # registered capability/operator inventory
+    EVIDENCE_LINEAGE = "evidence_lineage"                  # EvidenceRef provenance/lineage
+    MODEL_VERSION_LOCK = "model_version_lock"              # pinned model/provider identity
+    DATA_FLOW_CLASSIFICATION = "data_flow_classification"  # data-flow / PII classification
+    RISK_ASSESSMENT = "risk_assessment"                    # recorded risk assessments
+
+
 @dataclass(frozen=True)
 class ControlEvidence:
     """One piece of evidence, projected from the runtime, that bears on a control for a subject."""

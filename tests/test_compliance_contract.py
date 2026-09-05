@@ -1,5 +1,5 @@
 """ControlEvidence — the canonical, content-addressed compliance-evidence contract (AGPL base)."""
-from runtime_contracts import ControlEvidence, ControlEvidenceCollector, ControlStatus
+from runtime_contracts import ControlEvidence, ControlEvidenceCollector, ControlStatus, RuntimeStream
 
 
 def test_evidence_is_content_addressed():
@@ -21,6 +21,21 @@ def test_status_vocabulary_is_explicit():
     vals = {s.value for s in ControlStatus}
     assert vals == {"enforced", "evidenced", "external_evidence_required",
                     "not_applicable", "unverified"}
+
+
+def test_runtime_stream_vocabulary_is_the_shared_seam():
+    # the ten runtime-truth streams a base producer projects into ControlEvidence
+    vals = {s.value for s in RuntimeStream}
+    assert vals == {
+        "durable_event_ledger", "hitl_approval", "authority_grant", "execution_envelope",
+        "verification_receipt", "capability_manifest", "evidence_lineage",
+        "model_version_lock", "data_flow_classification", "risk_assessment",
+    }
+    # a producer tags evidence.control_id with the stream key; it's a plain str for the mapping side
+    e = ControlEvidence(control_id=RuntimeStream.DURABLE_EVENT_LEDGER.value, subject="sys",
+                        status=ControlStatus.ENFORCED)
+    assert e.control_id == "durable_event_ledger"
+    assert RuntimeStream.DURABLE_EVENT_LEDGER == "durable_event_ledger"  # StrEnum equality
 
 
 def test_canonical_form_serializes_status_and_sorts_refs():
