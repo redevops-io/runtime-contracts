@@ -96,8 +96,17 @@ from .adversarial import (
     check_classification_escalation,
     check_cross_source_contradiction,
 )
+from .compliance import (
+    ControlEvidence,
+    ControlEvidenceCollector,
+    ControlStatus,
+)
 
 __all__ = [
+    # compliance evidence (base emits; Enterprise maps to frameworks)
+    "ControlEvidence",
+    "ControlEvidenceCollector",
+    "ControlStatus",
     # concurrency topology vocabulary
     "TopologyKind",
     "JoinPolicy",
