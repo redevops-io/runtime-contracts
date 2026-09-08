@@ -1,5 +1,10 @@
 # Canonicalization
 
+> This defines the `rcv1` bytes. For how those bytes become the runtime's many
+> identities (evidence, intent, event, execution, context-view, seals, ledgers)
+> under one protocol — and which digests are cross-language vs domain-internal —
+> see [RUNTIME_DIGEST.md](RUNTIME_DIGEST.md).
+
 Every rule here exists to make one property reproducible rather than
 approximately true:
 
