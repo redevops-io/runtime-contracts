@@ -98,8 +98,9 @@ def gated_acquire(registry: IntelligenceRegistry, request: EvidenceRequest, *,
             trace.append(f"{p.provider_id}: skip ({gate.reason})")
             if gate.failure in (AcquisitionFailure.NOT_ENTITLED,) or gate.fallback == PlannerFallback.TRY_ALTERNATE_PROVIDER:
                 continue  # try the next provider
-            # budget/PII/value gates stop the ladder — do not silently substitute a weaker provider.
-            rec = _record(request, p.provider_id, requested=False, received=False, cost=spent)
+            # budget/PII/value gates stop the ladder — do not silently substitute a weaker provider. These are
+            # decision-level skips (nothing acquired), so the ledger row is not attributed to a provider.
+            rec = _record(request, "", requested=False, received=False, cost=spent)
             return AcquisitionResult.failed(gate.failure or AcquisitionFailure.BUDGET_EXCEEDED, gate.reason,
                                             spent), rec, trace
         res = p.acquire(request)
