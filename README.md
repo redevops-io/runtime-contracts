@@ -79,6 +79,22 @@ events (an optional `parents` field on `InvestigationTransitionEvent` plus
 `causal_order()`). Both are additive: an event with no `parents` serialises and
 hashes exactly as before, so existing golden fixtures are unchanged.
 
+**External / Professional Intelligence provider layer (`protocol/intelligence.py`,
+`protocol/intelligence_registry.py`)** — the domain-neutral contract behind the
+apps' intelligence moat: a `Capability` a DecisionCase asks for (never a provider
+name), `EvidenceRequest` / `EvidenceArtifact` carrying provenance / cost /
+freshness / license, the `IntelligenceProvider` protocols and registry, the
+evidence-value gate (`decide_acquire` / `gated_acquire`), and the legal
+authority-level ladder (`LegalAuthorityLevel` · `may_auto_execute`). Adapters and
+the gate wiring live in `agentic-os`, never here.
+
+**Email delivery execution + receipt (`protocol/email_delivery.py`)** — email
+delivery is an *execution*, not evidence, so it has its own contract:
+`EmailSendRequest` (idempotent by key), the normalized `EmailDeliveryStatus`
+lifecycle, and `EmailDeliveryReceipt` whose terminal bounce/complaint/unsubscribe
+states drive suppression as a governed side effect. Both intelligence and email
+delivery are additive and leave existing fixtures unchanged.
+
 ---
 
 ## Adoption
