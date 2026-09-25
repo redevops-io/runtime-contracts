@@ -237,6 +237,14 @@ __all__ = [
     "GateDecision",
     "decide_acquire",
     "gated_acquire",
+    # email delivery execution + receipt (moat plan §3.11, §6 P1)
+    "EMAIL_DELIVERY_CONTRACT_VERSION",
+    "EmailDeliveryStatus",
+    "EmailSubmitFailure",
+    "EmailMessageRef",
+    "EmailSendRequest",
+    "EmailDeliveryReceipt",
+    "EmailDeliveryProvider",
 ]
 
 from .intelligence import (  # noqa: E402
@@ -266,4 +274,13 @@ from .intelligence_registry import (  # noqa: E402
     GateDecision,
     decide_acquire,
     gated_acquire,
+)
+from .email_delivery import (  # noqa: E402
+    EMAIL_DELIVERY_CONTRACT_VERSION,
+    EmailDeliveryStatus,
+    EmailSubmitFailure,
+    EmailMessageRef,
+    EmailSendRequest,
+    EmailDeliveryReceipt,
+    EmailDeliveryProvider,
 )
