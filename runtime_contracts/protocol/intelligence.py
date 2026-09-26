@@ -48,6 +48,10 @@ class Capability(str, Enum):
     VULNERABILITY_EXPLOITABILITY = "vulnerability_exploitability"
     # marketing infra
     EMAIL_DELIVERY = "email_delivery"
+    # supply / operations (Agentic Apps intelligence families — Supplier/Supply/Order)
+    SUPPLIER_RESOLUTION = "supplier_resolution"
+    DELIVERY_RELIABILITY = "delivery_reliability"
+    CONFIRMATION_RELIABILITY = "confirmation_reliability"
     # legal (Professional Intelligence — §19)
     LEGAL_RESEARCH = "legal_research"
     LEGAL_AUTHORITY_LOOKUP = "legal_authority_lookup"
@@ -76,6 +80,7 @@ def is_legal(cap: Capability) -> bool:
 class ProviderFamily(str, Enum):
     EXTERNAL_DATA = "external_data"                    # enrichment / telemetry / network evidence
     PROFESSIONAL_INTELLIGENCE = "professional_intelligence"  # specialist research / interpretation / workflow
+    INTERNAL_COMPUTED = "internal_computed"           # evidence computed from the tenant's OWN canonical data (cost 0)
 
 
 class Sensitivity(str, Enum):
