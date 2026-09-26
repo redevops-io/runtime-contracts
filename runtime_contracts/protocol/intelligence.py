@@ -301,10 +301,229 @@ class EvidenceValueRecord:
         }
 
 
+# ── decision-scoped intelligence (the business layer above a single capability lookup) ────────────────────
+# A DecisionNeed is the ask a *business decision* makes; the broker may resolve it with one or more
+# EvidenceRequests and aggregates the resulting artifacts into one IntelligenceResult. This is the
+# `DecisionNeed → Broker → provider calls → IntelligenceResult` spine — one level above EvidenceRequest,
+# which stays the single-capability primitive.
+@dataclass(frozen=True)
+class DecisionNeed:
+    """A typed, decision-scoped intelligence ask. Carries the business objective, the bi-temporal decision
+    anchor (`as_of`/`known_at`, so a result is replayable against what was knowable then), and the policy
+    envelope (cost/confidence/freshness ceilings, permitted providers, fields that must not be disclosed)."""
+    decision_case_id: str
+    capability: Capability
+    question: str = ""
+    objective: str = ""              # the decision this evidence informs
+    subject_refs: tuple[str, ...] = ()
+    fields: tuple[str, ...] = ()
+    tenant: str = ""
+    as_of: str = ""                  # decision valid-time anchor
+    known_at: str = ""               # what was knowable at decision time (bi-temporal replay)
+    horizon: str = ""                # decision horizon, e.g. "P30D"
+    max_cost: float = 0.0            # money ceiling across the whole need; 0 ⇒ free-only
+    min_confidence: float = 0.0      # a result below this is not decision-grade
+    freshness_limit_s: float = 0.0   # freshness ceiling in seconds; 0 ⇒ any age
+    permitted_providers: tuple[str, ...] = ()   # empty ⇒ any entitled provider
+    prohibited_fields: tuple[str, ...] = ()     # fields that must NOT be disclosed to a provider
+    purpose: str = ""
+    jurisdiction: str = ""
+    sensitivity: Sensitivity = Sensitivity.PUBLIC
+    deadline: Optional[str] = None
+
+    def canonical_form(self) -> dict[str, Any]:
+        return {
+            "decision_case_id": self.decision_case_id, "capability": self.capability.value,
+            "question": self.question, "objective": self.objective, "subject_refs": list(self.subject_refs),
+            "fields": list(self.fields), "tenant": self.tenant, "as_of": self.as_of, "known_at": self.known_at,
+            "horizon": self.horizon, "max_cost": self.max_cost, "min_confidence": self.min_confidence,
+            "freshness_limit_s": self.freshness_limit_s, "permitted_providers": list(self.permitted_providers),
+            "prohibited_fields": list(self.prohibited_fields), "purpose": self.purpose,
+            "jurisdiction": self.jurisdiction, "sensitivity": self.sensitivity.value, "deadline": self.deadline,
+        }
+
+    def identity(self) -> str:
+        """Stable fingerprint of the ask — the replay key an IntelligenceResult points back to."""
+        return content_hash(self.canonical_form())
+
+    def to_evidence_request(self) -> EvidenceRequest:
+        """Lower the need to a single-capability broker request. Provider gating, min-confidence and
+        field-disclosure policy stay on the need (the broker reads them via the predicates below)."""
+        disclosed = tuple(f for f in self.fields if self.discloses_field(f))
+        return EvidenceRequest(
+            decision_case_id=self.decision_case_id, capability=self.capability, subject_refs=self.subject_refs,
+            fields=disclosed, purpose=self.purpose or self.objective, tenant=self.tenant,
+            max_cost=self.max_cost, max_age_s=self.freshness_limit_s, jurisdiction=self.jurisdiction,
+            sensitivity=self.sensitivity, deadline=self.deadline,
+        )
+
+    def permits_provider(self, provider_id: str) -> bool:
+        return not self.permitted_providers or provider_id in self.permitted_providers
+
+    def discloses_field(self, field_name: str) -> bool:
+        return field_name not in self.prohibited_fields
+
+    def meets_confidence(self, confidence: float) -> bool:
+        return confidence >= self.min_confidence
+
+
+@dataclass(frozen=True)
+class ProviderReceipt:
+    """One receipt per external provider call — cost ledgered separately from any model/subscription bill
+    (§4.6: never hide provider cost). Ties a spend to the exact evidence it produced (or the failure)."""
+    provider: str
+    capability: Capability
+    cost: float = 0.0
+    currency: str = "USD"
+    ok: bool = True
+    failure: Optional[AcquisitionFailure] = None
+    artifact_id: str = ""            # EvidenceArtifact.identity() when ok
+    retrieved_at: str = ""
+    latency_ms: float = 0.0
+    license_scope: str = ""
+    detail: str = ""
+
+    def canonical_form(self) -> dict[str, Any]:
+        return {
+            "provider": self.provider, "capability": self.capability.value, "cost": self.cost,
+            "currency": self.currency, "ok": self.ok,
+            "failure": self.failure.value if self.failure else None, "artifact_id": self.artifact_id,
+            "retrieved_at": self.retrieved_at, "latency_ms": self.latency_ms,
+            "license_scope": self.license_scope, "detail": self.detail,
+        }
+
+    def identity(self) -> str:
+        return content_hash(self.canonical_form())
+
+    @staticmethod
+    def for_artifact(artifact: "EvidenceArtifact", *, latency_ms: float = 0.0) -> "ProviderReceipt":
+        return ProviderReceipt(
+            provider=artifact.provider, capability=artifact.capability, cost=artifact.cost,
+            ok=True, artifact_id=artifact.identity(), retrieved_at=artifact.retrieved_at,
+            latency_ms=latency_ms, license_scope=artifact.license_scope,
+        )
+
+    @staticmethod
+    def for_failure(provider: str, capability: Capability, failure: AcquisitionFailure, *,
+                    cost: float = 0.0, detail: str = "", latency_ms: float = 0.0) -> "ProviderReceipt":
+        return ProviderReceipt(provider=provider, capability=capability, cost=cost, ok=False,
+                               failure=failure, detail=detail, latency_ms=latency_ms)
+
+
+@dataclass(frozen=True)
+class IntelligenceResult:
+    """The aggregated answer to a DecisionNeed. Every answer carries confidence, evidence lineage, the
+    per-call provider receipts, the total spend, assumptions/gaps, an expiry, and a stable fingerprint —
+    so a decision can be replayed and audited (§3)."""
+    decision_need_id: str            # DecisionNeed.identity() — the replay key
+    capability: Capability
+    answer: str = ""
+    metrics: dict[str, Any] = field(default_factory=dict)   # structured metrics
+    confidence: float = 0.0
+    evidence_event_ids: tuple[str, ...] = ()   # EvidenceArtifact identities backing the answer
+    provider_receipts: tuple[ProviderReceipt, ...] = ()
+    assumptions: tuple[str, ...] = ()
+    unresolved_gaps: tuple[str, ...] = ()
+    total_cost: float = 0.0
+    tenant: str = ""
+    as_of: str = ""
+    known_at: str = ""
+    produced_at: str = ""
+    expires_at: str = ""
+
+    def canonical_form(self) -> dict[str, Any]:
+        return {
+            "decision_need_id": self.decision_need_id, "capability": self.capability.value,
+            "answer": self.answer, "metrics": self.metrics, "confidence": self.confidence,
+            "evidence_event_ids": list(self.evidence_event_ids),
+            "provider_receipts": [r.canonical_form() for r in self.provider_receipts],
+            "assumptions": list(self.assumptions), "unresolved_gaps": list(self.unresolved_gaps),
+            "total_cost": self.total_cost, "tenant": self.tenant, "as_of": self.as_of,
+            "known_at": self.known_at, "produced_at": self.produced_at, "expires_at": self.expires_at,
+        }
+
+    def fingerprint(self) -> str:
+        """Stable replay fingerprint of the whole result (§3)."""
+        return content_hash(self.canonical_form())
+
+    identity = fingerprint
+
+    def is_expired(self, now_iso: str) -> bool:
+        return bool(self.expires_at) and now_iso >= self.expires_at
+
+    def is_decision_grade(self, need: "DecisionNeed") -> bool:
+        """The answer clears the need's confidence bar and left no unresolved gaps."""
+        return need.meets_confidence(self.confidence) and not self.unresolved_gaps
+
+    @staticmethod
+    def from_artifacts(need: "DecisionNeed", artifacts: tuple["EvidenceArtifact", ...],
+                       receipts: tuple["ProviderReceipt", ...], *, answer: str, confidence: float,
+                       metrics: Optional[dict[str, Any]] = None, assumptions: tuple[str, ...] = (),
+                       unresolved_gaps: tuple[str, ...] = (), produced_at: str = "",
+                       expires_at: str = "") -> "IntelligenceResult":
+        """Aggregate the artifacts + receipts of resolving a need into one result. Lineage and total spend
+        are derived from the inputs so they can never silently disagree with the receipts."""
+        return IntelligenceResult(
+            decision_need_id=need.identity(), capability=need.capability, answer=answer,
+            metrics=dict(metrics or {}), confidence=confidence,
+            evidence_event_ids=tuple(a.identity() for a in artifacts), provider_receipts=tuple(receipts),
+            assumptions=tuple(assumptions), unresolved_gaps=tuple(unresolved_gaps),
+            total_cost=round(sum(r.cost for r in receipts), 6), tenant=need.tenant,
+            as_of=need.as_of, known_at=need.known_at, produced_at=produced_at, expires_at=expires_at,
+        )
+
+
+# ── provider health (optional, non-breaking seam) ─────────────────────────────────────────────────────────
+class HealthStatus(str, Enum):
+    OK = "ok"
+    DEGRADED = "degraded"
+    UNAVAILABLE = "unavailable"
+    UNKNOWN = "unknown"            # provider does not report health
+
+
+@dataclass(frozen=True)
+class ProviderHealth:
+    provider: str
+    status: HealthStatus = HealthStatus.UNKNOWN
+    detail: str = ""
+    checked_at: str = ""
+    latency_ms: float = 0.0
+
+    @property
+    def usable(self) -> bool:
+        # UNKNOWN is treated as usable — a provider that simply doesn't report health is not "down".
+        return self.status in (HealthStatus.OK, HealthStatus.DEGRADED, HealthStatus.UNKNOWN)
+
+    def canonical_form(self) -> dict[str, Any]:
+        return {"provider": self.provider, "status": self.status.value, "detail": self.detail,
+                "checked_at": self.checked_at, "latency_ms": self.latency_ms}
+
+
+@runtime_checkable
+class SupportsHealth(Protocol):
+    """Optional capability an IntelligenceProvider MAY implement so the broker can route around outages.
+    Kept separate from IntelligenceProvider so existing adapters remain conformant without a health()."""
+    provider_id: str
+    def health(self) -> ProviderHealth: ...
+
+
+def provider_health(provider: Any) -> ProviderHealth:
+    """Health of a provider, degrading gracefully: UNKNOWN (still usable) when it implements no health()."""
+    pid = getattr(provider, "provider_id", "?")
+    if isinstance(provider, SupportsHealth):
+        try:
+            return provider.health()
+        except Exception as exc:  # a health probe must never take down the broker
+            return ProviderHealth(pid, HealthStatus.UNAVAILABLE, detail=f"health() raised: {exc!r}")
+    return ProviderHealth(pid, HealthStatus.UNKNOWN, detail="no health() implemented")
+
+
 __all__ = [
     "INTELLIGENCE_CONTRACT_VERSION", "Capability", "PII_CAPABILITIES", "is_legal", "ProviderFamily",
     "Sensitivity", "AcquisitionFailure", "PlannerFallback", "LegalAuthorityLevel", "may_auto_execute",
     "requires_professional_review", "EvidenceRequest", "CostEstimate", "EvidenceArtifact",
     "LegalEvidenceArtifact", "AcquisitionResult", "IntelligenceProvider", "ExternalDataProvider",
     "ProfessionalIntelligenceProvider", "EvidenceValueRecord",
+    "DecisionNeed", "ProviderReceipt", "IntelligenceResult",
+    "HealthStatus", "ProviderHealth", "SupportsHealth", "provider_health",
 ]
