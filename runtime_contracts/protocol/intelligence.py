@@ -52,6 +52,9 @@ class Capability(str, Enum):
     SUPPLIER_RESOLUTION = "supplier_resolution"
     DELIVERY_RELIABILITY = "delivery_reliability"
     CONFIRMATION_RELIABILITY = "confirmation_reliability"
+    ORDER_LINEAGE = "order_lineage"
+    ORDER_BLOCKERS = "order_blockers"
+    PROMISE_FEASIBILITY = "promise_feasibility"
     # legal (Professional Intelligence — §19)
     LEGAL_RESEARCH = "legal_research"
     LEGAL_AUTHORITY_LOOKUP = "legal_authority_lookup"
