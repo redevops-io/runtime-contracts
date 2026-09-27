@@ -66,6 +66,10 @@ class Capability(str, Enum):
     CYCLE_BENCHMARK = "cycle_benchmark"
     PROCESS_ANOMALY = "process_anomaly"
     NEXT_EVENT = "next_event"
+    # counterparty (Table 5) — identity/screening/ownership already covered by COMPANY_IDENTITY / SANCTIONS_RISK
+    PAYMENT_BEHAVIOR = "payment_behavior"
+    RELATIONSHIP_GRAPH = "relationship_graph"
+    FINANCIAL_RISK = "financial_risk"
     # legal (Professional Intelligence — §19)
     LEGAL_RESEARCH = "legal_research"
     LEGAL_AUTHORITY_LOOKUP = "legal_authority_lookup"
