@@ -55,6 +55,12 @@ class Capability(str, Enum):
     ORDER_LINEAGE = "order_lineage"
     ORDER_BLOCKERS = "order_blockers"
     PROMISE_FEASIBILITY = "promise_feasibility"
+    SHORTAGE_RISK = "shortage_risk"
+    REQUIRED_BY_FEASIBILITY = "required_by_feasibility"
+    BOM_IMPACT = "bom_impact"
+    SUBSTITUTE_AVAILABILITY = "substitute_availability"
+    STOCKOUT_CONSEQUENCE = "stockout_consequence"
+    SAFETY_STOCK = "safety_stock"
     # legal (Professional Intelligence — §19)
     LEGAL_RESEARCH = "legal_research"
     LEGAL_AUTHORITY_LOOKUP = "legal_authority_lookup"
