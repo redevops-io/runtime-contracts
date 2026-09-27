@@ -70,6 +70,13 @@ class Capability(str, Enum):
     PAYMENT_BEHAVIOR = "payment_behavior"
     RELATIONSHIP_GRAPH = "relationship_graph"
     FINANCIAL_RISK = "financial_risk"
+    # asset (Table 6)
+    ASSET_IDENTITY = "asset_identity"
+    SERVICE_HISTORY = "service_history"
+    FAILURE_RISK = "failure_risk"
+    REPLACEMENT_COMPATIBILITY = "replacement_compatibility"
+    MAINTENANCE_RISK = "maintenance_risk"
+    PARTS_RISK = "parts_risk"
     # legal (Professional Intelligence — §19)
     LEGAL_RESEARCH = "legal_research"
     LEGAL_AUTHORITY_LOOKUP = "legal_authority_lookup"
