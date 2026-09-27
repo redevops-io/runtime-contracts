@@ -57,6 +57,7 @@ from .investigation import (
     InvestigationTransitionEvent,
     OwnershipChange,
     replay_states,
+    causal_order,
 )
 from .ledger import (
     ReplayResult,
@@ -98,7 +99,7 @@ __all__ = [
     "INVESTIGATION_PROGRAM", "NO_APPROVAL", "ApprovalGate", "ApproverType",
     "Disposition", "Supports", "TerminalOutcome",
     "InvestigationTransitionEvent", "MissionProgram", "OwnershipChange",
-    "State", "Transition", "TransitionRefused", "replay_states",
+    "State", "Transition", "TransitionRefused", "replay_states", "causal_order",
     "ReplayResult", "SubmissionOutcome", "SubmissionResult", "submit",
     "replay_ledger", "permitted_then", "current_program_would_permit",
     "finding_requirement", "check_finding_routing",

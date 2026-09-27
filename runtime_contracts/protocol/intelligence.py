@@ -61,6 +61,11 @@ class Capability(str, Enum):
     SUBSTITUTE_AVAILABILITY = "substitute_availability"
     STOCKOUT_CONSEQUENCE = "stockout_consequence"
     SAFETY_STOCK = "safety_stock"
+    WHY_STUCK = "why_stuck"
+    BOTTLENECKS = "bottlenecks"
+    CYCLE_BENCHMARK = "cycle_benchmark"
+    PROCESS_ANOMALY = "process_anomaly"
+    NEXT_EVENT = "next_event"
     # legal (Professional Intelligence — §19)
     LEGAL_RESEARCH = "legal_research"
     LEGAL_AUTHORITY_LOOKUP = "legal_authority_lookup"
