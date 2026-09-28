@@ -85,7 +85,18 @@ class Capability(str, Enum):
     LEGAL_CLAUSE_REVIEW = "legal_clause_review"
     LEGAL_PRECEDENT_LOOKUP = "legal_precedent_lookup"
     LEGAL_JUDGMENT_REQUIRED = "legal_judgment_required"
+    # revenue & execution (Revenue & Execution Intelligence plan §8/§9 — "Revenue Intelligence")
+    QUOTE_FEASIBILITY = "quote_feasibility"
+    DELIVERY_FEASIBILITY = "delivery_feasibility"
+    REVENUE_LEAKAGE = "revenue_leakage"
+    RECEIVABLES_RISK = "receivables_risk"
+    COMMERCIAL_INTENT = "commercial_intent"
 
+
+_REVENUE_CAPABILITIES = frozenset({
+    Capability.QUOTE_FEASIBILITY, Capability.DELIVERY_FEASIBILITY, Capability.REVENUE_LEAKAGE,
+    Capability.RECEIVABLES_RISK, Capability.COMMERCIAL_INTENT,
+})
 
 _LEGAL_CAPABILITIES = frozenset({
     Capability.LEGAL_RESEARCH, Capability.LEGAL_AUTHORITY_LOOKUP, Capability.LEGAL_DOCUMENT_DRAFT,
