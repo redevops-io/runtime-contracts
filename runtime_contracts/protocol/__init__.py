@@ -55,6 +55,13 @@ from .security import (
     DelegationRefused,
     verify_chain,
 )
+from .agent_identity import (
+    AGENT_IDENTITY_CONTRACT_VERSION,
+    RiskSeverity,
+    IdentityRiskSignal,
+    ExecutionIdentity,
+    AgentIdentityProvider,
+)
 from .credentials import (
     CredentialGrant,
     redact,
@@ -164,6 +171,12 @@ __all__ = [
     "AuthorityContext",
     "DelegationRefused",
     "verify_chain",
+    # agent identity seam (external-IAM boundary, as a view over PrincipalRef + AuthorityContext)
+    "AGENT_IDENTITY_CONTRACT_VERSION",
+    "RiskSeverity",
+    "IdentityRiskSignal",
+    "ExecutionIdentity",
+    "AgentIdentityProvider",
     # just-in-time credentials + redaction
     "CredentialGrant",
     "redact",
