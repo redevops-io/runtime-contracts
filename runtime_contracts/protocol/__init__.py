@@ -62,6 +62,18 @@ from .agent_identity import (
     ExecutionIdentity,
     AgentIdentityProvider,
 )
+from .edge_execution import (
+    EDGE_EXECUTION_CONTRACT_VERSION,
+    ExecutionLocality,
+    Availability,
+    LocalityPolicy,
+    LocalCapabilityDescriptor,
+    LocalityDecision,
+    select_execution_target,
+    SELECTED,
+    REQUIRES_APPROVAL,
+    DEFERRED,
+)
 from .credentials import (
     CredentialGrant,
     redact,
@@ -177,6 +189,17 @@ __all__ = [
     "IdentityRiskSignal",
     "ExecutionIdentity",
     "AgentIdentityProvider",
+    # execution-locality contract (server / browser-local / device-local)
+    "EDGE_EXECUTION_CONTRACT_VERSION",
+    "ExecutionLocality",
+    "Availability",
+    "LocalityPolicy",
+    "LocalCapabilityDescriptor",
+    "LocalityDecision",
+    "select_execution_target",
+    "SELECTED",
+    "REQUIRES_APPROVAL",
+    "DEFERRED",
     # just-in-time credentials + redaction
     "CredentialGrant",
     "redact",

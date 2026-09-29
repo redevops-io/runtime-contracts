@@ -1,0 +1,117 @@
+# Edge / browser-native execution — Phase 0 capability audit
+#
+# Plan: ~/Documents/REDEVOPS_EDGE_BROWSER_NATIVE_EXECUTION_IMPLEMENTATION_PLAN.md
+# Principle: edge is an execution/resource class INSIDE ReDevOps, not a separate architecture. This audit maps each
+# plan capability onto EXISTING contracts so no duplicate edge stack is built. Status ∈ implemented | partial |
+# planned | absent. Repos: rc = runtime-contracts, aos = agentic-os.
+#
+# Axes (kept distinct on purpose — conflating them was the "duplicate architecture" risk):
+#   locality    — WHERE a step runs        → ExecutionLocality (this PR)
+#   isolation   — privilege/containment    → device_posture.ExecutionClass (aos, existing)
+#   enforcement — isolation STRENGTH       → EnforcementProfile + BackendCapabilities (rc #24)
+
+capabilities:
+  - name: execution-locality contract (SERVER / BROWSER_LOCAL / DEVICE_LOCAL)
+    plan_phase: 1
+    status: implemented
+    source: rc/runtime_contracts/protocol/edge_execution.py
+    tests: rc/tests/test_edge_execution.py
+    notes: ExecutionLocality + Availability + LocalityPolicy + LocalCapabilityDescriptor.
+
+  - name: locality selection (prefer-local, fail-closed, no silent remote for sensitive data)
+    plan_phase: 1,5,7
+    status: implemented
+    source: rc/runtime_contracts/protocol/edge_execution.py::select_execution_target
+    tests: rc/tests/test_edge_execution.py
+    notes: deterministic; DEFER/REQUIRES_APPROVAL outcomes; prohibit_raw_remote privacy gate; require_offline.
+
+  - name: execution-target policy + availability + fallback + privacy descriptors
+    plan_phase: 1
+    status: implemented
+    source: rc/runtime_contracts/protocol/edge_execution.py
+    notes: LocalityPolicy (LOCAL_ONLY/LOCAL_PREFERRED/REMOTE_ALLOWED/REMOTE_REQUIRES_APPROVAL/DEFER_IF_LOCAL_UNAVAILABLE).
+
+  - name: pluggable ExecutionBackend + capability negotiation (requirements ⊆ capabilities)
+    plan_phase: 1,6
+    status: implemented
+    source: rc/runtime_contracts/models/execution_backend.py
+    tests: rc/tests/test_agent_security.py
+    notes: EnforcementProfile/BackendCapabilities/admit_backend; a locality selection still admits through this.
+
+  - name: backend #1 — rootless membrane as ExecutionBackend
+    plan_phase: 2,6
+    status: implemented
+    source: aos/agentic_os/mission/execution_backend.py::MembraneExecutionBackend
+    tests: aos/tests/test_execution_backend.py
+    notes: honest caps (fs/resource/process/identity_binding; NOT network egress) → satisfies STANDARD only.
+
+  - name: execution identity + delegated authority (human_subject / agent_actor / agent_owner)
+    plan_phase: 2,8,12
+    status: implemented
+    source: rc/runtime_contracts/protocol/agent_identity.py
+    tests: rc/tests/test_agent_security.py
+    notes: ExecutionIdentity view + AgentIdentityProvider seam; identity follows into receipts via envelope.authority.
+
+  - name: ActionReceipt / evidence + envelope-bound execution
+    plan_phase: 2
+    status: implemented
+    source: rc/runtime_contracts/models/execution.py
+    tests: rc/tests/test_execution.py
+    notes: ExecutionEnvelope→ExecutionReceipt (hash-bound), ExecutionConstraint (fs/network/resource).
+
+  - name: device posture / isolation class (grant execution class per device)
+    plan_phase: 6,12
+    status: implemented
+    source: aos/agentic_os/mission/device_posture.py
+    notes: ExecutionClass (local_container<host_process<raw_credential_access/public_ingress) + admit(); ISOLATION axis.
+
+  - name: offline capability flag + offline-required selection
+    plan_phase: 8,11
+    status: partial
+    source: rc/runtime_contracts/protocol/edge_execution.py (offline_capable, require_offline)
+    notes: descriptor + selection support it; ONLINE/DEGRADED/OFFLINE/SYNC_PENDING state machine + queue = planned.
+
+  - name: PAIR / device-local ExecutionBackend adapter (Jetson / local node)
+    plan_phase: 6
+    status: planned
+    notes: contract ready (ExecutionBackend + DEVICE_LOCAL locality); concrete adapter not yet written.
+
+  - name: planner locality optimization with MEASURED latency/cost/privacy/bandwidth
+    plan_phase: 7
+    status: partial
+    source: rc/runtime_contracts/protocol/edge_execution.py (policy-based selection today)
+    notes: selection is policy+availability+privacy based; measured-score routing + benchmark matrix = planned.
+
+  - name: edge sentinel consumes execution anomalies as observations (no authorization authority)
+    plan_phase: 12
+    status: partial
+    notes: edge-sentinel + IdentityRiskSignal (risk-as-evidence) seams exist; wiring execution anomalies = planned.
+
+  - name: EXPLAIN of where/why a step ran + what left the device
+    plan_phase: 9,13
+    status: partial
+    source: rc/runtime_contracts/protocol/edge_execution.py::LocalityDecision (canonical_form: considered + reason)
+    notes: machine-readable decision exists; operator/device UX surface = absent.
+
+  - name: browser edge agent (PWA — capability discovery, request validation, offline queue, sync)
+    plan_phase: 2
+    status: absent
+    notes: frontend/runtime-dependent; contracts above are what it will implement against.
+
+  - name: Chrome local inference adapter (LocalInferenceProvider over built-in Prompt/Summarizer APIs)
+    plan_phase: 3
+    status: absent
+    notes: runtime-dependent; Chrome is an optional edge provider, never a platform dependency.
+
+  - name: encrypted / ephemeral browser-local state (Web Crypto; EPHEMERAL/SESSION_KEY/PASSPHRASE/PERSISTENT_ENCRYPTED)
+    plan_phase: 4
+    status: absent
+    notes: server-side enterprise persistence encryption (TenantKeyring) exists but is not the browser Web-Crypto store.
+
+  - name: local capture + privacy-preserving preprocessing reference mission
+    plan_phase: 5,10
+    status: absent
+    notes: the first locality benchmark; depends on the browser agent + a local inference adapter.
+
+# Phase-0 acceptance: browser execution maps onto existing contracts (locality is a new AXIS composed with the
+# existing isolation + enforcement axes); no duplicate edge architecture introduced.
