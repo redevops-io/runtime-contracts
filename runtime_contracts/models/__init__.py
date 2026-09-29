@@ -92,6 +92,16 @@ from .execution import (
     ExecutionEnvelope,
     ExecutionReceipt,
 )
+from .execution_backend import (
+    EXECUTION_BACKEND_CONTRACT_VERSION,
+    EnforcementProfile,
+    BackendCapabilities,
+    profile_requirements,
+    EnforcementDowngrade,
+    ExecutionAdmission,
+    ExecutionBackend,
+    admit_backend,
+)
 from .verification_ladder import (
     AssuranceTier,
     VerificationRequirement,
@@ -113,6 +123,8 @@ from .kpi import (
 __all__ = [
     "EXECUTION_CONTRACT_VERSION", "EnvelopeInvalid", "ExecutionConstraint",
     "ExecutionEnvelope", "ExecutionReceipt",
+    "EXECUTION_BACKEND_CONTRACT_VERSION", "EnforcementProfile", "BackendCapabilities",
+    "profile_requirements", "EnforcementDowngrade", "ExecutionAdmission", "ExecutionBackend", "admit_backend",
     "AssuranceTier", "VerificationRequirement", "VerifierDescriptor",
     "is_sufficient", "tier_rank",
     "KPI_CONTRACT_VERSION", "KPIDeclaration", "KPIDirection", "KPIKind",
