@@ -1,5 +1,6 @@
 from .app_manifest import (
     APP_MANIFEST_CONTRACT_VERSION,
+    BUILD_MANIFEST_CONTRACT_VERSION,
     AppManifest,
     CapabilityClaim,
     CoreRequirement,
@@ -7,6 +8,7 @@ from .app_manifest import (
     IntegrationLevel,
     OutcomeKind,
     ProducerClaim,
+    RuntimeBuildManifest,
     VerifierClaim,
 )
 from .context import (
@@ -162,7 +164,8 @@ __all__ = [
     "DereferenceEvent", "EventKind", "Freshness", "Intent", "Necessity",
     "PlanFeasibility", "PlannedItem", "RuntimeEvent", "Tenancy", "Visibility",
     "missing_sequences", "replay",
-    "APP_MANIFEST_CONTRACT_VERSION", "AppManifest", "CapabilityClaim",
+    "APP_MANIFEST_CONTRACT_VERSION", "BUILD_MANIFEST_CONTRACT_VERSION",
+    "AppManifest", "CapabilityClaim",
     "CoreRequirement", "EnterpriseRequirement", "IntegrationLevel", "OutcomeKind",
-    "ProducerClaim", "VerifierClaim",
+    "ProducerClaim", "RuntimeBuildManifest", "VerifierClaim",
 ]
