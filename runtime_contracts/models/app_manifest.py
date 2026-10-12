@@ -33,6 +33,7 @@ from enum import Enum
 from typing import Mapping, Tuple
 
 APP_MANIFEST_CONTRACT_VERSION = "app-manifest/v1"
+BUILD_MANIFEST_CONTRACT_VERSION = "runtime-build-manifest/v1"
 
 
 class IntegrationLevel(str, Enum):
@@ -108,6 +109,28 @@ class CoreRequirement:
 
 
 @dataclass(frozen=True)
+class RuntimeBuildManifest:
+    """Attributable runtime/build identity for conformance and incident review.
+
+    A version string alone is not enough once runtimes are embedded as libraries inside app images. This
+    manifest is the small, application-neutral shape every runtime can emit from `/buildinfo` or EXPLAIN:
+    package version, exact source commit, image digest when containerized, and the contract-version matrix
+    the running build claims to interpret.
+    """
+
+    component: str
+    package_version: str = "unknown"
+    source_commit: str = "unknown"
+    image_digest: str = ""
+    contract_matrix: Mapping[str, str] = field(default_factory=dict)
+    adapter_versions: Tuple[str, ...] = ()
+    contract_version: str = BUILD_MANIFEST_CONTRACT_VERSION
+
+    def is_attributable(self) -> bool:
+        return bool(self.source_commit and self.source_commit != "unknown")
+
+
+@dataclass(frozen=True)
 class AppManifest:
     """The runtime-native registration contract for one app.
 
@@ -150,6 +173,7 @@ class AppManifest:
 
 __all__ = [
     "APP_MANIFEST_CONTRACT_VERSION",
+    "BUILD_MANIFEST_CONTRACT_VERSION",
     "IntegrationLevel",
     "EnterpriseRequirement",
     "CapabilityClaim",
@@ -157,5 +181,6 @@ __all__ = [
     "VerifierClaim",
     "OutcomeKind",
     "CoreRequirement",
+    "RuntimeBuildManifest",
     "AppManifest",
 ]

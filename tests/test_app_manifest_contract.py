@@ -10,6 +10,7 @@ from runtime_contracts import (
     IntegrationLevel,
     OutcomeKind,
     ProducerClaim,
+    RuntimeBuildManifest,
     VerifierClaim,
 )
 
@@ -64,3 +65,18 @@ def test_pure_data_defaults_and_round_trip_vocabularies():
     assert m.outcome_kinds[0].expected_delay_s == 5.0           # seconds, not a bare ambiguous number
     assert "customer-confidential" in m.data_classifications     # unknown-to-reader class kept verbatim
     assert m.contract_version == "app-manifest/v1"
+
+
+def test_runtime_build_manifest_makes_conformance_attributable():
+    m = RuntimeBuildManifest(
+        component="agentic-os",
+        package_version="0.2.4",
+        source_commit="abc1234",
+        image_digest="sha256:deadbeef",
+        contract_matrix={"execution-plan": "v8", "runtime-contracts": "0.3.13"},
+        adapter_versions=("operator-sdk/v1",),
+    )
+    assert rc.RuntimeBuildManifest is RuntimeBuildManifest
+    assert m.is_attributable()
+    assert m.contract_version == "runtime-build-manifest/v1"
+    assert m.contract_matrix["execution-plan"] == "v8"
