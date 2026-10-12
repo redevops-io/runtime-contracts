@@ -137,8 +137,29 @@ from .interaction import (
     TranscriptArtifact,
     VoiceSessionProvider,
 )
+from .decision_provider import (
+    DECISION_PROVIDER_CONTRACT_VERSION,
+    AbstainReason,
+    DecisionProvider,
+    DecisionProviderRequest,
+    DecisionProviderResult,
+    QuestionKind,
+    ScoreSemantics,
+    StaticDecisionProvider,
+    validate_decision,
+)
 
 __all__ = [
+    # bounded decision provider protocol (rules / small models / LLM adapters / learned policies)
+    "DECISION_PROVIDER_CONTRACT_VERSION",
+    "AbstainReason",
+    "DecisionProvider",
+    "DecisionProviderRequest",
+    "DecisionProviderResult",
+    "QuestionKind",
+    "ScoreSemantics",
+    "StaticDecisionProvider",
+    "validate_decision",
     # compliance evidence (base emits; Enterprise maps to frameworks)
     "ControlEvidence",
     "ControlEvidenceCollector",
