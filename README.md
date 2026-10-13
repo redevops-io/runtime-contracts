@@ -88,6 +88,12 @@ evidence-value gate (`decide_acquire` / `gated_acquire`), and the legal
 authority-level ladder (`LegalAuthorityLevel` · `may_auto_execute`). Adapters and
 the gate wiring live in `agentic-os`, never here.
 
+**Bounded decision provider protocol (`protocol/decision_provider.py`)** — the
+shared `decision-provider/v1` request/result contract for rules, compact
+decision models, LLM adapters and learned policies. A provider scores or selects
+from an already-permitted option set and can abstain, but it never grants write
+authority or bypasses policy, approval, idempotency or independent readback.
+
 **Email delivery execution + receipt (`protocol/email_delivery.py`)** — email
 delivery is an *execution*, not evidence, so it has its own contract:
 `EmailSendRequest` (idempotent by key), the normalized `EmailDeliveryStatus`

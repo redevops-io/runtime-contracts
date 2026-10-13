@@ -125,6 +125,15 @@ from .protocol import (
     check_poisoned_tool_metadata,
     check_classification_escalation,
     check_cross_source_contradiction,
+    DECISION_PROVIDER_CONTRACT_VERSION,
+    AbstainReason,
+    DecisionProvider,
+    DecisionProviderRequest,
+    DecisionProviderResult,
+    QuestionKind,
+    ScoreSemantics,
+    StaticDecisionProvider,
+    validate_decision,
 )
 from .models import *  # noqa: F401,F403,E402
 from .models import __all__ as _model_all  # noqa: E402
@@ -199,6 +208,9 @@ __all__ = [
     "validate_evidence", "check_injection", "check_self_granted_authority",
     "check_hidden_instructions", "check_source_spoofing", "check_poisoned_tool_metadata",
     "check_classification_escalation", "check_cross_source_contradiction",
+    "DECISION_PROVIDER_CONTRACT_VERSION", "AbstainReason", "DecisionProvider",
+    "DecisionProviderRequest", "DecisionProviderResult", "QuestionKind",
+    "ScoreSemantics", "StaticDecisionProvider", "validate_decision",
     # historical evidence plane — storage seam (open interface + reference floor + backend registry)
     "EvidenceStore", "EvidenceEnvelope", "EVIDENCE_FAMILIES", "project_evidence",
     "FileEvidenceStore", "InMemoryEvidenceStore",
