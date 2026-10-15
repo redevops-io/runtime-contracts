@@ -1,0 +1,13 @@
+claim_id: rc_contextview_hash_invariant
+claim: "same handles + same preview plan + same version pins + same contract version = same ContextView hash (README 'load-bearing invariant')"
+status: Internally reproduced
+code_commit: "80e727d8d08b3d8bef371fefd0dedee8a77666f8"
+dataset: "golden/context_view.json (committed golden fixture)"
+protocol: "python -m pytest -q; tests/test_golden.py and tests/test_canonicalization.py recompute hashes from the fixtures"
+model: "none (deterministic hashing)"
+metrics: "442 passed (full suite, 2026-10-15, Python 3.12). Python only; no cross-process or cross-language run is committed here."
+baselines: NOT_IN_REPO
+reproduce: "pip install -e '.[dev]' && python -m pytest -q"
+artifacts: "golden/*.json, tests/golden_seal_vectors.json, .github/workflows/tests.yml"
+limitations: "Cross-language (Go/Kotlin) reproduction exists only in private repositories and is not shown here. Same maintainers wrote fixtures and tests."
+review: "none; no external review"
