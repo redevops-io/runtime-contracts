@@ -303,7 +303,7 @@ def authorize_request(request: CredentialRequest, authority: AuthorityContext,
       * a requested TTL over the requirement's ``max_ttl_seconds`` → DENY;
       * an expired (or unparsable-expiry) authority, judged by the injectable ``clock`` → DENY;
       * a request whose ``authority_context_id`` does not name the supplied authority → DENY;
-      * a request tenant that is empty, or differs from the authority principal's tenant → DENY;
+      * a request tenant that is empty, or differs from the authority principal's tenant (including an authority with no tenant) → DENY;
       * a secret reference whose namespace differs from the request tenant → DENY.
 
     Returns ALLOW only when every check passes."""
@@ -322,7 +322,9 @@ def authorize_request(request: CredentialRequest, authority: AuthorityContext,
     principal_tenant = authority.principal.tenant
     if not request.tenant_id and not principal_tenant:
         return _deny(DenyReason.TENANT_MISMATCH)   # no tenant on either side: nothing to bind to
-    if principal_tenant and request.tenant_id != principal_tenant:
+    if request.tenant_id != principal_tenant:
+        # also covers an authority with no tenant: the contracts define no platform-scope marker, so an
+        # unscoped authority cannot be used for a tenant-scoped request (fail closed)
         return _deny(DenyReason.TENANT_MISMATCH)
     ref = req.secret_ref
     if ref is not None and ref.namespace and ref.namespace != request.tenant_id:
