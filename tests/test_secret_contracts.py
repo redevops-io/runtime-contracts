@@ -258,3 +258,22 @@ def test_local_broker_refuses_expired_authority_and_cross_tenant_reference(monke
     grant = broker.grant(_request(secret_ref=ref), authority_context=_authority())
     with broker.redeem(grant, capability_id="deploy.github", mission_id="m1") as m:
         assert m.bytes() == b"value"
+
+
+# ── tenant binding vectors ───────────────────────────────────────────────────────────────────────────
+
+import json
+from pathlib import Path
+
+_TENANT_VECTORS = json.loads((Path(__file__).parent / "credential_tenant_vectors.json").read_text())["cases"]
+
+
+@pytest.mark.parametrize("case", _TENANT_VECTORS, ids=[c["name"] for c in _TENANT_VECTORS])
+def test_tenant_binding_vectors(case):
+    ref = SecretRef(provider="env", key="X", namespace=case["secret_namespace"]) if case["secret_namespace"] else None
+    auth = AuthorityContext(authority_id="a1", principal=PrincipalRef(id="p1", tenant=case["authority_tenant"]),
+                            purpose="deploy", scope=("repo:deploy",))
+    d = authorize_request(_request(tenant=case["request_tenant"], secret_ref=ref), auth)
+    assert d.verdict.value == case["expect"] if hasattr(d.verdict, "value") else d.verdict == case["expect"]
+    if "reason" in case:
+        assert d.reason == getattr(DenyReason, case["reason"])
