@@ -64,7 +64,8 @@ class LocalCredentialBroker:
         self._n = 0
 
     def grant(self, request: CredentialRequest, *, authority_context: AuthorityContext) -> CredentialGrant:
-        decision = authorize_request(request, authority_context, broker_assurance=self.assurance_level)
+        decision = authorize_request(request, authority_context, broker_assurance=self.assurance_level,
+                                     clock=self._clock)
         if decision.verdict != SecurityVerdict.ALLOW:
             raise CredentialDenied(decision.reason)
 

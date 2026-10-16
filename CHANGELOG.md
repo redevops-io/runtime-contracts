@@ -10,3 +10,4 @@ No curated changelog is kept. History:
 ## Unreleased
 
 - Docs: README status section, STATUS, CONTRIBUTING, SECURITY, evidence card, docs check.
+- Credential gate: tenant binding and authority expiry enforced in `authorize_request` (vectors in `tests/credential_tenant_vectors.json`).

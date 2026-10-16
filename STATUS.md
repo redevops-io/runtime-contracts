@@ -14,6 +14,7 @@ independently validated.
 | Seal vectors | `tests/golden_seal_vectors.json`, `tests/test_seal.py` |
 | Adoption manifest and CLI (`status`, `verify`) | `tests/test_adoption.py`, `tests/test_release_discipline.py` |
 | Quantify adapter reproduces golden hashes (`ADAPTER_STARTED`) | `adapters/quantify`, `tests/test_quantify_adapter.py` |
+| Credential gate: tenant binding (request tenant must equal authority tenant; empty tenants and tenant-less authority denied), authority expiry | `tests/test_secret_contracts.py`, `tests/credential_tenant_vectors.json` |
 | Whole suite | `python -m pytest -q` -> 442 passed (2026-10-15, Python 3.12, fresh venv); CI: `.github/workflows/tests.yml` |
 
 ## Conformance: proposed vs implemented
