@@ -163,3 +163,9 @@ concerning `mission-sdk`'s Apache-2.0 grant.
 Reversible, and the maintainers'. It is written down here rather than left
 implicit in a file header.
 down here rather than left implicit in a file header.
+
+## Credential tenant binding
+
+`authorize_request` denies a credential request unless the request tenant equals the authority principal's
+tenant. An authority with no tenant is not treated as platform-wide: the contracts define no platform-scope
+marker, so it is refused for tenant-scoped requests.
