@@ -39,7 +39,7 @@ def _request(scopes=("repo:deploy",), *, tenant="acme", production=False, ttl=No
                                 production_broker_required=production, max_ttl_seconds=max_ttl,
                                 secret_ref=secret_ref)
     return CredentialRequest(request_id="r1", mission_id="m1", node_id="n1", capability_id="deploy.github",
-                             tenant_id=tenant, authority_context_id="ctx1", requirement=req,
+                             tenant_id=tenant, authority_context_id="a1", requirement=req,
                              requested_ttl_seconds=ttl)
 
 
@@ -198,3 +198,63 @@ def test_file_store_tenant_namespace_confined(tmp_path):
     # a ref pointing outside the root is rejected before any backend read
     with pytest.raises(SecretAccessError):
         store._read(SecretRef(provider="file", namespace="..", path="../secret"))
+
+
+# ── expiry / binding / tenant ────────────────────────────────────────────────────────────────────────
+
+def _expiring(expires_at):
+    return AuthorityContext(authority_id="a1", principal=PrincipalRef(id="p1", tenant="acme"),
+                            purpose="deploy", scope=("repo:deploy",), expires_at=expires_at)
+
+
+def test_expired_authority_is_denied():
+    d = authorize_request(_request(), _expiring("2025-12-31T23:59:59Z"), clock=_fixed_clock())
+    assert d.verdict == SecurityVerdict.DENY and d.reason == DenyReason.AUTHORITY_EXPIRED
+
+
+def test_authority_expiring_exactly_now_is_denied_and_future_is_allowed():
+    assert authorize_request(_request(), _expiring("2026-01-01T00:00:00+00:00"),
+                             clock=_fixed_clock()).verdict == SecurityVerdict.DENY
+    assert authorize_request(_request(), _expiring("2026-01-01T01:00:00+01:00"),
+                             clock=_fixed_clock()).verdict == SecurityVerdict.DENY
+    assert authorize_request(_request(), _expiring("2026-01-01T00:00:01Z"),
+                             clock=_fixed_clock()).verdict == SecurityVerdict.ALLOW
+    assert authorize_request(_request(), _expiring(""), clock=_fixed_clock()).verdict == SecurityVerdict.ALLOW
+
+
+@pytest.mark.parametrize("bad", ["not-a-date", "2026-01-01T00:00:00", "tomorrow"])
+def test_unparsable_or_naive_expiry_is_denied(bad):
+    d = authorize_request(_request(), _expiring(bad), clock=_fixed_clock())
+    assert d.verdict == SecurityVerdict.DENY and d.reason == DenyReason.AUTHORITY_EXPIRED
+
+
+def test_authority_context_id_must_match_the_supplied_authority():
+    other = CredentialRequest(**{**_request().__dict__, "authority_context_id": "someone-else"})
+    d = authorize_request(other, _authority())
+    assert d.verdict == SecurityVerdict.DENY and d.reason == DenyReason.AUTHORITY_MISMATCH
+    chained = CredentialRequest(**{**_request().__dict__, "authority_context_id": _authority().chain_ref})
+    assert authorize_request(chained, _authority()).verdict == SecurityVerdict.ALLOW
+
+
+def test_secret_namespace_must_match_request_tenant():
+    ref = SecretRef(provider="env", key="X", namespace="other")
+    d = authorize_request(_request(secret_ref=ref), _authority())
+    assert d.verdict == SecurityVerdict.DENY and d.reason == DenyReason.TENANT_MISMATCH
+    same = SecretRef(provider="env", key="X", namespace="acme")
+    assert authorize_request(_request(secret_ref=same), _authority()).verdict == SecurityVerdict.ALLOW
+
+
+def test_local_broker_refuses_expired_authority_and_cross_tenant_reference(monkeypatch):
+    monkeypatch.setenv("RC_TEST_SECRET", "value")
+    broker = LocalCredentialBroker(EnvironmentSecretStore(), clock=_fixed_clock())
+    ref = SecretRef(provider="env", key="RC_TEST_SECRET", namespace="acme")
+    with pytest.raises(CredentialDenied) as e:
+        broker.grant(_request(secret_ref=ref), authority_context=_expiring("2025-01-01T00:00:00Z"))
+    assert DenyReason.AUTHORITY_EXPIRED in e.value.reason
+    cross = SecretRef(provider="env", key="RC_TEST_SECRET", namespace="other")
+    with pytest.raises(CredentialDenied) as e:
+        broker.grant(_request(secret_ref=cross), authority_context=_authority())
+    assert DenyReason.TENANT_MISMATCH in e.value.reason
+    grant = broker.grant(_request(secret_ref=ref), authority_context=_authority())
+    with broker.redeem(grant, capability_id="deploy.github", mission_id="m1") as m:
+        assert m.bytes() == b"value"

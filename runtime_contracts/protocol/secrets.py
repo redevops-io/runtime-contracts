@@ -22,7 +22,8 @@ fields participate in its hash; live redemption tokens (broker handles) never en
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Protocol, Tuple, runtime_checkable
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, Optional, Protocol, Tuple, runtime_checkable
 
 from .seal import content_hash
 from .security import AuthorityContext, SecurityDecision, SecurityVerdict
@@ -265,21 +266,61 @@ class DenyReason:
     LEASE_REJECTED = "LEASE_REJECTED"
     BACKEND_POLICY_DENY = "BACKEND_POLICY_DENY"
     TENANT_MISMATCH = "TENANT_MISMATCH"
+    AUTHORITY_EXPIRED = "AUTHORITY_EXPIRED"
+    AUTHORITY_MISMATCH = "AUTHORITY_MISMATCH"
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _authority_expired(expires_at: str, now: datetime) -> bool:
+    """True when ``expires_at`` is at or before ``now``. An unparsable or timezone-naive expiry counts as
+    expired (fail closed). An empty expiry means no expiry."""
+    if not expires_at:
+        return False
+    try:
+        text = expires_at.strip()
+        if text[-1:] in ("Z", "z"):
+            text = text[:-1] + "+00:00"
+        exp = datetime.fromisoformat(text)
+    except (ValueError, TypeError, AttributeError):
+        return True
+    if exp.tzinfo is None:
+        return True
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    return now >= exp
 
 
 def authorize_request(request: CredentialRequest, authority: AuthorityContext,
-                      *, broker_assurance: str = "production") -> SecurityDecision:
+                      *, broker_assurance: str = "production",
+                      clock: Callable[[], datetime] = _utc_now) -> SecurityDecision:
     """The gate a broker consults *before* minting a grant. Deny-wins:
 
       * a capability that declares ``production_broker_required`` against a ``development`` broker → DENY;
       * a requested scope not covered by the Mission authority → DENY (authority only narrows);
-      * a requested TTL over the requirement's ``max_ttl_seconds`` → DENY.
+      * a requested TTL over the requirement's ``max_ttl_seconds`` → DENY;
+      * an expired (or unparsable-expiry) authority, judged by the injectable ``clock`` → DENY;
+      * a request whose ``authority_context_id`` does not name the supplied authority → DENY;
+      * a secret reference whose namespace differs from the request tenant → DENY.
 
     Returns ALLOW only when every check passes."""
     req = request.requirement
-    if req.production_broker_required and broker_assurance != "production":
+
+    def _deny(reason: str) -> SecurityDecision:
         return SecurityDecision(SecurityVerdict.DENY, subject=request.tenant_id, resource=request.capability_id,
-                                reason=DenyReason.PRODUCTION_BROKER_REQUIRED, decided_by="credentials:authorize")
+                                reason=reason, decided_by="credentials:authorize")
+
+    if req.production_broker_required and broker_assurance != "production":
+        return _deny(DenyReason.PRODUCTION_BROKER_REQUIRED)
+    if _authority_expired(authority.expires_at, clock()):
+        return _deny(DenyReason.AUTHORITY_EXPIRED)
+    if request.authority_context_id not in (authority.authority_id, authority.chain_ref):
+        return _deny(DenyReason.AUTHORITY_MISMATCH)
+    ref = req.secret_ref
+    if ref is not None and ref.namespace and ref.namespace != request.tenant_id:
+        return _deny(DenyReason.TENANT_MISMATCH)
     missing = sorted(s for s in set(req.required_scopes) if not authority.permits(s))
     if missing:
         return SecurityDecision(SecurityVerdict.DENY, subject=request.tenant_id, resource=request.capability_id,
