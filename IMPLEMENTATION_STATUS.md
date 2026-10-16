@@ -28,8 +28,8 @@ says "Observed 2026-07-31". This table was reconciled with it on 2026-10-15.
 | quantify | ADAPTER_STARTED (golden hashes reproduced; not conformance) | CONFORMANT | gap |
 | context-runtime | SPECIFIED | CONFORMANT | gap |
 | redevops-rag | SPECIFIED | CONFORMANT | gap |
-| wealth-manager (private repository) | not in `adoption/implementations.yaml` | n/a | unverified |
-| rag-saas-platform (private repository) | PARTIAL_ADOPTION | PARTIAL_ADOPTION | ok |
+| (non-public application A) | not in `adoption/implementations.yaml` | n/a | unverified |
+| (non-public application B) | PARTIAL_ADOPTION | PARTIAL_ADOPTION | ok |
 | discovery-runtime | LOCATED (own repo); manifest still says NOT_LOCATED (stale) | seal-conformant per its README; unverified here | gap |
 | mission-runtime | agentic-os/mission (not a standalone repo) | unverified | gap |
 | sidekick | integration module in context-runtime | n/a | ok |

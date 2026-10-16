@@ -29,7 +29,7 @@ One statement, replacing earlier conflicting ones. Source of truth: [`adoption/i
 |---|---|
 | Is the contract specified? | **Yes, as a proposed specification.** Contract identity `v0.1`; the `0.3.x` package work is additive. |
 | Does any implementation claim conformance (`CONFORMANT`)? | **No.** None has reached `CONFORMANT` or `DEPLOYED_CONFORMANT`. |
-| Which implemented adapters pass tests? | **Quantify** (`adapters/quantify`, tests in `tests/test_quantify_adapter.py`): reproduces golden hashes. By this repo's own definition that earns `ADAPTER_STARTED` (translation proven), not conformance. The manifest also records `rag-saas-platform` as `PARTIAL_ADOPTION` (a private repository, not verifiable here). |
+| Which implemented adapters pass tests? | **Quantify** (`adapters/quantify`, tests in `tests/test_quantify_adapter.py`): reproduces golden hashes. By this repo's own definition that earns `ADAPTER_STARTED` (translation proven), not conformance. The manifest also records a non-public implementation as `PARTIAL_ADOPTION` (not verifiable here). |
 | Others (context-runtime, redevops-rag) | `SPECIFIED`: a `mapping.yaml` exists under `adapters/`, no tested adapter code. |
 | Conformance reports | **None yet.** The only machine-checked evidence is this repository's own test suite ([`tests` workflow](.github/workflows/tests.yml); 442 tests passed locally on 2026-10-15). |
 | Manifest freshness | The manifest header says "Observed 2026-07-31"; entries for `agentic-os`, `discovery-runtime`, `mission-runtime` still read `NOT_LOCATED` even though `agentic-os` and `discovery-runtime` are now public repositories. Treat those rows as stale, not as a statement of absence. |
@@ -61,8 +61,7 @@ No ReDevOps package is published on PyPI.
 ## Limitations
 
 Proposed spec; no `CONFORMANT` implementation; cross-language reproducibility (Go, Kotlin ports) is claimed
-only for private repositories and is not demonstrable from this repo; licence relationship with Apache-2.0
-`mission-sdk` is with counsel (see [LICENSE.md](LICENSE.md)).
+only for repositories that are not public and is not demonstrable from this repo; see [LICENSE.md](LICENSE.md) for licence terms.
 
 ## Docs
 
@@ -94,8 +93,7 @@ only for private repositories and is not demonstrable from this repo; licence re
 runtime-contracts   the ArtifactHandle wire contract
 context-runtime     how handles are selected and materialized
 redevops-rag        how candidate handles are retrieved
-rag-saas-platform   how MissionProgram is currently executed (private repository)
-quantify            its adapter and application-specific artifacts (RAAAL, private repository)
+(non-public)        how MissionProgram is currently executed, with its adapter and application-specific artifacts
 ```
 
 ---

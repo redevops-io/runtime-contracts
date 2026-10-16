@@ -32,9 +32,8 @@ independently validated.
 - `adoption/implementations.yaml` was observed on 2026-07-31; some rows are stale (`agentic-os`,
   `discovery-runtime`, `mission-runtime` read `NOT_LOCATED`). The data file is intentionally not edited in this
   documentation change.
-- References to `rag-saas-platform`, RAAAL/Quantify and `wealth-manager` point to private repositories.
-- Licence: `LICENSE.md` is titled "source-available, not open source" and records an unresolved question about
-  `mission-sdk`'s Apache-2.0 grant. Counsel item; no conclusion is drawn here.
+- Some referenced implementations are in repositories that are not public.
+- Licence: see `LICENSE.md` (titled "source-available, not open source").
 
 ## Known gaps
 
