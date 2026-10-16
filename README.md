@@ -6,13 +6,68 @@
 > **🚀 NVIDIA Inception Program Member** — ReDevOps is a member of the NVIDIA Inception Program, supporting startups advancing AI and accelerated computing. Membership provides access to NVIDIA technology, technical resources, and the startup ecosystem. It does not imply product endorsement by NVIDIA.
 
 
-**Status:** v0.1 — *proposed canonical contract, implementation adoption pending.*
-No implementation currently claims conformance.
+**What it does.** The canonical, application-neutral *schemas, hashing rules, golden fixtures and an adoption
+manifest* that let separate ReDevOps runtime components (Mission, Context, Discovery) exchange the same
+artifacts and produce the same hashes. It is a Python package of types and checks, not a service.
 
-> `runtime-contracts` is the canonical, application-neutral contract package for
-> ReDevOps runtime interoperability. Quantify.club provides the initial fixtures
-> and design discipline but does not own the contracts semantically.
+**Who it's for.** Maintainers of a ReDevOps runtime component, or an engineer writing an adapter that must
+produce byte-identical artifacts to the reference implementation.
+
+**Maturity: proposed specification (alpha), with one in-repo reference adapter.** Details and the exact
+conformance state are in [Status](#status) and [STATUS.md](STATUS.md).
+
+> `runtime-contracts` is the canonical contract package for ReDevOps runtime interoperability. Quantify.club
+> provides the initial fixtures and design discipline but does not own the contracts semantically.
 > Implementations conform through explicit adapters and golden fixtures.
+
+## Status
+
+One statement, replacing earlier conflicting ones. Source of truth: [`adoption/implementations.yaml`](adoption/implementations.yaml)
+(`python -m runtime_contracts.cli status`), verified 2026-10-15 at package `0.3.14`, commit `80e727d`.
+
+| Question | Answer |
+|---|---|
+| Is the contract specified? | **Yes, as a proposed specification.** Contract identity `v0.1`; the `0.3.x` package work is additive. |
+| Does any implementation claim conformance (`CONFORMANT`)? | **No.** None has reached `CONFORMANT` or `DEPLOYED_CONFORMANT`. |
+| Which implemented adapters pass tests? | **Quantify** (`adapters/quantify`, tests in `tests/test_quantify_adapter.py`): reproduces golden hashes. By this repo's own definition that earns `ADAPTER_STARTED` (translation proven), not conformance. The manifest also records a non-public implementation as `PARTIAL_ADOPTION` (not verifiable here). |
+| Others (context-runtime, redevops-rag) | `SPECIFIED`: a `mapping.yaml` exists under `adapters/`, no tested adapter code. |
+| Conformance reports | **None yet.** The only machine-checked evidence is this repository's own test suite ([`tests` workflow](.github/workflows/tests.yml); 442 tests passed locally on 2026-10-15). |
+| Manifest freshness | The manifest header says "Observed 2026-07-31"; entries for `agentic-os`, `discovery-runtime`, `mission-runtime` still read `NOT_LOCATED` even though `agentic-os` and `discovery-runtime` are now public repositories. Treat those rows as stale, not as a statement of absence. |
+
+Naming: *Mission* = governed execution, *Context* = context selection/optimization, *Discovery* = finding and
+prioritizing opportunities; together the one public product, **ReDevOps Runtime**. Glossary:
+[agentic-os/docs/GLOSSARY.md](https://github.com/redevops-io/agentic-os/blob/main/docs/GLOSSARY.md).
+
+## 3-minute example
+
+```bash
+git clone --depth 1 --branch v0.3.14 https://github.com/redevops-io/runtime-contracts.git && cd runtime-contracts
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+python -m runtime_contracts.cli status      # per-implementation maturity and gaps
+python -m pytest -q                         # golden fixtures + canonicalization tests
+```
+
+To depend on it from another project (not on PyPI):
+`pip install "runtime-contracts @ git+https://github.com/redevops-io/runtime-contracts.git@v0.3.14"`.
+No ReDevOps package is published on PyPI.
+
+## Evidence
+
+[`golden/`](golden/) fixtures and `tests/` (the hash invariant below); card
+[`docs/evidence/rc_contextview_hash_invariant.yaml`](docs/evidence/rc_contextview_hash_invariant.yaml)
+(*Internally reproduced*). Nothing here is externally reproduced or field validated.
+
+## Limitations
+
+Proposed spec; no `CONFORMANT` implementation; cross-language reproducibility (Go, Kotlin ports) is claimed
+only for repositories that are not public and is not demonstrable from this repo; see [LICENSE.md](LICENSE.md) for licence terms.
+
+## Docs
+
+[STATUS](STATUS.md) · [IMPLEMENTATION_STATUS](IMPLEMENTATION_STATUS.md) · [canonicalization](docs/canonicalization.md) ·
+[release discipline](docs/release-discipline.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) ·
+[CHANGELOG](CHANGELOG.md)
 
 ---
 
@@ -38,8 +93,7 @@ No implementation currently claims conformance.
 runtime-contracts   the ArtifactHandle wire contract
 context-runtime     how handles are selected and materialized
 redevops-rag        how candidate handles are retrieved
-rag-saas-platform   how MissionProgram is currently executed
-quantify            its adapter and application-specific artifacts
+(non-public)        how MissionProgram is currently executed, with its adapter and application-specific artifacts
 ```
 
 ---
@@ -51,7 +105,8 @@ same handles + same preview plan + same version pins + same contract version
     = same ContextView hash
 ```
 
-Across implementations, across process restarts, across languages. Everything in
+Intended to hold across implementations, process restarts and languages. Verified in this repo for Python only
+(golden fixtures + tests). Everything in
 [docs/canonicalization.md](docs/canonicalization.md) exists to make that
 reproducible rather than approximately true.
 
@@ -105,7 +160,7 @@ delivery are additive and leave existing fixtures unchanged.
 
 ## Adoption
 
-Conformance is claimed per implementation and per contract, never globally.
+Conformance is claimed per implementation and per contract, never globally. At present no implementation claims it (see [Status](#status)).
 
 ```bash
 python -m runtime_contracts.cli status
@@ -162,10 +217,10 @@ concerning `mission-sdk`'s Apache-2.0 grant.
 
 Reversible, and the maintainers'. It is written down here rather than left
 implicit in a file header.
-down here rather than left implicit in a file header.
 
 ## Credential tenant binding
 
 `authorize_request` denies a credential request unless the request tenant equals the authority principal's
-tenant. An authority with no tenant is not treated as platform-wide: the contracts define no platform-scope
-marker, so it is refused for tenant-scoped requests.
+tenant. Empty tenants are denied. An authority with no tenant is not treated as platform-wide: the contracts
+define no platform-scope marker, so it is refused for tenant-scoped requests. Expired or unparsable-expiry
+authorities are denied. Vectors: `tests/credential_tenant_vectors.json`.

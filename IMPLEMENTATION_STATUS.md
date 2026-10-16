@@ -1,8 +1,8 @@
 # Implementation status
 
-**Contract identity: v0.1** (`CONTRACT_VERSION`) · **package: 0.3.0.** The canonical
-seal is stable and several implementations now conform to it (see the table below); the
-contract *spec* has not rev'd past v0.1 because the identity has not changed — the 0.3.x
+**Contract identity: v0.1** (`CONTRACT_VERSION`) · **package: 0.3.14.** The canonical
+seal is stable. No implementation has reached `CONFORMANT` (see the table below and
+[STATUS.md](STATUS.md)); the contract *spec* has not rev'd past v0.1 because the identity has not changed — the 0.3.x
 work is additive (concurrency-topology vocabulary, partial-order events) with unchanged
 hashes for existing payloads.
 
@@ -20,17 +20,20 @@ python -m runtime_contracts.cli verify --implementation quantify
 
 ## Where each component stands
 
+Authoritative source: `adoption/implementations.yaml` (`python -m runtime_contracts.cli status`), whose header
+says "Observed 2026-07-31". This table was reconciled with it on 2026-10-15.
+
 | Component | State | Gate | |
 |---|---|---|---|
-| quantify | SPECIFIED | CONFORMANT | gap |
+| quantify | ADAPTER_STARTED (golden hashes reproduced; not conformance) | CONFORMANT | gap |
 | context-runtime | SPECIFIED | CONFORMANT | gap |
 | redevops-rag | SPECIFIED | CONFORMANT | gap |
-| wealth-manager | SPECIFIED | CONFORMANT | gap |
-| rag-saas-platform | PLANNED | PARTIAL | gap |
-| discovery-runtime | LOCATED (own repo) | seal-conformant per its README; unverified here | gap |
+| (non-public application A) | not in `adoption/implementations.yaml` | n/a | unverified |
+| (non-public application B) | PARTIAL_ADOPTION | PARTIAL_ADOPTION | ok |
+| discovery-runtime | LOCATED (own repo); manifest still says NOT_LOCATED (stale) | seal-conformant per its README; unverified here | gap |
 | mission-runtime | agentic-os/mission (not a standalone repo) | unverified | gap |
 | sidekick | integration module in context-runtime | n/a | ok |
-| agentic-os | LOCATED (own repo) | unverified | gap |
+| agentic-os | LOCATED (own repo); manifest still says NOT_LOCATED (stale) | unverified | gap |
 
 A component whose gate is `NOT_LOCATED` is a visible roadmap gap, not a red
 build. It becomes a failure the day it is declared part of the release.
