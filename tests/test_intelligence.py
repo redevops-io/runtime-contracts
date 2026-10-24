@@ -1,4 +1,4 @@
-"""WP1 acceptance tests for the intelligence-provider contract (moat plan §15 + §19.7).
+"""WP1 acceptance tests for the intelligence-provider contract (intelligence plan §15 + §19.7).
 
 Pins the guarantees the whole external/professional-intelligence layer relies on: providers are replaceable
 behind a capability, provenance/freshness/cost are explicit, entitlement + PII-purpose + budget are gated before

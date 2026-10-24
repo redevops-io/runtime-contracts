@@ -1,4 +1,4 @@
-"""Contract tests for the email-delivery execution/receipt layer (moat plan §3.11, §6 P1, §15).
+"""Contract tests for the email-delivery execution/receipt layer (intelligence plan §3.11, §6 P1, §15).
 
 Pins the guarantees email delivery relies on: it is idempotent by key, the receipt lifecycle is normalized,
 terminal/suppression states are explicit and drive a governed side effect, provenance is never omitted, and a

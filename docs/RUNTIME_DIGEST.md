@@ -29,7 +29,7 @@ Every runtime identity is:
 ```
 RuntimeDigest :=
     algorithm                 # sha256
-    canonicalization_version  # rcv1  (see canonicalization.md)
+    canonicalization_version  # rcv1  (see CANONICALIZATION.md)
     semantic_domain           # what KIND of thing this identifies (evidence / intent / event / …)
     schema_version            # the version of that thing's schema
     canonical_bytes           # canonicalize(payload) under canonicalization_version
@@ -100,7 +100,7 @@ each is a migration to schedule, not a bug to patch.
 
 ## See also
 
-- [`canonicalization.md`](canonicalization.md) — the `rcv1` rules the digest bytes are produced under.
+- [`CANONICALIZATION.md`](CANONICALIZATION.md) — the `rcv1` rules the digest bytes are produced under.
 - The conformance suite — golden fixtures + the CI drift gate that pins `runtime-contracts` and runs
   the Python / Go / Kotlin re-derivations.
 - Mission EXPLAIN `interpreted_under` / `GET /buildinfo` — every answer records the

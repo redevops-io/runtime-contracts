@@ -4,7 +4,7 @@ No curated changelog is kept. History:
 
 - Tags: <https://github.com/redevops-io/runtime-contracts/tags> (`v0.1.0-alpha.1..3`, `v0.2.0..v0.2.4`, `v0.3.0..v0.3.14`; never delete or rewrite them).
 - GitHub releases: none.
-- Release rules and what each version number means: [docs/release-discipline.md](docs/release-discipline.md).
+- Release rules and what each version number means: [docs/RELEASE_DISCIPLINE.md](docs/RELEASE_DISCIPLINE.md).
 - `git log --oneline v0.3.13..v0.3.14` style ranges give per-release changes.
 
 ## Unreleased

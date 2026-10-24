@@ -1,8 +1,7 @@
 """External / Professional Intelligence Provider protocol (WP1).
 
-The moat plan (REDEVOPS_AGENTIC_APPS_COMPETITIVE_MOAT_API_INTEGRATION_AUDIT_PLAN.md) says: don't reimplement
-incumbent data/network moats — put a first-class *evidence provider* layer behind Discovery Runtime. The
-Runtime asks for a **capability** (never `call_apollo()`), a gate decides whether the evidence can change the
+Apps get external and professional evidence through a first-class *evidence provider* layer behind
+Discovery Runtime, not through hard-wired provider calls. The Runtime asks for a **capability** (never `call_apollo()`), a gate decides whether the evidence can change the
 decision and is worth its cost, an adapter acquires it, and the result is a governed EvidenceArtifact carrying
 provenance/cost/freshness/license. Later, verified-outcome accounting says whether buying it actually helped.
 

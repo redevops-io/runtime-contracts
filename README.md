@@ -65,8 +65,8 @@ only for repositories that are not public and is not demonstrable from this repo
 
 ## Docs
 
-[STATUS](STATUS.md) · [IMPLEMENTATION_STATUS](IMPLEMENTATION_STATUS.md) · [canonicalization](docs/canonicalization.md) ·
-[release discipline](docs/release-discipline.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) ·
+[STATUS](STATUS.md) · [IMPLEMENTATION_STATUS](IMPLEMENTATION_STATUS.md) · [canonicalization](docs/CANONICALIZATION.md) ·
+[release discipline](docs/RELEASE_DISCIPLINE.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) ·
 [CHANGELOG](CHANGELOG.md)
 
 ---
@@ -107,7 +107,7 @@ same handles + same preview plan + same version pins + same contract version
 
 Intended to hold across implementations, process restarts and languages. Verified in this repo for Python only
 (golden fixtures + tests). Everything in
-[docs/canonicalization.md](docs/canonicalization.md) exists to make that
+[docs/CANONICALIZATION.md](docs/CANONICALIZATION.md) exists to make that
 reproducible rather than approximately true.
 
 ---
@@ -136,7 +136,7 @@ hashes exactly as before, so existing golden fixtures are unchanged.
 
 **External / Professional Intelligence provider layer (`protocol/intelligence.py`,
 `protocol/intelligence_registry.py`)** — the domain-neutral contract behind the
-apps' intelligence moat: a `Capability` a DecisionCase asks for (never a provider
+apps' intelligence layer: a `Capability` a DecisionCase asks for (never a provider
 name), `EvidenceRequest` / `EvidenceArtifact` carrying provenance / cost /
 freshness / license, the `IntelligenceProvider` protocols and registry, the
 evidence-value gate (`decide_acquire` / `gated_acquire`), and the legal
@@ -179,7 +179,7 @@ translation, not adoption.
 
 See [adoption/implementations.yaml](adoption/implementations.yaml),
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) and
-[docs/release-discipline.md](docs/release-discipline.md).
+[docs/RELEASE_DISCIPLINE.md](docs/RELEASE_DISCIPLINE.md).
 
 ---
 
