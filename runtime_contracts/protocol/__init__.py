@@ -269,7 +269,7 @@ __all__ = [
     "relation",
     "derived_from",
     "supersedes",
-    # external / professional intelligence provider layer (moat plan WP1)
+    # external / professional intelligence provider layer (intelligence plan WP1)
     "INTELLIGENCE_CONTRACT_VERSION",
     "Capability",
     "PII_CAPABILITIES",
@@ -301,7 +301,7 @@ __all__ = [
     "GateDecision",
     "decide_acquire",
     "gated_acquire",
-    # email delivery execution + receipt (moat plan §3.11, §6 P1)
+    # email delivery execution + receipt (intelligence plan §3.11, §6 P1)
     "EMAIL_DELIVERY_CONTRACT_VERSION",
     "EmailDeliveryStatus",
     "EmailSubmitFailure",

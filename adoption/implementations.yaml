@@ -1,5 +1,5 @@
 # Observed 2026-07-31 from the filesystem, not inferred from architecture docs.
-# See docs/deployment-inventory.md for how each fact was established.
+# See docs/DEPLOYMENT_INVENTORY.md for how each fact was established.
 contract_version: "0.1"
 
 # Three axes, kept apart. Conflating them lets a gap analysis imply code

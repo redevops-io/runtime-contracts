@@ -7,9 +7,9 @@ work is additive (concurrency-topology vocabulary, partial-order events) with un
 hashes for existing payloads.
 
 > **This file is the single current status source.** Two earlier records —
-> [`docs/deployment-inventory.md`](docs/deployment-inventory.md) (a dated 2026-07-31
+> [`docs/DEPLOYMENT_INVENTORY.md`](docs/DEPLOYMENT_INVENTORY.md) (a dated 2026-07-31
 > pre-work snapshot) and
-> [`docs/RUNTIME_CONTRACTS_0.3.x_CONSOLIDATION.md`](docs/RUNTIME_CONTRACTS_0.3.x_CONSOLIDATION.md)
+> [`docs/RUNTIME_CONTRACTS_0.3.X_CONSOLIDATION.md`](docs/RUNTIME_CONTRACTS_0.3.X_CONSOLIDATION.md)
 > (the now-completed 0.3.x consolidation plan) — are **historical** and may disagree on
 > version/conformance/what-exists. Where they do, this file wins.
 

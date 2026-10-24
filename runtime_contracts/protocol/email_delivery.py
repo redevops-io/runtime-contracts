@@ -1,4 +1,4 @@
-"""Email delivery execution + receipt contract (moat plan §3.11, §6 P1).
+"""Email delivery execution + receipt contract (intelligence plan §3.11, §6 P1).
 
 Email delivery is an EXECUTION, not read-only evidence: the Runtime hands a message to a delivery provider (SES /
 Postmark / SendGrid / …) and gets back a receipt whose lifecycle — accepted → delivered → bounced / complaint /
@@ -11,7 +11,7 @@ Two invariants distinguish it from intelligence acquisition:
      governed side effect, not an inference.
 
 The receipt still carries provenance (provider + raw_response_digest) and cost, and later joins Experience so the
-moat `campaign → delivered → order/invoice → retention` can be measured. Domain-neutral contract only — no SDKs,
+chain `campaign → delivered → order/invoice → retention` can be measured. Domain-neutral contract only — no SDKs,
 no network; adapters implement `EmailDeliveryProvider`.
 """
 from __future__ import annotations
