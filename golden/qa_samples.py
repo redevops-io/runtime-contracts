@@ -9,12 +9,20 @@ from __future__ import annotations
 from typing import Optional
 
 from runtime_contracts.models.capability import Idempotency, RetrySafety, SideEffect
-from runtime_contracts.qa import (Action, ActionKind, AssertionSpec, AssertionSubject, Budget, CheckProgramRef,
-                                  ComponentRef,
-                                  CoverageContract, EvidenceLevel, Executor, FixtureRef, LocatorDescriptor,
-                                  PermittedRecovery, PlanGate, PlanItem, Predicate, PredicateOp, QAPlan,
-                                  ResourceClaim, ResourceKind, ResourceRef, Step, StepTarget, SubjectKind,
-                                  TestSpec, TestTarget)
+from runtime_contracts.models.verification import Check, Determinism, Verdict
+from runtime_contracts.protocol.evidence import EvidenceRef
+from runtime_contracts.qa import (Action, ActionKind, ActionReceipt, ActionRecord, AssertionResult, AssertionSpec,
+                                  AssertionSubject, Budget, Checkpoint, CheckProgramRef, ClaimedClass,
+                                  CleanupReport, ComponentRef, CoverageContract, Counters, EvidenceLevel, Executor,
+                                  FaultDetection, FaultEvent, FaultRecovery, FaultSignal, FixtureRef,
+                                  LocatorCandidate, LocatorDescriptor, LocatorStrategy, LocatorUsed, ModelRef,
+                                  Observation, ObservationSource, ObservedValue, Outcome, PermittedRecovery, Phase,
+                                  PlanGate, PlanItem, PolicyDecisionKind, Postcondition, PostconditionResult,
+                                  Predicate, PredicateOp, QAPlan, QAPolicyDecision, RecoveryCost, RecoveryResult,
+                                  RecoveryStrategy, Resolution, ResourceClaim, ResourceKind, ResourceRef,
+                                  ResultCode, ReviewDecision, ReviewItem, ReviewRecord, RunManifest,
+                                  SkippedAssertion, SkipReason, Step, StepResult, StepTarget, SubjectKind,
+                                  SuppressedReason, TestSpec, TestTarget, ToolRef, VersionPin)
 
 
 def h(n: int) -> str:
@@ -104,3 +112,103 @@ def plan_for(refs, *, coverage=CoverageContract.FULL, **overrides) -> QAPlan:
         rationale_ref=d(10))
     kwargs.update(overrides)
     return QAPlan(**kwargs)
+
+
+# ── run records ────────────────────────────────────────────────────────────────────────────────────────────
+
+
+ADAPTER = ComponentRef(id="qa-playwright", version="0.1.0")
+VERIFIER = ComponentRef(id="det-verifier", version="1.0.0")
+DETECTOR = ComponentRef(id="step-detector", version="0.1.0")
+
+
+def evidence(n: int, ref: str = "shot") -> EvidenceRef:
+    return EvidenceRef(ref=f"{ref}-{n}", content_hash=d(100 + n), version="1", modality="image",
+                       media_type="image/png", source="qa-playwright", ref_type="artifact")
+
+
+def observation(step_id: str = "s1", phase: Phase = Phase.AFTER, **kw) -> Observation:
+    base = dict(
+        observation_id=f"obs-{step_id}-{phase.value.lower()}", step_id=step_id, phase=phase,
+        source=ObservationSource(adapter="qa-playwright", adapter_version="0.1.0", browser="chromium",
+                                 browser_version="130.0.1"),
+        redaction_policy_id=h(31), redaction_applied=True, url="https://app.example.test/saved", frame="main",
+        a11y_snapshot_ref=evidence(1, "a11y"), screenshot_ref=evidence(2), dom_meta={"title": "Saved", "nodes": 41},
+        observed_at="2026-10-30T10:00:00Z", duration_ms=120)
+    base.update(kw)
+    return Observation(**base)
+
+
+def policy_decision(step_id: str = "s1", decision: PolicyDecisionKind = PolicyDecisionKind.ALLOW, **kw):
+    base = dict(
+        policy_decision_id=f"pd-{step_id}", run_id="run-1", step_id=step_id, principal="runner:qa", app="demo-app",
+        decision=decision, provider="cr-policy-plane", action_kind=ActionKind.CLICK,
+        side_effect=SideEffect.WRITES_INTERNAL, scope=("ui:click",), rule_id="allow-local-writes",
+        reason="matched rule allow-local-writes", decided_at="2026-10-30T10:00:00Z")
+    base.update(kw)
+    return QAPolicyDecision(**base)
+
+
+def action_receipt(step_id: str = "s1", attempt: int = 1, **kw) -> ActionReceipt:
+    base = dict(
+        receipt_id=f"rcpt-{step_id}-{attempt}", run_id="run-1", step_id=step_id, attempt=attempt,
+        tool=ToolRef(name="qa-playwright", version="0.1.0"), action=ActionRecord(kind=ActionKind.CLICK),
+        state_before_hash=h(41), state_after_hash=h(42), policy_decision_ref=policy_decision(step_id).content_hash,
+        idempotency_key=f"idem-{step_id}-1",
+        postcondition=Postcondition(declared="url ends /saved", observed="url ends /saved",
+                                    result=PostconditionResult.SATISFIED),
+        result=ResultCode.OK,
+        locator_used=LocatorUsed(descriptor=LocatorDescriptor(role="button", name="Save"),
+                                 strategy=LocatorStrategy.AUTHORED),
+        duration_ms=340, recovery_rationale=None)
+    base.update(kw)
+    return ActionReceipt(**base)
+
+
+def assertion_result(assertion=None, spec=None, *, verdict: Verdict = Verdict.PASS, **kw) -> AssertionResult:
+    assertion = assertion or ui_assertion()
+    spec_hash = (spec or ui_spec()).assertion_set_hash
+    conclusive = verdict.is_conclusive
+    base = dict(
+        assertion_id=assertion.assertion_id, assertion_set_hash=spec_hash, expected_hash=assertion.expected_hash,
+        executor=assertion.executor, verifier=VERIFIER,
+        check=Check(check_id=assertion.assertion_id, verdict=verdict, determinism=Determinism.DETERMINISTIC,
+                    detail="", evidence_refs=(evidence(3).pin(),)),
+        reason_code=None if conclusive else "SUBJECT_UNRESOLVED", observation_id="obs-s1-after",
+        actual="Saved" if conclusive else None, evaluated_at="2026-10-30T10:00:01Z")
+    base.update(kw)
+    return AssertionResult(**base)
+
+
+def fault_event(sequence: int = 0, *, recovered: bool = True, step_id: str = "s1") -> FaultEvent:
+    detection = FaultDetection(
+        detected=True, signal=FaultSignal.LOCATOR_NOT_FOUND, claimed_class=ClaimedClass.BENIGN_DRIFT,
+        detector=DETECTOR, evidence_refs=(evidence(4, "obs"),), detected_at_ms_into_step=250)
+    recovery = FaultRecovery(
+        detection_ref=detection.content_hash, attempted=True, strategy=RecoveryStrategy.SEMANTIC_LOCATOR,
+        result=RecoveryResult.RECOVERED if recovered else RecoveryResult.NOT_RECOVERED,
+        postcondition_verified=recovered, attempts=1, candidates_considered=2,
+        candidates_rejected_reasons=("NOT_UNIQUE",), cost=RecoveryCost(tokens=0, model_calls=0, ms=180))
+    return FaultEvent(fault_event_id=f"fe-{sequence}", step_id=step_id, sequence=sequence, detection=detection,
+                      recovery=recovery)
+
+
+def run_manifest(spec=None, **kw) -> RunManifest:
+    spec = spec or ui_spec()
+    ids = tuple(spec.assertion_ids)
+    base = dict(
+        run_id="run-1", spec_ref=spec.spec_ref, assertion_set_hash=spec.assertion_set_hash, adapter=ADAPTER,
+        egress_policy_id=h(32), redaction_policy_id=h(31), trace_id="0123456789abcdef0123456789abcdef",
+        recovery_enabled=True, model_recovery_enabled=False, assertions_declared=ids, assertions_executed=ids,
+        assertions_skipped=(), outcome=Outcome.PASS,
+        versions=(VersionPin(component="runtime-contracts", version="0.3.14", revision="403f536"),
+                  VersionPin(component="agent-harness", version="0.1.0")),
+        plan_hash=h(33), planner=PLANNER, browser="chromium 130.0.1", seeds=(7, 11), sandbox_image_digest=d(34),
+        resource_limits={"memory_mb": 2048, "pids": 256},
+        step_results=(StepResult(step_id="s1", result=ResultCode.OK, postcondition=PostconditionResult.SATISFIED,
+                                 receipts=(action_receipt().content_hash,)),),
+        assertion_results=tuple(assertion_result(a, spec) for a in spec.assertions),
+        fault_events=(fault_event(),), counters=Counters(tokens=0, model_calls=0, infrastructure_ms=5400),
+        started_at="2026-10-30T10:00:00Z", finished_at="2026-10-30T10:00:05Z")
+    base.update(kw)
+    return RunManifest(**base)
