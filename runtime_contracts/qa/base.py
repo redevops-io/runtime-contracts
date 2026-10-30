@@ -430,19 +430,27 @@ class QARecord(QAValue):
         path = _path or cls.__name__
         if not isinstance(data, collections.abc.Mapping):
             raise QAContractError(Code.INVALID_FIELD, f"{path} must be an object")
-        if data.get("schema_id") != cls.SCHEMA_ID:
-            raise QAContractError(Code.SCHEMA_MISMATCH, f"{path}.schema_id is {data.get('schema_id')!r}, "
-                                  f"expected {cls.SCHEMA_ID!r}")
-        if data.get("schema_version") != cls.SCHEMA_VERSION:
-            raise QAContractError(Code.SCHEMA_VERSION_UNSUPPORTED,
-                                  f"{path}.schema_version is {data.get('schema_version')!r}; this reader supports "
-                                  f"{cls.SCHEMA_VERSION!r} and refuses any other (unknown major fails closed)")
+        _guard_schema_identity(cls, data, path)
         obj = super().from_json(data, _path=path)
-        stored = data.get("content_hash")
-        if stored is not None and stored != obj.content_hash:
-            raise QAContractError(Code.HASH_MISMATCH, f"{path}.content_hash {stored!r} does not match the "
-                                  f"recomputed {obj.content_hash!r}")
+        _guard_stored_hash(obj, data, path)
         return obj
+
+
+def _guard_schema_identity(cls: type, data: collections.abc.Mapping, path: str) -> None:
+    if data.get("schema_id") != cls.SCHEMA_ID:
+        raise QAContractError(Code.SCHEMA_MISMATCH, f"{path}.schema_id is {data.get('schema_id')!r}, "
+                              f"expected {cls.SCHEMA_ID!r}")
+    if data.get("schema_version") != cls.SCHEMA_VERSION:
+        raise QAContractError(Code.SCHEMA_VERSION_UNSUPPORTED,
+                              f"{path}.schema_version is {data.get('schema_version')!r}; this reader supports "
+                              f"{cls.SCHEMA_VERSION!r} and refuses any other (unknown major fails closed)")
+
+
+def _guard_stored_hash(obj: "QARecord", data: collections.abc.Mapping, path: str) -> None:
+    stored = data.get("content_hash")
+    if stored is not None and stored != obj.content_hash:
+        raise QAContractError(Code.HASH_MISMATCH, f"{path}.content_hash {stored!r} does not match the "
+                              f"recomputed {obj.content_hash!r}")
 
 
 def _encode(value: Any, *, full: bool) -> Any:

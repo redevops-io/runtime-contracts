@@ -8,7 +8,7 @@ Only the verifier produces an ``AssertionResult``, from assertions loaded by con
 facts (``ObservedValue``, ``ActionOutcome``) and never a verdict; nothing here has a field through which an
 adapter or a recovery module could express one.
 
-These contracts hold no ground truth and no field that says how a run is scored. They record what happened.
+These records say what happened. Nothing in them says how a run is judged from outside.
 """
 from __future__ import annotations
 

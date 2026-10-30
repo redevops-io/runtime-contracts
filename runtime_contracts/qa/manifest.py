@@ -7,7 +7,7 @@ still be recorded, because the record of a violation must exist, but only as ``I
 claiming anything else is refused. A ``PASS`` requires every declared assertion executed and passed, nothing
 skipped and every detected fault recovered by its own postcondition.
 
-No ground truth and no scoring field is carried here. A manifest cannot tell a run what it is being tested against.
+A manifest records what a run was and did. It carries nothing a run could use to learn what it is tested against.
 """
 from __future__ import annotations
 

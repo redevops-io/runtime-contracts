@@ -15,6 +15,7 @@ independently validated.
 | Adoption manifest and CLI (`status`, `verify`) | `tests/test_adoption.py`, `tests/test_release_discipline.py` |
 | Quantify adapter reproduces golden hashes (`ADAPTER_STARTED`) | `adapters/quantify`, `tests/test_quantify_adapter.py` |
 | Credential gate: tenant binding (request tenant must equal authority tenant; empty tenants and tenant-less authority denied), authority expiry | `tests/test_secret_contracts.py`, `tests/credential_tenant_vectors.json` |
+| `qa/v1` contracts: frozen-assertion types, plan, run records, fault detection/recovery, manifest accounting, adapter and blob protocols | `tests/test_qa_*.py`, `golden/qa.json`, `golden/qa_canon_vectors.json`, `golden/qa.schema.json`, `docs/QA_V1.md` |
 | Whole suite | `python -m pytest -q` -> 442 passed (2026-10-15, Python 3.12, fresh venv); CI: `.github/workflows/tests.yml` |
 
 ## Conformance: proposed vs implemented
