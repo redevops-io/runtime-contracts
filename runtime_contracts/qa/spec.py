@@ -283,6 +283,15 @@ def _guard_executor_matches_subject(a: "AssertionSpec") -> None:
                               "PLAYWRIGHT reads the rest)")
 
 
+def _guard_check_program_ref(a: "AssertionSpec") -> None:
+    if a.executor is Executor.SCRIPT and a.check_program_ref is None:
+        raise QAContractError(Code.CHECK_PROGRAM_REF_REQUIRED, f"assertion {a.assertion_id}: executor SCRIPT "
+                              "requires check_program_ref, the hashed identity of the program it runs")
+    if a.executor is not Executor.SCRIPT and a.check_program_ref is not None:
+        raise QAContractError(Code.SPEC_INVALID, f"assertion {a.assertion_id}: check_program_ref is only for "
+                              "executor SCRIPT")
+
+
 @dataclass(frozen=True)
 class AssertionSpec(QARecord):
     """One frozen expectation. Immutable, hashed whole, and referenced by hash from then on."""
@@ -302,11 +311,16 @@ class AssertionSpec(QARecord):
 
     determinism: Determinism = Determinism.DETERMINISTIC
     on_unresolvable: Verdict = Verdict.INDETERMINATE
+    check_program_ref: Optional[CheckProgramRef] = None
+    """Required when ``executor = SCRIPT``, absent otherwise, and hashed with the assertion. Check programs are
+    individually hashed, and this is where that hash is frozen. A SCRIPT assertion without it is an invalid spec
+    (``CHECK_PROGRAM_REF_REQUIRED``, a test defect); a changed program hash is a changed assertion set."""
 
     def validate(self) -> None:
         _guard_determinism(self)
         _guard_on_unresolvable(self)
         _guard_executor_matches_subject(self)
+        _guard_check_program_ref(self)
 
     @property
     def assertion_hash(self) -> str:

@@ -9,7 +9,8 @@ from __future__ import annotations
 from typing import Optional
 
 from runtime_contracts.models.capability import Idempotency, RetrySafety, SideEffect
-from runtime_contracts.qa import (Action, ActionKind, AssertionSpec, AssertionSubject, Budget, ComponentRef,
+from runtime_contracts.qa import (Action, ActionKind, AssertionSpec, AssertionSubject, Budget, CheckProgramRef,
+                                  ComponentRef,
                                   CoverageContract, EvidenceLevel, Executor, FixtureRef, LocatorDescriptor,
                                   PermittedRecovery, PlanGate, PlanItem, Predicate, PredicateOp, QAPlan,
                                   ResourceClaim, ResourceKind, ResourceRef, Step, StepTarget, SubjectKind,
@@ -45,6 +46,18 @@ def url_assertion(assertion_id: str = "a-url") -> AssertionSpec:
         subject=AssertionSubject(kind=SubjectKind.URL, pattern="/saved$"),
         predicate=Predicate(PredicateOp.MATCHES, "/saved$"), verifier_id="det-verifier",
         verifier_version_range=">=1.0,<2")
+
+
+def script_assertion(assertion_id: str = "a-image-pinned", *, program_hash: str = None,
+                     requirement_ref: Optional[str] = "REQ-IMG-1") -> AssertionSpec:
+    """A SCRIPT assertion over an image digest, evaluated by a registered check program."""
+    return AssertionSpec(
+        assertion_id=assertion_id, executor=Executor.SCRIPT,
+        subject=AssertionSubject(kind=SubjectKind.RESOURCE_INPUTS,
+                                 inputs=(ResourceRef(kind=ResourceKind.IMAGE_DIGEST, digest=d(5)),)),
+        predicate=Predicate(PredicateOp.EQUALS, "pinned"), verifier_id="det-verifier",
+        verifier_version_range=">=1.0,<2", requirement_ref=requirement_ref,
+        check_program_ref=CheckProgramRef(id="image-pinned", version="1.0.0", program_hash=program_hash or d(6)))
 
 
 def ui_step(step_id: str = "s1", *, name: str = "Save") -> Step:

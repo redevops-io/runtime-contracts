@@ -10,7 +10,7 @@ import unicodedata
 
 import pytest
 
-from golden.qa_samples import d, h, resource_step, ui_assertion, ui_spec, ui_step, url_assertion
+from golden.qa_samples import d, h, resource_step, script_assertion, ui_assertion, ui_spec, ui_step, url_assertion
 from runtime_contracts import canonical
 from runtime_contracts.models.capability import Idempotency, RetrySafety, SideEffect
 from runtime_contracts.models.verification import Determinism, Verdict
@@ -208,16 +208,11 @@ class TestAssertionSpec:
 
     def test_executor_is_part_of_the_hash(self):
         playwright = ui_assertion()
-        j = playwright.to_json()
-        script = AssertionSpec(
-            assertion_id=playwright.assertion_id, executor=Executor.SCRIPT,
-            subject=AssertionSubject(kind=SubjectKind.RESOURCE_INPUTS,
-                                     inputs=(ResourceRef(kind=ResourceKind.MANIFEST_PATH, path="a.yaml"),)),
-            predicate=playwright.predicate, verifier_id=playwright.verifier_id,
-            verifier_version_range=playwright.verifier_version_range, requirement_ref=playwright.requirement_ref)
+        script = dataclasses.replace(script_assertion(), assertion_id=playwright.assertion_id,
+                                     predicate=playwright.predicate, requirement_ref=playwright.requirement_ref)
         assert script.assertion_hash != playwright.assertion_hash
         assert assertion_set_hash([script]) != assertion_set_hash([playwright])
-        assert j["executor"] == "PLAYWRIGHT"
+        assert playwright.to_json()["executor"] == "PLAYWRIGHT"
 
     def test_executor_must_match_the_subject_it_reads(self):
         with pytest.raises(QAContractError):
@@ -370,12 +365,8 @@ class TestTestSpec:
             TestTarget(app_id="a", build_sha="xyz", environment_profile="e")
 
     def test_a_resource_only_spec(self):
-        script = AssertionSpec(
-            assertion_id="img", executor=Executor.SCRIPT,
-            subject=AssertionSubject(kind=SubjectKind.RESOURCE_INPUTS,
-                                     inputs=(ResourceRef(kind=ResourceKind.IMAGE_DIGEST, digest=d(5)),)),
-            predicate=Predicate(PredicateOp.EQUALS, "pinned"), verifier_id="det", verifier_version_range=">=1")
-        spec = ui_spec("infra-1", steps=(resource_step(),), assertions=(script,), allowed_side_effects=())
+        spec = ui_spec("infra-1", steps=(resource_step(),), assertions=(script_assertion(),),
+                       allowed_side_effects=())
         assert TestSpec.from_json(spec.to_json()) == spec
 
 
