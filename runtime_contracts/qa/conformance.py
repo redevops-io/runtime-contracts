@@ -91,7 +91,7 @@ def parse_recovery_candidate(raw: Any) -> LocatorCandidate:
         raise AssertionIntegrityError(Code.RECOVERY_PAYLOAD_REJECTED, "a recovery candidate is an object")
     _guard_candidate_keys(raw)
     try:
-        return LocatorCandidate(**{k: raw[k] for k in raw})
+        return LocatorCandidate(**{k: raw[k] for k in raw if k in CANDIDATE_KEYS})
     except (QAContractError, TypeError) as exc:
         raise AssertionIntegrityError(Code.RECOVERY_PAYLOAD_REJECTED, f"not a valid locator candidate: {exc}") from None
 
