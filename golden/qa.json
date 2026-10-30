@@ -1,0 +1,4006 @@
+{
+  "assertion_sets": {
+    "expected_changed": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Different",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:38729284a68ab99bf886544e2abfbf6fcfdafc22c33507dbeb3d3c226a5c58c0",
+      "why": "changing expected changes the set hash"
+    },
+    "locator_descriptor_changed": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [
+                "f"
+              ],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:7d1a32f5b6fbc7e7915487d3e4ec0eab2a3def1a93c7e44388e160287e4950c9",
+      "why": "the frozen locator is part of the assertion"
+    },
+    "operator_changed": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "CONTAINS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:96e7d5d9afe5b83392bdc595ba6f3177a36c64b6a46542b85e0f6236820d336f",
+      "why": "the predicate op is hashed"
+    },
+    "order_variation": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+      "why": "listing order is a property of the builder, not the set"
+    },
+    "reference": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+      "why": "the reference set"
+    },
+    "requirement_ref_changed": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-OTHER",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:cd3a1b7a415a04f221a8fa83bd3c19c8687edbcc2125af470fe25144287999ac",
+      "why": "requirement_ref is hashed"
+    },
+    "requirement_ref_removed": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        {
+          "assertion_id": "a-url",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "/saved$",
+            "op": "MATCHES"
+          },
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "URL",
+            "pattern": "/saved$",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:d9566320f66999ee39807a997b7e6a3435ce95c095e28922aab62d334d3f53d7",
+      "why": "removing requirement_ref changes the hash"
+    },
+    "unicode_nfc": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "caf\u00e9",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:1571f824d8fc1c8a6e67722cb067ec52ab16f04d1a6e5e1f75ae05144ec3c720",
+      "why": "expected written in NFC"
+    },
+    "unicode_nfd": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "cafe\u0301",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:1571f824d8fc1c8a6e67722cb067ec52ab16f04d1a6e5e1f75ae05144ec3c720",
+      "why": "expected written in NFD hashes as NFC"
+    }
+  },
+  "canonicalization": "rcv1",
+  "cases": {
+    "action_receipt": {
+      "custody": {
+        "duration_ms": 340
+      },
+      "hash": "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61",
+      "input": {
+        "action": {
+          "kind": "click"
+        },
+        "attempt": 1,
+        "idempotency_key": "idem-s1-1",
+        "locator_used": {
+          "descriptor": {
+            "frame_path": [],
+            "name": "Save",
+            "role": "button"
+          },
+          "strategy": "AUTHORED"
+        },
+        "policy_decision_ref": "rcv1:9cf0f2b4f7f49d81d6736ee4d988c98158485b5d29ea74ac1d2af2e3fb16e29e",
+        "postcondition": {
+          "declared": "url ends /saved",
+          "observed": "url ends /saved",
+          "result": "SATISFIED"
+        },
+        "receipt_id": "rcpt-s1-1",
+        "result": "OK",
+        "run_id": "run-1",
+        "schema_id": "runtime-contracts/qa/action-receipt",
+        "schema_version": "0.1",
+        "state_after_hash": "rcv1:000000000000000000000000000000000000000000000000000000000000002a",
+        "state_before_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000029",
+        "step_id": "s1",
+        "tool": {
+          "name": "qa-playwright",
+          "version": "0.1.0"
+        }
+      },
+      "schema_id": "runtime-contracts/qa/action-receipt",
+      "why": "an attempt with the authored locator and a satisfied postcondition"
+    },
+    "action_receipt_blocked_by_policy": {
+      "custody": {
+        "duration_ms": 340
+      },
+      "hash": "rcv1:d4986198ab73ff6331dbf2cccc62a48254630284ec2dc09afd5b1d3bb35eca27",
+      "input": {
+        "action": {
+          "kind": "click"
+        },
+        "attempt": 1,
+        "idempotency_key": "idem-s1-1",
+        "locator_used": {
+          "descriptor": {
+            "frame_path": [],
+            "name": "Save",
+            "role": "button"
+          },
+          "strategy": "AUTHORED"
+        },
+        "policy_decision_ref": "rcv1:1c679fda34a9ca67fbdaaf4ff5247ba48a6b9f60225f97b99a1b8fb6dd56b695",
+        "postcondition": {
+          "declared": "url ends /saved",
+          "result": "NOT_EVALUATED"
+        },
+        "receipt_id": "rcpt-s1-1",
+        "result": "ACTION_BLOCKED_BY_POLICY",
+        "run_id": "run-1",
+        "schema_id": "runtime-contracts/qa/action-receipt",
+        "schema_version": "0.1",
+        "state_after_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000029",
+        "state_before_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000029",
+        "step_id": "s1",
+        "tool": {
+          "name": "qa-playwright",
+          "version": "0.1.0"
+        }
+      },
+      "schema_id": "runtime-contracts/qa/action-receipt",
+      "why": "a denied action still cites its policy decision and changed nothing"
+    },
+    "assertion_result_indeterminate": {
+      "custody": {
+        "evaluated_at": "2026-10-30T10:00:01Z"
+      },
+      "hash": "rcv1:a69939d3c687bb92cb0cde5132a48c61704baf9a69d44e25fd1b3549032a5cf1",
+      "input": {
+        "assertion_id": "a-saved",
+        "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+        "check": {
+          "check_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "evidence_refs": [],
+          "verdict": "INDETERMINATE"
+        },
+        "executor": "PLAYWRIGHT",
+        "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+        "observation_id": "obs-s1-after",
+        "reason_code": "SUBJECT_UNRESOLVED",
+        "schema_id": "runtime-contracts/qa/assertion-result",
+        "schema_version": "0.1",
+        "verifier": {
+          "id": "det-verifier",
+          "version": "1.0.0"
+        }
+      },
+      "schema_id": "runtime-contracts/qa/assertion-result",
+      "why": "an unresolved subject is indeterminate with a reason, never a pass"
+    },
+    "assertion_result_pass": {
+      "custody": {
+        "evaluated_at": "2026-10-30T10:00:01Z"
+      },
+      "hash": "rcv1:97868ba9578029b73aa83202ab123f0d939fe6d4372db36299078c9689503e20",
+      "input": {
+        "actual": "Saved",
+        "assertion_id": "a-saved",
+        "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+        "check": {
+          "check_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "evidence_refs": [
+            "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+          ],
+          "verdict": "PASS"
+        },
+        "executor": "PLAYWRIGHT",
+        "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+        "observation_id": "obs-s1-after",
+        "schema_id": "runtime-contracts/qa/assertion-result",
+        "schema_version": "0.1",
+        "verifier": {
+          "id": "det-verifier",
+          "version": "1.0.0"
+        }
+      },
+      "schema_id": "runtime-contracts/qa/assertion-result",
+      "why": "verifier output; embeds Check, mirrors executor"
+    },
+    "assertion_spec_playwright": {
+      "hash": "rcv1:0fc7c18c187e055f82f58a06cb45ac76712526d3e2e7d305806cacaacbfd2108",
+      "input": {
+        "assertion_id": "a-saved",
+        "determinism": "DETERMINISTIC",
+        "executor": "PLAYWRIGHT",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "Saved",
+          "op": "EQUALS"
+        },
+        "requirement_ref": "REQ-SAVE-1",
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "0.1",
+        "subject": {
+          "inputs": [],
+          "kind": "UI_ELEMENT",
+          "locator": {
+            "frame_path": [],
+            "test_id": "save-status"
+          },
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "schema_id": "runtime-contracts/qa/assertion-spec",
+      "why": "a frozen UI assertion: executor, requirement_ref and expected are all hashed"
+    },
+    "assertion_spec_without_requirement_ref": {
+      "hash": "rcv1:59fbf768d0461f9a2c1b18b2dd84fc0e142410509d24ceb41f100c4d884754bd",
+      "input": {
+        "assertion_id": "a-saved",
+        "determinism": "DETERMINISTIC",
+        "executor": "PLAYWRIGHT",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "Saved",
+          "op": "EQUALS"
+        },
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "0.1",
+        "subject": {
+          "inputs": [],
+          "kind": "UI_ELEMENT",
+          "locator": {
+            "frame_path": [],
+            "test_id": "save-status"
+          },
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "schema_id": "runtime-contracts/qa/assertion-spec",
+      "why": "absent requirement_ref is null and null is dropped, so this hashes as an assertion from before the field existed"
+    },
+    "checkpoint": {
+      "custody": {
+        "taken_at": "2026-10-30T10:00:02Z"
+      },
+      "hash": "rcv1:5592da10a1073d0af498f6ec6acace2fab97cc97d2392f114a74f9ab63ee5d31",
+      "input": {
+        "checkpoint_id": "cp-1",
+        "fixture_snapshot_id": "snap-1",
+        "run_id": "run-1",
+        "schema_id": "runtime-contracts/qa/checkpoint",
+        "schema_version": "0.1",
+        "state_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000033",
+        "step_index": 2
+      },
+      "schema_id": "runtime-contracts/qa/checkpoint",
+      "why": "in-run resume point; no storage state"
+    },
+    "cleanup_report": {
+      "hash": "rcv1:7c905b058993f6312fbd4d00f56484e9731c061aa7f72bc7111e5d30672ac9b2",
+      "input": {
+        "handle_id": "s1",
+        "leaked": [],
+        "released": [
+          "context",
+          "page"
+        ],
+        "schema_id": "runtime-contracts/qa/cleanup-report",
+        "schema_version": "0.1",
+        "verified": true
+      },
+      "schema_id": "runtime-contracts/qa/cleanup-report",
+      "why": "verified cleanup"
+    },
+    "fault_detection": {
+      "custody": {
+        "detected_at_ms_into_step": 250
+      },
+      "hash": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+      "input": {
+        "claimed_class": "BENIGN_DRIFT",
+        "detected": true,
+        "detector": {
+          "id": "step-detector",
+          "version": "0.1.0"
+        },
+        "evidence_refs": [
+          {
+            "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+            "media_type": "image/png",
+            "modality": "image",
+            "ref": "obs-4",
+            "ref_type": "artifact",
+            "source": "qa-playwright",
+            "version": "1"
+          }
+        ],
+        "schema_id": "runtime-contracts/qa/fault-detection",
+        "schema_version": "0.1",
+        "signal": "LOCATOR_NOT_FOUND"
+      },
+      "schema_id": "runtime-contracts/qa/fault-detection",
+      "why": "detection, hashed first"
+    },
+    "fault_event": {
+      "hash": "rcv1:8051bb050e03c32079e1d2e1b716d2f22c05e2d0f2552ca43404a7bfa12a09a1",
+      "input": {
+        "detection": {
+          "claimed_class": "BENIGN_DRIFT",
+          "detected": true,
+          "detector": {
+            "id": "step-detector",
+            "version": "0.1.0"
+          },
+          "evidence_refs": [
+            {
+              "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+              "media_type": "image/png",
+              "modality": "image",
+              "ref": "obs-4",
+              "ref_type": "artifact",
+              "source": "qa-playwright",
+              "version": "1"
+            }
+          ],
+          "schema_id": "runtime-contracts/qa/fault-detection",
+          "schema_version": "0.1",
+          "signal": "LOCATOR_NOT_FOUND"
+        },
+        "fault_event_id": "fe-0",
+        "recovery": {
+          "attempted": true,
+          "attempts": 1,
+          "candidates_considered": 2,
+          "candidates_rejected_reasons": [
+            "NOT_UNIQUE"
+          ],
+          "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+          "postcondition_verified": true,
+          "result": "RECOVERED",
+          "schema_id": "runtime-contracts/qa/fault-recovery",
+          "schema_version": "0.1",
+          "strategy": "SEMANTIC_LOCATOR",
+          "suppressed_reason": "NONE"
+        },
+        "schema_id": "runtime-contracts/qa/fault-event",
+        "schema_version": "0.1",
+        "sequence": 0,
+        "step_id": "s1"
+      },
+      "schema_id": "runtime-contracts/qa/fault-event",
+      "why": "detection and recovery as two embedded records"
+    },
+    "fault_recovery": {
+      "custody": {
+        "cost": {
+          "model_calls": 0,
+          "ms": 180,
+          "tokens": 0
+        }
+      },
+      "hash": "rcv1:e9fc14128bdf765d77cef1169c9a511885db5ac6f3197b01e0d2531aa410e4b9",
+      "input": {
+        "attempted": true,
+        "attempts": 1,
+        "candidates_considered": 2,
+        "candidates_rejected_reasons": [
+          "NOT_UNIQUE"
+        ],
+        "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+        "postcondition_verified": true,
+        "result": "RECOVERED",
+        "schema_id": "runtime-contracts/qa/fault-recovery",
+        "schema_version": "0.1",
+        "strategy": "SEMANTIC_LOCATOR",
+        "suppressed_reason": "NONE"
+      },
+      "schema_id": "runtime-contracts/qa/fault-recovery",
+      "why": "recovery binds to the detection by hash; cost is custody"
+    },
+    "locator_candidate": {
+      "hash": "rcv1:866474e59f99128f4713de1b62a9c3fed539900b38d8aada97940a607a5738b0",
+      "input": {
+        "name": "Save",
+        "role": "button",
+        "schema_id": "runtime-contracts/qa/locator-candidate",
+        "schema_version": "0.1",
+        "strategy": "SEMANTIC_ALTERNATE"
+      },
+      "schema_id": "runtime-contracts/qa/locator-candidate",
+      "why": "the only thing recovery may express: a locator to try"
+    },
+    "observation": {
+      "custody": {
+        "duration_ms": 120,
+        "observed_at": "2026-10-30T10:00:00Z"
+      },
+      "hash": "rcv1:76a27ce82824ba5625667e1b02a29ef3814208b343effd7cacfef965e9420d38",
+      "input": {
+        "a11y_snapshot_ref": {
+          "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000065",
+          "media_type": "image/png",
+          "modality": "image",
+          "ref": "a11y-1",
+          "ref_type": "artifact",
+          "source": "qa-playwright",
+          "version": "1"
+        },
+        "dom_meta": {
+          "nodes": 41,
+          "title": "Saved"
+        },
+        "frame": "main",
+        "observation_id": "obs-s1-after",
+        "phase": "AFTER",
+        "redaction_applied": true,
+        "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+        "schema_id": "runtime-contracts/qa/observation",
+        "schema_version": "0.1",
+        "screenshot_ref": {
+          "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000066",
+          "media_type": "image/png",
+          "modality": "image",
+          "ref": "shot-2",
+          "ref_type": "artifact",
+          "source": "qa-playwright",
+          "version": "1"
+        },
+        "source": {
+          "adapter": "qa-playwright",
+          "adapter_version": "0.1.0",
+          "browser": "chromium",
+          "browser_version": "130.0.1"
+        },
+        "step_id": "s1",
+        "url": "https://app.example.test/saved"
+      },
+      "schema_id": "runtime-contracts/qa/observation",
+      "why": "observation; timestamps and duration are custody"
+    },
+    "observed_value_ambiguous": {
+      "hash": "rcv1:c437b45a6f2f574e89bc143b20209d6f03202ed69bf6068947a731fc7893e9a4",
+      "input": {
+        "match_count": 3,
+        "resolution": "AMBIGUOUS",
+        "schema_id": "runtime-contracts/qa/observed-value",
+        "schema_version": "0.1"
+      },
+      "schema_id": "runtime-contracts/qa/observed-value",
+      "why": "resolution fact only"
+    },
+    "observed_value_resolved": {
+      "hash": "rcv1:244c1a464ff8509acd5dbf73983c448c5df08319f0c851d075cd507ea3f43934",
+      "input": {
+        "match_count": 1,
+        "observation_id": "obs-s1-after",
+        "resolution": "RESOLVED",
+        "schema_id": "runtime-contracts/qa/observed-value",
+        "schema_version": "0.1",
+        "value": "Saved"
+      },
+      "schema_id": "runtime-contracts/qa/observed-value",
+      "why": "what assert_ read; no expected and no verdict"
+    },
+    "policy_decision": {
+      "custody": {
+        "decided_at": "2026-10-30T10:00:00Z",
+        "reason": "matched rule allow-local-writes"
+      },
+      "hash": "rcv1:9cf0f2b4f7f49d81d6736ee4d988c98158485b5d29ea74ac1d2af2e3fb16e29e",
+      "input": {
+        "action_kind": "click",
+        "app": "demo-app",
+        "decision": "ALLOW",
+        "phase": "ui_action",
+        "policy_decision_id": "pd-s1",
+        "principal": "runner:qa",
+        "provider": "cr-policy-plane",
+        "rule_id": "allow-local-writes",
+        "run_id": "run-1",
+        "schema_id": "runtime-contracts/qa/policy-decision",
+        "schema_version": "0.1",
+        "scope": [
+          "ui:click"
+        ],
+        "side_effect": "WRITES_INTERNAL",
+        "step_id": "s1"
+      },
+      "schema_id": "runtime-contracts/qa/policy-decision",
+      "why": "a ui_action allow decision; reason is custody"
+    },
+    "qa_plan": {
+      "custody": {
+        "rationale_ref": "sha256:000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "hash": "rcv1:fd55c6ae75e6b7cdc7fb9240af713212bbd045a7f7ae28586966a7c535453090",
+      "input": {
+        "action_policy_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000009",
+        "coverage_contract": "FULL",
+        "gates": [
+          {
+            "after": [
+              "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7"
+            ],
+            "item": "infra-manifest@rcv1:6cf52f6e0857de42e1a95099619011058641e9a9c9c7a6edea647ec315fdd901"
+          }
+        ],
+        "items": [
+          {
+            "budget": {
+              "deadline_ms": 120000,
+              "max_model_calls": 0,
+              "max_recovery_attempts": 2,
+              "max_retries": 0,
+              "max_tokens": 0
+            },
+            "evidence_level": "STANDARD",
+            "lane": "lane-a",
+            "order": 0,
+            "recovery_ceiling": 2,
+            "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7"
+          },
+          {
+            "budget": {
+              "deadline_ms": 120000,
+              "max_model_calls": 0,
+              "max_recovery_attempts": 2,
+              "max_retries": 0,
+              "max_tokens": 0
+            },
+            "evidence_level": "STANDARD",
+            "lane": "lane-b",
+            "order": 0,
+            "recovery_ceiling": 2,
+            "spec_ref": "infra-manifest@rcv1:6cf52f6e0857de42e1a95099619011058641e9a9c9c7a6edea647ec315fdd901"
+          }
+        ],
+        "lanes": [
+          "lane-a",
+          "lane-b"
+        ],
+        "max_parallel": 2,
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "resource_claims": [
+          {
+            "amount": 2,
+            "resource": "browser_slots"
+          }
+        ],
+        "schema_id": "runtime-contracts/qa/qa-plan",
+        "schema_version": "0.1"
+      },
+      "schema_id": "runtime-contracts/qa/qa-plan",
+      "why": "static lanes, one gate, coverage_contract FULL; rationale_ref is custody"
+    },
+    "review_item": {
+      "custody": {
+        "created_at": "2026-10-30T10:00:06Z"
+      },
+      "hash": "rcv1:40719e535c30abda606af75187dd62ebc56fedb036ab837c3c4e01cbe79052c4",
+      "input": {
+        "evidence_refs": [
+          {
+            "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000065",
+            "media_type": "image/png",
+            "modality": "image",
+            "ref": "shot-1",
+            "ref_type": "artifact",
+            "source": "qa-playwright",
+            "version": "1"
+          },
+          {
+            "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000066",
+            "media_type": "image/png",
+            "modality": "image",
+            "ref": "shot-2",
+            "ref_type": "artifact",
+            "source": "qa-playwright",
+            "version": "1"
+          }
+        ],
+        "reason": "ASSERTION_INTEGRITY",
+        "review_item_id": "ri-1",
+        "run_id": "run-1",
+        "schema_id": "runtime-contracts/qa/review-item",
+        "schema_version": "0.1",
+        "suggested_change_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000034"
+      },
+      "schema_id": "runtime-contracts/qa/review-item",
+      "why": "an INCONCLUSIVE run always creates one"
+    },
+    "review_record": {
+      "custody": {
+        "review_minutes": 4,
+        "reviewer_id": "rev-1"
+      },
+      "hash": "rcv1:8f82cecde42816ebbbf4468a2bd5eea7af527bce888b7c723f16f19d0d2e67e4",
+      "input": {
+        "decision": "ACCEPT",
+        "review_item_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000035",
+        "schema_id": "runtime-contracts/qa/review-record",
+        "schema_version": "0.1"
+      },
+      "schema_id": "runtime-contracts/qa/review-record",
+      "why": "appended later; reviewer and minutes are custody"
+    },
+    "run_manifest_assertion_integrity": {
+      "custody": {
+        "counters": {
+          "infrastructure_ms": 5400,
+          "model_calls": 0,
+          "tokens": 0
+        },
+        "finished_at": "2026-10-30T10:00:05Z",
+        "started_at": "2026-10-30T10:00:00Z"
+      },
+      "hash": "rcv1:e8650e4b27a5204928797057304ed8551cae8c65a81ed74a28f7f7ca2194445a",
+      "input": {
+        "adapter": {
+          "id": "qa-playwright",
+          "version": "0.1.0"
+        },
+        "assertion_results": [
+          {
+            "actual": "Saved",
+            "assertion_id": "a-saved",
+            "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+            "check": {
+              "check_id": "a-saved",
+              "determinism": "DETERMINISTIC",
+              "evidence_refs": [
+                "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+              ],
+              "verdict": "PASS"
+            },
+            "executor": "PLAYWRIGHT",
+            "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+            "observation_id": "obs-s1-after",
+            "schema_id": "runtime-contracts/qa/assertion-result",
+            "schema_version": "0.1",
+            "verifier": {
+              "id": "det-verifier",
+              "version": "1.0.0"
+            }
+          }
+        ],
+        "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+        "assertions_declared": [
+          "a-saved",
+          "a-url"
+        ],
+        "assertions_executed": [
+          "a-saved"
+        ],
+        "assertions_skipped": [],
+        "browser": "chromium 130.0.1",
+        "egress_policy_id": "rcv1:0000000000000000000000000000000000000000000000000000000000000020",
+        "fault_events": [
+          {
+            "detection": {
+              "claimed_class": "BENIGN_DRIFT",
+              "detected": true,
+              "detector": {
+                "id": "step-detector",
+                "version": "0.1.0"
+              },
+              "evidence_refs": [
+                {
+                  "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+                  "media_type": "image/png",
+                  "modality": "image",
+                  "ref": "obs-4",
+                  "ref_type": "artifact",
+                  "source": "qa-playwright",
+                  "version": "1"
+                }
+              ],
+              "schema_id": "runtime-contracts/qa/fault-detection",
+              "schema_version": "0.1",
+              "signal": "LOCATOR_NOT_FOUND"
+            },
+            "fault_event_id": "fe-0",
+            "recovery": {
+              "attempted": true,
+              "attempts": 1,
+              "candidates_considered": 2,
+              "candidates_rejected_reasons": [
+                "NOT_UNIQUE"
+              ],
+              "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+              "postcondition_verified": true,
+              "result": "RECOVERED",
+              "schema_id": "runtime-contracts/qa/fault-recovery",
+              "schema_version": "0.1",
+              "strategy": "SEMANTIC_LOCATOR",
+              "suppressed_reason": "NONE"
+            },
+            "schema_id": "runtime-contracts/qa/fault-event",
+            "schema_version": "0.1",
+            "sequence": 0,
+            "step_id": "s1"
+          }
+        ],
+        "model_recovery_enabled": false,
+        "outcome": "INCONCLUSIVE",
+        "outcome_reason": "ASSERTION_INTEGRITY",
+        "plan_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000021",
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "recovery_enabled": true,
+        "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+        "resource_limits": {
+          "memory_mb": 2048,
+          "pids": 256
+        },
+        "run_id": "run-1",
+        "sandbox_image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000022",
+        "schema_id": "runtime-contracts/qa/run-manifest",
+        "schema_version": "0.1",
+        "seeds": [
+          7,
+          11
+        ],
+        "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+        "step_results": [
+          {
+            "postcondition": "SATISFIED",
+            "receipts": [
+              "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+            ],
+            "result": "OK",
+            "step_id": "s1"
+          }
+        ],
+        "trace_id": "0123456789abcdef0123456789abcdef",
+        "versions": [
+          {
+            "component": "agent-harness",
+            "version": "0.1.0"
+          },
+          {
+            "component": "runtime-contracts",
+            "revision": "403f536",
+            "version": "0.3.14"
+          }
+        ]
+      },
+      "schema_id": "runtime-contracts/qa/run-manifest",
+      "why": "declared != executed + skipped: only INCONCLUSIVE(ASSERTION_INTEGRITY) can be recorded"
+    },
+    "run_manifest_inconclusive_skipped": {
+      "custody": {
+        "counters": {
+          "infrastructure_ms": 5400,
+          "model_calls": 0,
+          "tokens": 0
+        },
+        "finished_at": "2026-10-30T10:00:05Z",
+        "started_at": "2026-10-30T10:00:00Z"
+      },
+      "hash": "rcv1:f14e6bc8dbd762711c28b1291ea418c438e52a2acaac4a404a695eaffd3de3d7",
+      "input": {
+        "adapter": {
+          "id": "qa-playwright",
+          "version": "0.1.0"
+        },
+        "assertion_results": [
+          {
+            "actual": "Saved",
+            "assertion_id": "a-saved",
+            "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+            "check": {
+              "check_id": "a-saved",
+              "determinism": "DETERMINISTIC",
+              "evidence_refs": [
+                "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+              ],
+              "verdict": "PASS"
+            },
+            "executor": "PLAYWRIGHT",
+            "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+            "observation_id": "obs-s1-after",
+            "schema_id": "runtime-contracts/qa/assertion-result",
+            "schema_version": "0.1",
+            "verifier": {
+              "id": "det-verifier",
+              "version": "1.0.0"
+            }
+          }
+        ],
+        "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+        "assertions_declared": [
+          "a-saved",
+          "a-url"
+        ],
+        "assertions_executed": [
+          "a-saved"
+        ],
+        "assertions_skipped": [
+          {
+            "assertion_id": "a-url",
+            "reason_code": "NOT_REACHED"
+          }
+        ],
+        "browser": "chromium 130.0.1",
+        "egress_policy_id": "rcv1:0000000000000000000000000000000000000000000000000000000000000020",
+        "fault_events": [
+          {
+            "detection": {
+              "claimed_class": "BENIGN_DRIFT",
+              "detected": true,
+              "detector": {
+                "id": "step-detector",
+                "version": "0.1.0"
+              },
+              "evidence_refs": [
+                {
+                  "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+                  "media_type": "image/png",
+                  "modality": "image",
+                  "ref": "obs-4",
+                  "ref_type": "artifact",
+                  "source": "qa-playwright",
+                  "version": "1"
+                }
+              ],
+              "schema_id": "runtime-contracts/qa/fault-detection",
+              "schema_version": "0.1",
+              "signal": "LOCATOR_NOT_FOUND"
+            },
+            "fault_event_id": "fe-0",
+            "recovery": {
+              "attempted": true,
+              "attempts": 1,
+              "candidates_considered": 2,
+              "candidates_rejected_reasons": [
+                "NOT_UNIQUE"
+              ],
+              "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+              "postcondition_verified": true,
+              "result": "RECOVERED",
+              "schema_id": "runtime-contracts/qa/fault-recovery",
+              "schema_version": "0.1",
+              "strategy": "SEMANTIC_LOCATOR",
+              "suppressed_reason": "NONE"
+            },
+            "schema_id": "runtime-contracts/qa/fault-event",
+            "schema_version": "0.1",
+            "sequence": 0,
+            "step_id": "s1"
+          }
+        ],
+        "model_recovery_enabled": false,
+        "outcome": "INCONCLUSIVE",
+        "plan_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000021",
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "recovery_enabled": true,
+        "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+        "resource_limits": {
+          "memory_mb": 2048,
+          "pids": 256
+        },
+        "run_id": "run-1",
+        "sandbox_image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000022",
+        "schema_id": "runtime-contracts/qa/run-manifest",
+        "schema_version": "0.1",
+        "seeds": [
+          7,
+          11
+        ],
+        "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+        "step_results": [
+          {
+            "postcondition": "SATISFIED",
+            "receipts": [
+              "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+            ],
+            "result": "OK",
+            "step_id": "s1"
+          }
+        ],
+        "trace_id": "0123456789abcdef0123456789abcdef",
+        "versions": [
+          {
+            "component": "agent-harness",
+            "version": "0.1.0"
+          },
+          {
+            "component": "runtime-contracts",
+            "revision": "403f536",
+            "version": "0.3.14"
+          }
+        ]
+      },
+      "schema_id": "runtime-contracts/qa/run-manifest",
+      "why": "an assertion skipped with a reason: INCONCLUSIVE, consistent accounting"
+    },
+    "run_manifest_pass": {
+      "custody": {
+        "counters": {
+          "infrastructure_ms": 5400,
+          "model_calls": 0,
+          "tokens": 0
+        },
+        "finished_at": "2026-10-30T10:00:05Z",
+        "started_at": "2026-10-30T10:00:00Z"
+      },
+      "hash": "rcv1:a2eb640ac68297ff03feb9eec4f678a7f4af3d3a6be4a06f2d89f3ebbb14cec9",
+      "input": {
+        "adapter": {
+          "id": "qa-playwright",
+          "version": "0.1.0"
+        },
+        "assertion_results": [
+          {
+            "actual": "Saved",
+            "assertion_id": "a-saved",
+            "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+            "check": {
+              "check_id": "a-saved",
+              "determinism": "DETERMINISTIC",
+              "evidence_refs": [
+                "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+              ],
+              "verdict": "PASS"
+            },
+            "executor": "PLAYWRIGHT",
+            "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+            "observation_id": "obs-s1-after",
+            "schema_id": "runtime-contracts/qa/assertion-result",
+            "schema_version": "0.1",
+            "verifier": {
+              "id": "det-verifier",
+              "version": "1.0.0"
+            }
+          },
+          {
+            "actual": "Saved",
+            "assertion_id": "a-url",
+            "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+            "check": {
+              "check_id": "a-url",
+              "determinism": "DETERMINISTIC",
+              "evidence_refs": [
+                "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+              ],
+              "verdict": "PASS"
+            },
+            "executor": "PLAYWRIGHT",
+            "expected_hash": "rcv1:fd486b78aafb6295042c9b2ad98dd2ce47c9df3d0d26dc8795bb5f6c3a701b40",
+            "observation_id": "obs-s1-after",
+            "schema_id": "runtime-contracts/qa/assertion-result",
+            "schema_version": "0.1",
+            "verifier": {
+              "id": "det-verifier",
+              "version": "1.0.0"
+            }
+          }
+        ],
+        "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+        "assertions_declared": [
+          "a-saved",
+          "a-url"
+        ],
+        "assertions_executed": [
+          "a-saved",
+          "a-url"
+        ],
+        "assertions_skipped": [],
+        "browser": "chromium 130.0.1",
+        "egress_policy_id": "rcv1:0000000000000000000000000000000000000000000000000000000000000020",
+        "fault_events": [
+          {
+            "detection": {
+              "claimed_class": "BENIGN_DRIFT",
+              "detected": true,
+              "detector": {
+                "id": "step-detector",
+                "version": "0.1.0"
+              },
+              "evidence_refs": [
+                {
+                  "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+                  "media_type": "image/png",
+                  "modality": "image",
+                  "ref": "obs-4",
+                  "ref_type": "artifact",
+                  "source": "qa-playwright",
+                  "version": "1"
+                }
+              ],
+              "schema_id": "runtime-contracts/qa/fault-detection",
+              "schema_version": "0.1",
+              "signal": "LOCATOR_NOT_FOUND"
+            },
+            "fault_event_id": "fe-0",
+            "recovery": {
+              "attempted": true,
+              "attempts": 1,
+              "candidates_considered": 2,
+              "candidates_rejected_reasons": [
+                "NOT_UNIQUE"
+              ],
+              "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+              "postcondition_verified": true,
+              "result": "RECOVERED",
+              "schema_id": "runtime-contracts/qa/fault-recovery",
+              "schema_version": "0.1",
+              "strategy": "SEMANTIC_LOCATOR",
+              "suppressed_reason": "NONE"
+            },
+            "schema_id": "runtime-contracts/qa/fault-event",
+            "schema_version": "0.1",
+            "sequence": 0,
+            "step_id": "s1"
+          }
+        ],
+        "model_recovery_enabled": false,
+        "outcome": "PASS",
+        "plan_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000021",
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "recovery_enabled": true,
+        "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+        "resource_limits": {
+          "memory_mb": 2048,
+          "pids": 256
+        },
+        "run_id": "run-1",
+        "sandbox_image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000022",
+        "schema_id": "runtime-contracts/qa/run-manifest",
+        "schema_version": "0.1",
+        "seeds": [
+          7,
+          11
+        ],
+        "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+        "step_results": [
+          {
+            "postcondition": "SATISFIED",
+            "receipts": [
+              "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+            ],
+            "result": "OK",
+            "step_id": "s1"
+          }
+        ],
+        "trace_id": "0123456789abcdef0123456789abcdef",
+        "versions": [
+          {
+            "component": "agent-harness",
+            "version": "0.1.0"
+          },
+          {
+            "component": "runtime-contracts",
+            "revision": "403f536",
+            "version": "0.3.14"
+          }
+        ]
+      },
+      "schema_id": "runtime-contracts/qa/run-manifest",
+      "why": "declared == executed, nothing skipped, PASS"
+    },
+    "test_spec_resource": {
+      "custody": {
+        "author": "author-1"
+      },
+      "hash": "rcv1:6cf52f6e0857de42e1a95099619011058641e9a9c9c7a6edea647ec315fdd901",
+      "input": {
+        "allowed_side_effects": [],
+        "assertions": [
+          {
+            "assertion_id": "a-resource-note",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "budget": {
+          "deadline_ms": 120000,
+          "max_model_calls": 0,
+          "max_recovery_attempts": 2,
+          "max_retries": 1,
+          "max_tokens": 0
+        },
+        "cleanup": [
+          "reset form fixture"
+        ],
+        "depends_on": [],
+        "egress_profile": "operator-default",
+        "fixtures": [
+          {
+            "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+            "id": "seed-form"
+          }
+        ],
+        "id": "infra-manifest",
+        "preconditions": [
+          "user is signed in"
+        ],
+        "schema_id": "runtime-contracts/qa/test-spec",
+        "schema_version": "0.1",
+        "sensitivity_labels": [
+          "internal"
+        ],
+        "steps": [
+          {
+            "action": {
+              "kind": "resolve"
+            },
+            "expected_transition": "manifest resolves to a content digest",
+            "idempotency": "IDEMPOTENT",
+            "intent": "Resolve the deployment manifest",
+            "observation_deadline_ms": 2000,
+            "permitted_recovery": [
+              "RETRY_SAME"
+            ],
+            "retry_safety": "SAFE",
+            "side_effect": "NONE",
+            "step_id": "r1",
+            "target": {
+              "kind": "resource",
+              "resource": {
+                "kind": "MANIFEST_PATH",
+                "path": "k8s/deploy.yaml"
+              }
+            }
+          }
+        ],
+        "target": {
+          "app_id": "demo-app",
+          "build_sha": "0123456789abcdef",
+          "environment_profile": "ci-baseline"
+        },
+        "version": 1
+      },
+      "schema_id": "runtime-contracts/qa/test-spec",
+      "why": "a spec with a resource-target step (manifest path)"
+    },
+    "test_spec_ui": {
+      "custody": {
+        "author": "author-1"
+      },
+      "hash": "rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+      "input": {
+        "allowed_side_effects": [
+          "WRITES_INTERNAL"
+        ],
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "budget": {
+          "deadline_ms": 120000,
+          "max_model_calls": 0,
+          "max_recovery_attempts": 2,
+          "max_retries": 1,
+          "max_tokens": 0
+        },
+        "cleanup": [
+          "reset form fixture"
+        ],
+        "depends_on": [],
+        "egress_profile": "operator-default",
+        "fixtures": [
+          {
+            "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+            "id": "seed-form"
+          }
+        ],
+        "id": "checkout-save",
+        "preconditions": [
+          "user is signed in"
+        ],
+        "schema_id": "runtime-contracts/qa/test-spec",
+        "schema_version": "0.1",
+        "sensitivity_labels": [
+          "internal"
+        ],
+        "steps": [
+          {
+            "action": {
+              "kind": "click"
+            },
+            "expected_transition": "url ends /saved",
+            "idempotency": "AT_MOST_ONCE",
+            "intent": "Save the form",
+            "observation_deadline_ms": 5000,
+            "permitted_recovery": [
+              "CHECKPOINT_RESUME",
+              "SEMANTIC_LOCATOR"
+            ],
+            "retry_safety": "UNSAFE",
+            "side_effect": "WRITES_INTERNAL",
+            "step_id": "s1",
+            "target": {
+              "kind": "ui",
+              "locator": {
+                "frame_path": [],
+                "name": "Save",
+                "role": "button"
+              }
+            }
+          }
+        ],
+        "target": {
+          "app_id": "demo-app",
+          "build_sha": "0123456789abcdef",
+          "environment_profile": "ci-baseline"
+        },
+        "version": 1
+      },
+      "schema_id": "runtime-contracts/qa/test-spec",
+      "why": "a UI spec; author is custody and is not in the hash"
+    }
+  },
+  "contract": "qa/v1",
+  "hash_properties": {
+    "absent_equals_null": {
+      "explicit_null": "rcv1:59fbf768d0461f9a2c1b18b2dd84fc0e142410509d24ceb41f100c4d884754bd",
+      "omitted": "rcv1:59fbf768d0461f9a2c1b18b2dd84fc0e142410509d24ceb41f100c4d884754bd",
+      "why": "an explicit null and an omitted key hash identically"
+    },
+    "custody_excluded": {
+      "spec_hash_a": "rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+      "spec_hash_b": "rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+      "why": "author is custody: two specs differing only in author share spec_hash"
+    }
+  },
+  "refusals": [
+    {
+      "expect": {
+        "code": "ASSERTION_HASH_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "expected_edited_after_pinning",
+      "input": {
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Hacked",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "pinned_assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858"
+      },
+      "operation": "verify_assertion_set",
+      "why": "an assertion's expected value is edited after the set hash was pinned: refuse, evaluate nothing"
+    },
+    {
+      "expect": {
+        "code": "ASSERTION_HASH_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "locator_edited_after_pinning",
+      "input": {
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "other"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "pinned_assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858"
+      },
+      "operation": "verify_assertion_set",
+      "why": "a frozen locator descriptor is edited after pinning"
+    },
+    {
+      "expect": {
+        "code": "ASSERTION_HASH_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "requirement_ref_edited_after_pinning",
+      "input": {
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-OTHER",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "pinned_assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858"
+      },
+      "operation": "verify_assertion_set",
+      "why": "requirement_ref is part of the frozen assertion"
+    },
+    {
+      "expect": {
+        "code": "ASSERTION_HASH_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "assertion_removed",
+      "input": {
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "pinned_assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858"
+      },
+      "operation": "verify_assertion_set",
+      "why": "dropping an assertion is a change"
+    },
+    {
+      "expect": {
+        "code": "ASSERTION_HASH_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "assertion_added",
+      "input": {
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-extra",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "pinned_assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858"
+      },
+      "operation": "verify_assertion_set",
+      "why": "adding an assertion is a change"
+    },
+    {
+      "expect": {
+        "refused": false
+      },
+      "id": "assertions_unchanged_control",
+      "input": {
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Saved",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "pinned_assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858"
+      },
+      "operation": "verify_assertion_set",
+      "why": "control: untouched assertions verify"
+    },
+    {
+      "expect": {
+        "code": "HASH_MISMATCH",
+        "refused": true
+      },
+      "id": "spec_file_edited_between_load_and_verify",
+      "input": {
+        "allowed_side_effects": [
+          "WRITES_INTERNAL"
+        ],
+        "assertions": [
+          {
+            "assertion_id": "a-saved",
+            "content_hash": "rcv1:0fc7c18c187e055f82f58a06cb45ac76712526d3e2e7d305806cacaacbfd2108",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "Hacked",
+              "op": "EQUALS"
+            },
+            "requirement_ref": "REQ-SAVE-1",
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "UI_ELEMENT",
+              "locator": {
+                "frame_path": [],
+                "test_id": "save-status"
+              },
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          },
+          {
+            "assertion_id": "a-url",
+            "content_hash": "rcv1:56c82fa07b0158377d173d680f3349d507eac4fd3034d680760316920598fc70",
+            "determinism": "DETERMINISTIC",
+            "executor": "PLAYWRIGHT",
+            "on_unresolvable": "INDETERMINATE",
+            "predicate": {
+              "expected": "/saved$",
+              "op": "MATCHES"
+            },
+            "schema_id": "runtime-contracts/qa/assertion-spec",
+            "schema_version": "0.1",
+            "subject": {
+              "inputs": [],
+              "kind": "URL",
+              "pattern": "/saved$",
+              "subject_alternates": []
+            },
+            "verifier_id": "det-verifier",
+            "verifier_version_range": ">=1.0,<2"
+          }
+        ],
+        "budget": {
+          "deadline_ms": 120000,
+          "max_model_calls": 0,
+          "max_recovery_attempts": 2,
+          "max_retries": 1,
+          "max_tokens": 0
+        },
+        "cleanup": [
+          "reset form fixture"
+        ],
+        "content_hash": "rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+        "custody": {
+          "author": "author-1"
+        },
+        "depends_on": [],
+        "egress_profile": "operator-default",
+        "fixtures": [
+          {
+            "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+            "id": "seed-form"
+          }
+        ],
+        "id": "checkout-save",
+        "preconditions": [
+          "user is signed in"
+        ],
+        "schema_id": "runtime-contracts/qa/test-spec",
+        "schema_version": "0.1",
+        "sensitivity_labels": [
+          "internal"
+        ],
+        "steps": [
+          {
+            "action": {
+              "kind": "click"
+            },
+            "expected_transition": "url ends /saved",
+            "idempotency": "AT_MOST_ONCE",
+            "intent": "Save the form",
+            "observation_deadline_ms": 5000,
+            "permitted_recovery": [
+              "CHECKPOINT_RESUME",
+              "SEMANTIC_LOCATOR"
+            ],
+            "retry_safety": "UNSAFE",
+            "side_effect": "WRITES_INTERNAL",
+            "step_id": "s1",
+            "target": {
+              "kind": "ui",
+              "locator": {
+                "frame_path": [],
+                "name": "Save",
+                "role": "button"
+              }
+            }
+          }
+        ],
+        "target": {
+          "app_id": "demo-app",
+          "build_sha": "0123456789abcdef",
+          "environment_profile": "ci-baseline"
+        },
+        "version": 1
+      },
+      "operation": "parse_test_spec",
+      "why": "the stored content_hash no longer matches the edited bytes: hash mismatch, no evaluation"
+    },
+    {
+      "expect": {
+        "code": "EXPECTED_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "verifier_handed_a_different_expected",
+      "input": {
+        "assertion": {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        "result": {
+          "actual": "Saved",
+          "assertion_id": "a-saved",
+          "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+          "check": {
+            "check_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "evidence_refs": [
+              "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+            ],
+            "verdict": "PASS"
+          },
+          "executor": "PLAYWRIGHT",
+          "expected_hash": "rcv1:fb147142ada1a93c786d4d614a1505a7ac4514b2cea2056644ba844832233945",
+          "observation_id": "obs-s1-after",
+          "schema_id": "runtime-contracts/qa/assertion-result",
+          "schema_version": "0.1",
+          "verifier": {
+            "id": "det-verifier",
+            "version": "1.0.0"
+          }
+        }
+      },
+      "operation": "check_result_matches_assertion",
+      "why": "a result computed against another expected value is refused"
+    },
+    {
+      "expect": {
+        "code": "EXECUTOR_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "result_executor_differs_from_assertion",
+      "input": {
+        "assertion": {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        "result": {
+          "actual": "Saved",
+          "assertion_id": "a-saved",
+          "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+          "check": {
+            "check_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "evidence_refs": [
+              "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+            ],
+            "verdict": "PASS"
+          },
+          "executor": "SCRIPT",
+          "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+          "observation_id": "obs-s1-after",
+          "schema_id": "runtime-contracts/qa/assertion-result",
+          "schema_version": "0.1",
+          "verifier": {
+            "id": "det-verifier",
+            "version": "1.0.0"
+          }
+        }
+      },
+      "operation": "check_result_matches_assertion",
+      "why": "AssertionResult.executor must equal the frozen assertion's executor"
+    },
+    {
+      "expect": {
+        "refused": false
+      },
+      "id": "result_matches_control",
+      "input": {
+        "assertion": {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        "result": {
+          "actual": "Saved",
+          "assertion_id": "a-saved",
+          "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+          "check": {
+            "check_id": "a-saved",
+            "determinism": "DETERMINISTIC",
+            "evidence_refs": [
+              "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+            ],
+            "verdict": "PASS"
+          },
+          "executor": "PLAYWRIGHT",
+          "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+          "observation_id": "obs-s1-after",
+          "schema_id": "runtime-contracts/qa/assertion-result",
+          "schema_version": "0.1",
+          "verifier": {
+            "id": "det-verifier",
+            "version": "1.0.0"
+          }
+        }
+      },
+      "operation": "check_result_matches_assertion",
+      "why": "control: a faithful result is accepted"
+    },
+    {
+      "expect": {
+        "code": "RECOVERY_PAYLOAD_REJECTED",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "recovery_proposes_expected",
+      "input": {
+        "expected": "Anything",
+        "role": "button",
+        "strategy": "SEMANTIC_ALTERNATE"
+      },
+      "operation": "parse_recovery_candidate",
+      "why": "a hostile recoverer returns a changed expected value"
+    },
+    {
+      "expect": {
+        "code": "RECOVERY_PAYLOAD_REJECTED",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "recovery_extra_field",
+      "input": {
+        "selector": "#save",
+        "strategy": "MODEL_CANDIDATE",
+        "test_id": "save"
+      },
+      "operation": "parse_recovery_candidate",
+      "why": "a candidate with any field beyond the strict schema"
+    },
+    {
+      "expect": {
+        "code": "RECOVERY_PAYLOAD_REJECTED",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "recovery_returns_an_assertion_object",
+      "input": {
+        "assertion": {
+          "assertion_id": "a-saved",
+          "determinism": "DETERMINISTIC",
+          "executor": "PLAYWRIGHT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "Saved",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-SAVE-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [],
+            "kind": "UI_ELEMENT",
+            "locator": {
+              "frame_path": [],
+              "test_id": "save-status"
+            },
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        },
+        "role": "button",
+        "strategy": "MODEL_CANDIDATE"
+      },
+      "operation": "parse_recovery_candidate",
+      "why": "a recovery payload carrying an assertion"
+    },
+    {
+      "expect": {
+        "refused": false
+      },
+      "id": "recovery_candidate_control",
+      "input": {
+        "name": "Save",
+        "role": "button",
+        "strategy": "SEMANTIC_ALTERNATE"
+      },
+      "operation": "parse_recovery_candidate",
+      "why": "control: a strict candidate is accepted"
+    },
+    {
+      "expect": {
+        "code": "ASSERTION_HASH_MISMATCH",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "manifest_pins_a_different_assertion_set",
+      "input": {
+        "manifest": {
+          "adapter": {
+            "id": "qa-playwright",
+            "version": "0.1.0"
+          },
+          "assertion_results": [
+            {
+              "actual": "Saved",
+              "assertion_id": "a-saved",
+              "assertion_set_hash": "rcv1:ccab07d678f186b4d6a7e4ee8620e72741ab742b7c476ae3e16d21ea2e79a915",
+              "check": {
+                "check_id": "a-saved",
+                "determinism": "DETERMINISTIC",
+                "evidence_refs": [
+                  "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+                ],
+                "verdict": "PASS"
+              },
+              "executor": "PLAYWRIGHT",
+              "expected_hash": "rcv1:04ff30e5ef34a3e81f877702367426f5b90d51e60ca75425e4bb255990fa6eb4",
+              "observation_id": "obs-s1-after",
+              "schema_id": "runtime-contracts/qa/assertion-result",
+              "schema_version": "0.1",
+              "verifier": {
+                "id": "det-verifier",
+                "version": "1.0.0"
+              }
+            },
+            {
+              "actual": "Saved",
+              "assertion_id": "a-url",
+              "assertion_set_hash": "rcv1:ccab07d678f186b4d6a7e4ee8620e72741ab742b7c476ae3e16d21ea2e79a915",
+              "check": {
+                "check_id": "a-url",
+                "determinism": "DETERMINISTIC",
+                "evidence_refs": [
+                  "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+                ],
+                "verdict": "PASS"
+              },
+              "executor": "PLAYWRIGHT",
+              "expected_hash": "rcv1:fd486b78aafb6295042c9b2ad98dd2ce47c9df3d0d26dc8795bb5f6c3a701b40",
+              "observation_id": "obs-s1-after",
+              "schema_id": "runtime-contracts/qa/assertion-result",
+              "schema_version": "0.1",
+              "verifier": {
+                "id": "det-verifier",
+                "version": "1.0.0"
+              }
+            }
+          ],
+          "assertion_set_hash": "rcv1:ccab07d678f186b4d6a7e4ee8620e72741ab742b7c476ae3e16d21ea2e79a915",
+          "assertions_declared": [
+            "a-saved",
+            "a-url"
+          ],
+          "assertions_executed": [
+            "a-saved",
+            "a-url"
+          ],
+          "assertions_skipped": [],
+          "browser": "chromium 130.0.1",
+          "egress_policy_id": "rcv1:0000000000000000000000000000000000000000000000000000000000000020",
+          "fault_events": [
+            {
+              "detection": {
+                "claimed_class": "BENIGN_DRIFT",
+                "detected": true,
+                "detector": {
+                  "id": "step-detector",
+                  "version": "0.1.0"
+                },
+                "evidence_refs": [
+                  {
+                    "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+                    "media_type": "image/png",
+                    "modality": "image",
+                    "ref": "obs-4",
+                    "ref_type": "artifact",
+                    "source": "qa-playwright",
+                    "version": "1"
+                  }
+                ],
+                "schema_id": "runtime-contracts/qa/fault-detection",
+                "schema_version": "0.1",
+                "signal": "LOCATOR_NOT_FOUND"
+              },
+              "fault_event_id": "fe-0",
+              "recovery": {
+                "attempted": true,
+                "attempts": 1,
+                "candidates_considered": 2,
+                "candidates_rejected_reasons": [
+                  "NOT_UNIQUE"
+                ],
+                "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+                "postcondition_verified": true,
+                "result": "RECOVERED",
+                "schema_id": "runtime-contracts/qa/fault-recovery",
+                "schema_version": "0.1",
+                "strategy": "SEMANTIC_LOCATOR",
+                "suppressed_reason": "NONE"
+              },
+              "schema_id": "runtime-contracts/qa/fault-event",
+              "schema_version": "0.1",
+              "sequence": 0,
+              "step_id": "s1"
+            }
+          ],
+          "model_recovery_enabled": false,
+          "outcome": "PASS",
+          "plan_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000021",
+          "planner": {
+            "id": "cr-qa-planner",
+            "version": "0.1.0"
+          },
+          "recovery_enabled": true,
+          "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+          "resource_limits": {
+            "memory_mb": 2048,
+            "pids": 256
+          },
+          "run_id": "run-1",
+          "sandbox_image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000022",
+          "schema_id": "runtime-contracts/qa/run-manifest",
+          "schema_version": "0.1",
+          "seeds": [
+            7,
+            11
+          ],
+          "spec_ref": "checkout-save@rcv1:293276e6235d84d0cec24c5986bbc201a0019cba4347c5d843dd20ba07aeb7ce",
+          "step_results": [
+            {
+              "postcondition": "SATISFIED",
+              "receipts": [
+                "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+              ],
+              "result": "OK",
+              "step_id": "s1"
+            }
+          ],
+          "trace_id": "0123456789abcdef0123456789abcdef",
+          "versions": [
+            {
+              "component": "agent-harness",
+              "version": "0.1.0"
+            },
+            {
+              "component": "runtime-contracts",
+              "revision": "403f536",
+              "version": "0.3.14"
+            }
+          ]
+        },
+        "spec": {
+          "allowed_side_effects": [
+            "WRITES_INTERNAL"
+          ],
+          "assertions": [
+            {
+              "assertion_id": "a-saved",
+              "determinism": "DETERMINISTIC",
+              "executor": "PLAYWRIGHT",
+              "on_unresolvable": "INDETERMINATE",
+              "predicate": {
+                "expected": "Saved",
+                "op": "EQUALS"
+              },
+              "requirement_ref": "REQ-SAVE-1",
+              "schema_id": "runtime-contracts/qa/assertion-spec",
+              "schema_version": "0.1",
+              "subject": {
+                "inputs": [],
+                "kind": "UI_ELEMENT",
+                "locator": {
+                  "frame_path": [],
+                  "test_id": "save-status"
+                },
+                "subject_alternates": []
+              },
+              "verifier_id": "det-verifier",
+              "verifier_version_range": ">=1.0,<2"
+            },
+            {
+              "assertion_id": "a-url",
+              "determinism": "DETERMINISTIC",
+              "executor": "PLAYWRIGHT",
+              "on_unresolvable": "INDETERMINATE",
+              "predicate": {
+                "expected": "/saved$",
+                "op": "MATCHES"
+              },
+              "schema_id": "runtime-contracts/qa/assertion-spec",
+              "schema_version": "0.1",
+              "subject": {
+                "inputs": [],
+                "kind": "URL",
+                "pattern": "/saved$",
+                "subject_alternates": []
+              },
+              "verifier_id": "det-verifier",
+              "verifier_version_range": ">=1.0,<2"
+            }
+          ],
+          "budget": {
+            "deadline_ms": 120000,
+            "max_model_calls": 0,
+            "max_recovery_attempts": 2,
+            "max_retries": 1,
+            "max_tokens": 0
+          },
+          "cleanup": [
+            "reset form fixture"
+          ],
+          "depends_on": [],
+          "egress_profile": "operator-default",
+          "fixtures": [
+            {
+              "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+              "id": "seed-form"
+            }
+          ],
+          "id": "checkout-save",
+          "preconditions": [
+            "user is signed in"
+          ],
+          "schema_id": "runtime-contracts/qa/test-spec",
+          "schema_version": "0.1",
+          "sensitivity_labels": [
+            "internal"
+          ],
+          "steps": [
+            {
+              "action": {
+                "kind": "click"
+              },
+              "expected_transition": "url ends /saved",
+              "idempotency": "AT_MOST_ONCE",
+              "intent": "Save the form",
+              "observation_deadline_ms": 5000,
+              "permitted_recovery": [
+                "CHECKPOINT_RESUME",
+                "SEMANTIC_LOCATOR"
+              ],
+              "retry_safety": "UNSAFE",
+              "side_effect": "WRITES_INTERNAL",
+              "step_id": "s1",
+              "target": {
+                "kind": "ui",
+                "locator": {
+                  "frame_path": [],
+                  "name": "Save",
+                  "role": "button"
+                }
+              }
+            }
+          ],
+          "target": {
+            "app_id": "demo-app",
+            "build_sha": "0123456789abcdef",
+            "environment_profile": "ci-baseline"
+          },
+          "version": 1
+        }
+      },
+      "operation": "verify_manifest_against_spec",
+      "why": "the run pinned an assertion set the spec does not hold"
+    },
+    {
+      "expect": {
+        "refused": false
+      },
+      "id": "manifest_run_of_the_spec_control",
+      "input": {
+        "manifest": {
+          "adapter": {
+            "id": "qa-playwright",
+            "version": "0.1.0"
+          },
+          "assertion_results": [
+            {
+              "actual": "Saved",
+              "assertion_id": "a-saved",
+              "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+              "check": {
+                "check_id": "a-saved",
+                "determinism": "DETERMINISTIC",
+                "evidence_refs": [
+                  "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+                ],
+                "verdict": "PASS"
+              },
+              "executor": "PLAYWRIGHT",
+              "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+              "observation_id": "obs-s1-after",
+              "schema_id": "runtime-contracts/qa/assertion-result",
+              "schema_version": "0.1",
+              "verifier": {
+                "id": "det-verifier",
+                "version": "1.0.0"
+              }
+            },
+            {
+              "actual": "Saved",
+              "assertion_id": "a-url",
+              "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+              "check": {
+                "check_id": "a-url",
+                "determinism": "DETERMINISTIC",
+                "evidence_refs": [
+                  "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+                ],
+                "verdict": "PASS"
+              },
+              "executor": "PLAYWRIGHT",
+              "expected_hash": "rcv1:fd486b78aafb6295042c9b2ad98dd2ce47c9df3d0d26dc8795bb5f6c3a701b40",
+              "observation_id": "obs-s1-after",
+              "schema_id": "runtime-contracts/qa/assertion-result",
+              "schema_version": "0.1",
+              "verifier": {
+                "id": "det-verifier",
+                "version": "1.0.0"
+              }
+            }
+          ],
+          "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+          "assertions_declared": [
+            "a-saved",
+            "a-url"
+          ],
+          "assertions_executed": [
+            "a-saved",
+            "a-url"
+          ],
+          "assertions_skipped": [],
+          "browser": "chromium 130.0.1",
+          "egress_policy_id": "rcv1:0000000000000000000000000000000000000000000000000000000000000020",
+          "fault_events": [
+            {
+              "detection": {
+                "claimed_class": "BENIGN_DRIFT",
+                "detected": true,
+                "detector": {
+                  "id": "step-detector",
+                  "version": "0.1.0"
+                },
+                "evidence_refs": [
+                  {
+                    "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+                    "media_type": "image/png",
+                    "modality": "image",
+                    "ref": "obs-4",
+                    "ref_type": "artifact",
+                    "source": "qa-playwright",
+                    "version": "1"
+                  }
+                ],
+                "schema_id": "runtime-contracts/qa/fault-detection",
+                "schema_version": "0.1",
+                "signal": "LOCATOR_NOT_FOUND"
+              },
+              "fault_event_id": "fe-0",
+              "recovery": {
+                "attempted": true,
+                "attempts": 1,
+                "candidates_considered": 2,
+                "candidates_rejected_reasons": [
+                  "NOT_UNIQUE"
+                ],
+                "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+                "postcondition_verified": true,
+                "result": "RECOVERED",
+                "schema_id": "runtime-contracts/qa/fault-recovery",
+                "schema_version": "0.1",
+                "strategy": "SEMANTIC_LOCATOR",
+                "suppressed_reason": "NONE"
+              },
+              "schema_id": "runtime-contracts/qa/fault-event",
+              "schema_version": "0.1",
+              "sequence": 0,
+              "step_id": "s1"
+            }
+          ],
+          "model_recovery_enabled": false,
+          "outcome": "PASS",
+          "plan_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000021",
+          "planner": {
+            "id": "cr-qa-planner",
+            "version": "0.1.0"
+          },
+          "recovery_enabled": true,
+          "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+          "resource_limits": {
+            "memory_mb": 2048,
+            "pids": 256
+          },
+          "run_id": "run-1",
+          "sandbox_image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000022",
+          "schema_id": "runtime-contracts/qa/run-manifest",
+          "schema_version": "0.1",
+          "seeds": [
+            7,
+            11
+          ],
+          "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+          "step_results": [
+            {
+              "postcondition": "SATISFIED",
+              "receipts": [
+                "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+              ],
+              "result": "OK",
+              "step_id": "s1"
+            }
+          ],
+          "trace_id": "0123456789abcdef0123456789abcdef",
+          "versions": [
+            {
+              "component": "agent-harness",
+              "version": "0.1.0"
+            },
+            {
+              "component": "runtime-contracts",
+              "revision": "403f536",
+              "version": "0.3.14"
+            }
+          ]
+        },
+        "spec": {
+          "allowed_side_effects": [
+            "WRITES_INTERNAL"
+          ],
+          "assertions": [
+            {
+              "assertion_id": "a-saved",
+              "determinism": "DETERMINISTIC",
+              "executor": "PLAYWRIGHT",
+              "on_unresolvable": "INDETERMINATE",
+              "predicate": {
+                "expected": "Saved",
+                "op": "EQUALS"
+              },
+              "requirement_ref": "REQ-SAVE-1",
+              "schema_id": "runtime-contracts/qa/assertion-spec",
+              "schema_version": "0.1",
+              "subject": {
+                "inputs": [],
+                "kind": "UI_ELEMENT",
+                "locator": {
+                  "frame_path": [],
+                  "test_id": "save-status"
+                },
+                "subject_alternates": []
+              },
+              "verifier_id": "det-verifier",
+              "verifier_version_range": ">=1.0,<2"
+            },
+            {
+              "assertion_id": "a-url",
+              "determinism": "DETERMINISTIC",
+              "executor": "PLAYWRIGHT",
+              "on_unresolvable": "INDETERMINATE",
+              "predicate": {
+                "expected": "/saved$",
+                "op": "MATCHES"
+              },
+              "schema_id": "runtime-contracts/qa/assertion-spec",
+              "schema_version": "0.1",
+              "subject": {
+                "inputs": [],
+                "kind": "URL",
+                "pattern": "/saved$",
+                "subject_alternates": []
+              },
+              "verifier_id": "det-verifier",
+              "verifier_version_range": ">=1.0,<2"
+            }
+          ],
+          "budget": {
+            "deadline_ms": 120000,
+            "max_model_calls": 0,
+            "max_recovery_attempts": 2,
+            "max_retries": 1,
+            "max_tokens": 0
+          },
+          "cleanup": [
+            "reset form fixture"
+          ],
+          "depends_on": [],
+          "egress_profile": "operator-default",
+          "fixtures": [
+            {
+              "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+              "id": "seed-form"
+            }
+          ],
+          "id": "checkout-save",
+          "preconditions": [
+            "user is signed in"
+          ],
+          "schema_id": "runtime-contracts/qa/test-spec",
+          "schema_version": "0.1",
+          "sensitivity_labels": [
+            "internal"
+          ],
+          "steps": [
+            {
+              "action": {
+                "kind": "click"
+              },
+              "expected_transition": "url ends /saved",
+              "idempotency": "AT_MOST_ONCE",
+              "intent": "Save the form",
+              "observation_deadline_ms": 5000,
+              "permitted_recovery": [
+                "CHECKPOINT_RESUME",
+                "SEMANTIC_LOCATOR"
+              ],
+              "retry_safety": "UNSAFE",
+              "side_effect": "WRITES_INTERNAL",
+              "step_id": "s1",
+              "target": {
+                "kind": "ui",
+                "locator": {
+                  "frame_path": [],
+                  "name": "Save",
+                  "role": "button"
+                }
+              }
+            }
+          ],
+          "target": {
+            "app_id": "demo-app",
+            "build_sha": "0123456789abcdef",
+            "environment_profile": "ci-baseline"
+          },
+          "version": 1
+        }
+      },
+      "operation": "verify_manifest_against_spec",
+      "why": "control: a manifest of this spec is accepted"
+    },
+    {
+      "expect": {
+        "classification": [
+          "INCONCLUSIVE",
+          "ASSERTION_INTEGRITY"
+        ]
+      },
+      "id": "coverage_declared_not_accounted",
+      "input": {
+        "declared": [
+          "a",
+          "b"
+        ],
+        "executed": [
+          "a"
+        ],
+        "skipped": []
+      },
+      "operation": "classify_coverage",
+      "why": "declared assertion neither executed nor skipped"
+    },
+    {
+      "expect": {
+        "classification": [
+          "INCONCLUSIVE",
+          "ASSERTION_INTEGRITY"
+        ]
+      },
+      "id": "coverage_executed_and_skipped",
+      "input": {
+        "declared": [
+          "a",
+          "b"
+        ],
+        "executed": [
+          "a",
+          "b"
+        ],
+        "skipped": [
+          "b"
+        ]
+      },
+      "operation": "classify_coverage",
+      "why": "executed and skipped overlap"
+    },
+    {
+      "expect": {
+        "classification": [
+          "INCONCLUSIVE",
+          "ASSERTION_INTEGRITY"
+        ]
+      },
+      "id": "coverage_executed_not_declared",
+      "input": {
+        "declared": [
+          "a"
+        ],
+        "executed": [
+          "a",
+          "z"
+        ],
+        "skipped": []
+      },
+      "operation": "classify_coverage",
+      "why": "an assertion ran that the spec never declared"
+    },
+    {
+      "expect": {
+        "classification": null
+      },
+      "id": "coverage_consistent_control",
+      "input": {
+        "declared": [
+          "a",
+          "b"
+        ],
+        "executed": [
+          "a"
+        ],
+        "skipped": [
+          "b"
+        ]
+      },
+      "operation": "classify_coverage",
+      "why": "control: declared == executed + skipped, disjoint"
+    },
+    {
+      "expect": {
+        "code": "COVERAGE_VIOLATION",
+        "refused": true,
+        "run_outcome": "INCONCLUSIVE",
+        "run_reason": "ASSERTION_INTEGRITY"
+      },
+      "id": "manifest_claims_pass_with_broken_accounting",
+      "input": {
+        "adapter": {
+          "id": "qa-playwright",
+          "version": "0.1.0"
+        },
+        "assertion_results": [
+          {
+            "actual": "Saved",
+            "assertion_id": "a-saved",
+            "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+            "check": {
+              "check_id": "a-saved",
+              "determinism": "DETERMINISTIC",
+              "evidence_refs": [
+                "shot-3@1#sha256:0000000000000000000000000000000000000000000000000000000000000067"
+              ],
+              "verdict": "PASS"
+            },
+            "executor": "PLAYWRIGHT",
+            "expected_hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+            "observation_id": "obs-s1-after",
+            "schema_id": "runtime-contracts/qa/assertion-result",
+            "schema_version": "0.1",
+            "verifier": {
+              "id": "det-verifier",
+              "version": "1.0.0"
+            }
+          }
+        ],
+        "assertion_set_hash": "rcv1:94c9e0bd652146534232836c1de1cea4d1aab066939f8e0755f8b930a2898858",
+        "assertions_declared": [
+          "a-saved",
+          "a-url"
+        ],
+        "assertions_executed": [
+          "a-saved"
+        ],
+        "assertions_skipped": [],
+        "browser": "chromium 130.0.1",
+        "egress_policy_id": "rcv1:0000000000000000000000000000000000000000000000000000000000000020",
+        "fault_events": [
+          {
+            "detection": {
+              "claimed_class": "BENIGN_DRIFT",
+              "detected": true,
+              "detector": {
+                "id": "step-detector",
+                "version": "0.1.0"
+              },
+              "evidence_refs": [
+                {
+                  "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+                  "media_type": "image/png",
+                  "modality": "image",
+                  "ref": "obs-4",
+                  "ref_type": "artifact",
+                  "source": "qa-playwright",
+                  "version": "1"
+                }
+              ],
+              "schema_id": "runtime-contracts/qa/fault-detection",
+              "schema_version": "0.1",
+              "signal": "LOCATOR_NOT_FOUND"
+            },
+            "fault_event_id": "fe-0",
+            "recovery": {
+              "attempted": true,
+              "attempts": 1,
+              "candidates_considered": 2,
+              "candidates_rejected_reasons": [
+                "NOT_UNIQUE"
+              ],
+              "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+              "postcondition_verified": true,
+              "result": "RECOVERED",
+              "schema_id": "runtime-contracts/qa/fault-recovery",
+              "schema_version": "0.1",
+              "strategy": "SEMANTIC_LOCATOR",
+              "suppressed_reason": "NONE"
+            },
+            "schema_id": "runtime-contracts/qa/fault-event",
+            "schema_version": "0.1",
+            "sequence": 0,
+            "step_id": "s1"
+          }
+        ],
+        "model_recovery_enabled": false,
+        "outcome": "PASS",
+        "outcome_reason": null,
+        "plan_hash": "rcv1:0000000000000000000000000000000000000000000000000000000000000021",
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "recovery_enabled": true,
+        "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f",
+        "resource_limits": {
+          "memory_mb": 2048,
+          "pids": 256
+        },
+        "run_id": "run-1",
+        "sandbox_image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000022",
+        "schema_id": "runtime-contracts/qa/run-manifest",
+        "schema_version": "0.1",
+        "seeds": [
+          7,
+          11
+        ],
+        "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7",
+        "step_results": [
+          {
+            "postcondition": "SATISFIED",
+            "receipts": [
+              "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+            ],
+            "result": "OK",
+            "step_id": "s1"
+          }
+        ],
+        "trace_id": "0123456789abcdef0123456789abcdef",
+        "versions": [
+          {
+            "component": "agent-harness",
+            "version": "0.1.0"
+          },
+          {
+            "component": "runtime-contracts",
+            "revision": "403f536",
+            "version": "0.3.14"
+          }
+        ]
+      },
+      "operation": "parse_run_manifest",
+      "why": "a manifest that breaks the accounting cannot claim PASS"
+    },
+    {
+      "expect": {
+        "code": "UNSUPPORTED_COVERAGE_CONTRACT",
+        "refused": true
+      },
+      "id": "plan_coverage_subset",
+      "input": {
+        "action_policy_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000009",
+        "coverage_contract": "SUBSET",
+        "gates": [],
+        "items": [
+          {
+            "budget": {
+              "deadline_ms": 120000,
+              "max_model_calls": 0,
+              "max_recovery_attempts": 2,
+              "max_retries": 0,
+              "max_tokens": 0
+            },
+            "evidence_level": "STANDARD",
+            "lane": "lane-a",
+            "order": 0,
+            "recovery_ceiling": 2,
+            "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7"
+          }
+        ],
+        "lanes": [
+          "lane-a",
+          "lane-b"
+        ],
+        "max_parallel": 2,
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "resource_claims": [
+          {
+            "amount": 2,
+            "resource": "browser_slots"
+          }
+        ],
+        "schema_id": "runtime-contracts/qa/qa-plan",
+        "schema_version": "0.1"
+      },
+      "operation": "parse_qa_plan",
+      "why": "SUBSET is a reserved value every validator rejects"
+    },
+    {
+      "expect": {
+        "code": "UNKNOWN_FIELD",
+        "refused": true
+      },
+      "id": "plan_dynamic_dispatch_field",
+      "input": {
+        "action_policy_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000009",
+        "coverage_contract": "FULL",
+        "gates": [],
+        "items": [
+          {
+            "budget": {
+              "deadline_ms": 120000,
+              "max_model_calls": 0,
+              "max_recovery_attempts": 2,
+              "max_retries": 0,
+              "max_tokens": 0
+            },
+            "evidence_level": "STANDARD",
+            "lane": "lane-a",
+            "order": 0,
+            "recovery_ceiling": 2,
+            "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7"
+          }
+        ],
+        "lanes": [
+          "lane-a",
+          "lane-b"
+        ],
+        "max_parallel": 2,
+        "planner": {
+          "id": "cr-qa-planner",
+          "version": "0.1.0"
+        },
+        "resource_claims": [
+          {
+            "amount": 2,
+            "resource": "browser_slots"
+          }
+        ],
+        "schema_id": "runtime-contracts/qa/qa-plan",
+        "schema_version": "0.1",
+        "work_stealing": true
+      },
+      "operation": "parse_qa_plan",
+      "why": "a plan has no field through which dynamic dispatch could be requested"
+    },
+    {
+      "expect": {
+        "code": "UNKNOWN_ENUM_VALUE",
+        "refused": true
+      },
+      "id": "unknown_executor_is_non_certifying",
+      "input": {
+        "assertion_id": "a-saved",
+        "determinism": "DETERMINISTIC",
+        "executor": "TELEPATHY",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "Saved",
+          "op": "EQUALS"
+        },
+        "requirement_ref": "REQ-SAVE-1",
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "0.1",
+        "subject": {
+          "inputs": [],
+          "kind": "UI_ELEMENT",
+          "locator": {
+            "frame_path": [],
+            "test_id": "save-status"
+          },
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "operation": "parse_assertion_spec",
+      "why": "an executor value this version does not define fails closed"
+    },
+    {
+      "expect": {
+        "code": "SCHEMA_VERSION_UNSUPPORTED",
+        "refused": true
+      },
+      "id": "unknown_schema_version",
+      "input": {
+        "assertion_id": "a-saved",
+        "determinism": "DETERMINISTIC",
+        "executor": "PLAYWRIGHT",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "Saved",
+          "op": "EQUALS"
+        },
+        "requirement_ref": "REQ-SAVE-1",
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "1.0",
+        "subject": {
+          "inputs": [],
+          "kind": "UI_ELEMENT",
+          "locator": {
+            "frame_path": [],
+            "test_id": "save-status"
+          },
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "operation": "parse_assertion_spec",
+      "why": "a reader refuses an unknown major"
+    },
+    {
+      "expect": {
+        "verdict": "INDETERMINATE"
+      },
+      "id": "unknown_outcome_maps_to_indeterminate",
+      "input": {
+        "outcome": "GREAT"
+      },
+      "operation": "outcome_to_verdict",
+      "why": "an outcome this version does not define can never be read as a pass"
+    },
+    {
+      "expect": {
+        "code": "FAULT_BINDING_MISMATCH",
+        "refused": true
+      },
+      "id": "recovery_rewrites_the_detection",
+      "input": {
+        "detection": {
+          "claimed_class": "PRODUCT_DEFECT_SUSPECTED",
+          "detected": true,
+          "detector": {
+            "id": "step-detector",
+            "version": "0.1.0"
+          },
+          "evidence_refs": [
+            {
+              "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000068",
+              "media_type": "image/png",
+              "modality": "image",
+              "ref": "obs-4",
+              "ref_type": "artifact",
+              "source": "qa-playwright",
+              "version": "1"
+            }
+          ],
+          "schema_id": "runtime-contracts/qa/fault-detection",
+          "schema_version": "0.1",
+          "signal": "ASSERTION_FAILED"
+        },
+        "fault_event_id": "fe-0",
+        "recovery": {
+          "attempted": true,
+          "attempts": 1,
+          "candidates_considered": 2,
+          "candidates_rejected_reasons": [
+            "NOT_UNIQUE"
+          ],
+          "detection_ref": "rcv1:c6370e1a6b97fdfda74ac2a7a937ff3a3ca3960fd48b389fed5a75b043271738",
+          "postcondition_verified": true,
+          "result": "RECOVERED",
+          "schema_id": "runtime-contracts/qa/fault-recovery",
+          "schema_version": "0.1",
+          "strategy": "SEMANTIC_LOCATOR",
+          "suppressed_reason": "NONE"
+        },
+        "schema_id": "runtime-contracts/qa/fault-event",
+        "schema_version": "0.1",
+        "sequence": 0,
+        "step_id": "s1"
+      },
+      "operation": "parse_fault_event",
+      "why": "recovery.detection_ref must be the hash of the detection it responds to"
+    }
+  ],
+  "relations": [
+    {
+      "equal": [
+        "reference",
+        "order_variation"
+      ],
+      "why": "assertion order does not matter"
+    },
+    {
+      "equal": [
+        "unicode_nfc",
+        "unicode_nfd"
+      ],
+      "why": "NFC and NFD spellings of expected hash the same"
+    },
+    {
+      "differ": [
+        [
+          "reference",
+          "expected_changed"
+        ],
+        [
+          "reference",
+          "locator_descriptor_changed"
+        ],
+        [
+          "reference",
+          "requirement_ref_changed"
+        ],
+        [
+          "reference",
+          "requirement_ref_removed"
+        ],
+        [
+          "reference",
+          "operator_changed"
+        ]
+      ],
+      "why": "any change to expected, locator, requirement_ref or op changes the set hash"
+    }
+  ],
+  "schema_version": "0.1",
+  "schemas": {
+    "runtime-contracts/qa/action-receipt": "0.1",
+    "runtime-contracts/qa/assertion-result": "0.1",
+    "runtime-contracts/qa/assertion-spec": "0.1",
+    "runtime-contracts/qa/checkpoint": "0.1",
+    "runtime-contracts/qa/cleanup-report": "0.1",
+    "runtime-contracts/qa/fault-detection": "0.1",
+    "runtime-contracts/qa/fault-event": "0.1",
+    "runtime-contracts/qa/fault-recovery": "0.1",
+    "runtime-contracts/qa/locator-candidate": "0.1",
+    "runtime-contracts/qa/observation": "0.1",
+    "runtime-contracts/qa/observed-value": "0.1",
+    "runtime-contracts/qa/policy-decision": "0.1",
+    "runtime-contracts/qa/qa-plan": "0.1",
+    "runtime-contracts/qa/review-item": "0.1",
+    "runtime-contracts/qa/review-record": "0.1",
+    "runtime-contracts/qa/run-manifest": "0.1",
+    "runtime-contracts/qa/test-spec": "0.1"
+  },
+  "values": {
+    "action_click": {
+      "hash": "rcv1:28c5bdf86ec3f9b048fc0fc10c12fc81e661c9a622d22b0a83dc9e20988fc004",
+      "input": {
+        "kind": "click"
+      },
+      "type": "Action",
+      "why": "an action with no value"
+    },
+    "action_outcome": {
+      "hash": "rcv1:f7d595a699860f394598b720a015537850464e5e469c0783005b3f126f2285b8",
+      "input": {
+        "result": "OK"
+      },
+      "type": "ActionOutcome",
+      "why": "a raw result, no verdict"
+    },
+    "action_record": {
+      "hash": "rcv1:28c5bdf86ec3f9b048fc0fc10c12fc81e661c9a622d22b0a83dc9e20988fc004",
+      "input": {
+        "kind": "click"
+      },
+      "type": "ActionRecord",
+      "why": "the action taken; value digest only"
+    },
+    "action_request": {
+      "hash": "rcv1:da70d4d6d94a4110192fe0ef98763b88ffa15deb0d4927e29513ad11bce2d75c",
+      "input": {
+        "action": {
+          "kind": "click"
+        },
+        "idempotency_key": "idem-1",
+        "policy_decision_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000009",
+        "step_id": "s1"
+      },
+      "type": "ActionRequest",
+      "why": "an action cannot be built without a decision"
+    },
+    "assertion_subject_ui": {
+      "hash": "rcv1:3b82d127375f0293b22681e743ec7869494abb244c2874e2c24b07bc75bf7275",
+      "input": {
+        "inputs": [],
+        "kind": "UI_ELEMENT",
+        "locator": {
+          "frame_path": [],
+          "test_id": "save-status"
+        },
+        "subject_alternates": []
+      },
+      "type": "AssertionSubject",
+      "why": "a UI element subject"
+    },
+    "budget": {
+      "hash": "rcv1:26b7d76debd287a71ed35945d703488c2cb46d4107e59e16af2664945a20d497",
+      "input": {
+        "deadline_ms": 120000,
+        "max_model_calls": 0,
+        "max_recovery_attempts": 2,
+        "max_retries": 1,
+        "max_tokens": 0
+      },
+      "type": "Budget",
+      "why": "hard caps for one run"
+    },
+    "check_profile_k": {
+      "hash": "rcv1:e5bbb88a7f5af5a8593b429c7142f89a88bd93b316dc711ebae5d258a80f1be7",
+      "input": {
+        "case_root_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001",
+        "disposable_proof_ref": "rcv1:0000000000000000000000000000000000000000000000000000000000000002",
+        "tier": "K"
+      },
+      "type": "CheckProfile",
+      "why": "tier K requires the disposable-cluster proof"
+    },
+    "check_profile_offline": {
+      "hash": "rcv1:1434b9c019cef9dc6a51a0e431f0bddefa8a3165eab7305ac1d5a5389195f5be",
+      "input": {
+        "case_root_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001",
+        "tier": "OFFLINE"
+      },
+      "type": "CheckProfile",
+      "why": "offline: no disposable proof"
+    },
+    "check_program_ref": {
+      "hash": "rcv1:a347e173d4894cc92f057f38b1d96be73189044cacd8c125f24ab7f02ecbb341",
+      "input": {
+        "id": "image-pinned",
+        "program_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+        "version": "1.0.0"
+      },
+      "type": "CheckProgramRef",
+      "why": "a registered program pinned by the full sha256 of its source"
+    },
+    "check_subject": {
+      "hash": "rcv1:f2a7e0daff6c9d8e5e1080604305ec7afa464840b1a4096914b59eb21dd5be91",
+      "input": {
+        "check_program_ref": {
+          "id": "image-pinned",
+          "program_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+          "version": "1.0.0"
+        },
+        "inputs": [
+          {
+            "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+            "kind": "IMAGE_DIGEST"
+          }
+        ],
+        "tier": "OFFLINE"
+      },
+      "type": "CheckSubject",
+      "why": "program, inputs and tier; never an expected value"
+    },
+    "component_ref": {
+      "hash": "rcv1:08940da4789b67f9e9f190788b9dddfee3c014ad2a644b6f501014465c2c24ba",
+      "input": {
+        "id": "qa-playwright",
+        "version": "0.1.0"
+      },
+      "type": "ComponentRef",
+      "why": "{id, version} of whatever produced something"
+    },
+    "counters": {
+      "hash": "rcv1:0008e11a5797f55d96e84674706b33ac354413d2282c5322b0240d21b608a168",
+      "input": {
+        "infrastructure_ms": 5400,
+        "model_calls": 0,
+        "tokens": 0
+      },
+      "type": "Counters",
+      "why": "cost counters (custody on the manifest)"
+    },
+    "fixture_ref": {
+      "hash": "rcv1:918e1e4dd4dd9d63d14fe6791b3397e572d86672d3a7ecefd26397978992ca89",
+      "input": {
+        "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000007",
+        "id": "seed-form"
+      },
+      "type": "FixtureRef",
+      "why": "a fixture pinned by digest"
+    },
+    "locate_candidate": {
+      "hash": "rcv1:991de416525725d08f384e3494ca953ae44f7ecef33e3d6254cd87fd32dc3c43",
+      "input": {
+        "candidate_ref": "c1",
+        "enabled": true,
+        "name": "Save",
+        "role": "button",
+        "unique": true,
+        "visible": true
+      },
+      "type": "LocateCandidate",
+      "why": "a sole candidate is unique"
+    },
+    "locate_result": {
+      "hash": "rcv1:e97ede02cb65e0bb71e7f20e301bad6ec9b6d61c6f00a2d0422813e7cdedb409",
+      "input": {
+        "candidates": [
+          {
+            "candidate_ref": "c1",
+            "enabled": true,
+            "name": "Save",
+            "role": "button",
+            "unique": true,
+            "visible": true
+          }
+        ]
+      },
+      "type": "LocateResult",
+      "why": "every candidate, not the first"
+    },
+    "locator_descriptor": {
+      "hash": "rcv1:dffd320eda4cdce28314a54e98da64a510c95f056db000383578c93063e3e0de",
+      "input": {
+        "frame_path": [
+          "outer",
+          "inner"
+        ],
+        "name": "Save",
+        "role": "button"
+      },
+      "type": "LocatorDescriptor",
+      "why": "frame_path order is meaning"
+    },
+    "locator_used": {
+      "hash": "rcv1:f898d5a2fa88ed1093ccbb49694aae8dda4aa9290af8f93272b63da1cdd6b16f",
+      "input": {
+        "descriptor": {
+          "frame_path": [],
+          "name": "Save",
+          "role": "button"
+        },
+        "strategy": "AUTHORED"
+      },
+      "type": "LocatorUsed",
+      "why": "the locator actually used and how it was chosen"
+    },
+    "model_ref": {
+      "hash": "rcv1:d038c54ee90c6b8aca9fb0f7a6312cd8f754ceeb7359b2a6b283fe0d314e8adc",
+      "input": {
+        "model_id": "fake-1",
+        "parameters": {
+          "temperature": "0"
+        },
+        "provider": "fake"
+      },
+      "type": "ModelRef",
+      "why": "model identity; parameters are decimal strings, not floats"
+    },
+    "observation_source": {
+      "hash": "rcv1:270a3c006b7de36057bdc3a5353e2202051a4a1b04445b51a38507682d840f87",
+      "input": {
+        "adapter": "qa-playwright",
+        "adapter_version": "0.1.0",
+        "browser": "chromium",
+        "browser_version": "130.0.1"
+      },
+      "type": "ObservationSource",
+      "why": "which adapter and browser observed"
+    },
+    "observe_request": {
+      "hash": "rcv1:e70029fe0f02297f8abdc44bcd5a3bbb82213d46116a7a49e8f85d73152391c6",
+      "input": {
+        "capture": [
+          "A11Y_SNAPSHOT",
+          "SCREENSHOT"
+        ],
+        "phase": "AFTER",
+        "step_id": "s1"
+      },
+      "type": "ObserveRequest",
+      "why": "what to capture"
+    },
+    "plan_gate": {
+      "hash": "rcv1:be399edba5e6887dbdd94da2f2262597b708df9c2fd255e98b61499f4c023567",
+      "input": {
+        "after": [
+          "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7"
+        ],
+        "item": "infra-manifest@rcv1:6cf52f6e0857de42e1a95099619011058641e9a9c9c7a6edea647ec315fdd901"
+      },
+      "type": "PlanGate",
+      "why": "a start condition between items"
+    },
+    "plan_item": {
+      "hash": "rcv1:b8d96b4919948fcf2cc1a9fe69720679c1e30e4c011b7941d599e446eb87123a",
+      "input": {
+        "budget": {
+          "deadline_ms": 120000,
+          "max_model_calls": 0,
+          "max_recovery_attempts": 2,
+          "max_retries": 0,
+          "max_tokens": 0
+        },
+        "evidence_level": "STANDARD",
+        "lane": "lane-a",
+        "order": 0,
+        "recovery_ceiling": 2,
+        "spec_ref": "checkout-save@rcv1:2e63d029f7e5eea524716ed9c5e80d8fd807155318b5c02c2fda2f6b7c69d8f7"
+      },
+      "type": "PlanItem",
+      "why": "a spec in a lane at a position"
+    },
+    "postcondition": {
+      "hash": "rcv1:ea952203b35b838651030c74a32418ac1c30c33f954d08f29099c2ec0b6aaaed",
+      "input": {
+        "declared": "url ends /saved",
+        "observed": "url ends /saved",
+        "result": "SATISFIED"
+      },
+      "type": "Postcondition",
+      "why": "declared, observed, result"
+    },
+    "predicate_equals": {
+      "hash": "rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80",
+      "input": {
+        "expected": "Saved",
+        "op": "EQUALS"
+      },
+      "type": "Predicate",
+      "why": "expected_hash is the hash of this value"
+    },
+    "recovery_cost": {
+      "hash": "rcv1:8e864b6e4a1509107e0073ae5c10f012715be3f47feb4c4ddf42cd1500adfc5b",
+      "input": {
+        "model_calls": 0,
+        "ms": 180,
+        "tokens": 0
+      },
+      "type": "RecoveryCost",
+      "why": "recovery cost (custody on the recovery record)"
+    },
+    "reset_result": {
+      "hash": "rcv1:7423ba1432d2722d94cf91e9a78a296f964f2465f185223a69df5f19187722fd",
+      "input": {
+        "ok": true,
+        "scope": "FIXTURE"
+      },
+      "type": "ResetResult",
+      "why": "reset outcome"
+    },
+    "resolved_resource": {
+      "hash": "rcv1:2e4bf1ce84778b901c15051554e13b8d5becf091e4e47b729401bd4daa322c11",
+      "input": {
+        "content_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000003",
+        "ref": {
+          "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+          "kind": "IMAGE_DIGEST"
+        }
+      },
+      "type": "ResolvedResource",
+      "why": "a reference and its digest"
+    },
+    "resolved_target": {
+      "hash": "rcv1:0d14c91adc7c9fe7e865982b35dcbc5b3244e1f9451d7173f3080fd3dc1508c8",
+      "input": {
+        "candidate_ref": "c1",
+        "locator": {
+          "frame_path": [],
+          "role": "button"
+        },
+        "strategy": "AUTHORED"
+      },
+      "type": "ResolvedTarget",
+      "why": "what locate produced"
+    },
+    "resource_claim": {
+      "hash": "rcv1:e249bb152755cdcfdc98702d96038e5aa97fa98efb38f163186f9932cd2e2f2b",
+      "input": {
+        "amount": 2,
+        "resource": "browser_slots"
+      },
+      "type": "ResourceClaim",
+      "why": "a declarative claim"
+    },
+    "resource_ref_image_digest": {
+      "hash": "rcv1:d8aef569c4dd83a794a17caa5e35e345880cb8848667de563d2c73d161d2aae8",
+      "input": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+        "kind": "IMAGE_DIGEST"
+      },
+      "type": "ResourceRef",
+      "why": "IMAGE_DIGEST carries only a digest"
+    },
+    "resource_ref_manifest_path": {
+      "hash": "rcv1:a1076a7c65370ed2faaace5143dfbe6df781747d04e2dac664514d1df3ea1f90",
+      "input": {
+        "kind": "MANIFEST_PATH",
+        "path": "k8s/deploy.yaml"
+      },
+      "type": "ResourceRef",
+      "why": "MANIFEST_PATH carries only a case-relative path"
+    },
+    "resource_ref_namespace_object": {
+      "hash": "rcv1:08dd1d25d93cfc1b9fa6b2fe4694e1fdf14f072120a76708343e679defb52bfb",
+      "input": {
+        "api_version": "apps/v1",
+        "kind": "NAMESPACE_OBJECT",
+        "name": "api",
+        "namespace": "web",
+        "object_kind": "Deployment"
+      },
+      "type": "ResourceRef",
+      "why": "NAMESPACE_OBJECT carries the four typed fields"
+    },
+    "session_handle": {
+      "hash": "rcv1:2dc21dedfd4dfdde00918351c2942c83ab667ae9bfbf922e7407da65b92e6b45",
+      "input": {
+        "session_id": "sess-1"
+      },
+      "type": "SessionHandle",
+      "why": "opaque session id"
+    },
+    "session_profile": {
+      "hash": "rcv1:a74455362c83eb207d72683e782cd64fbdd2a88e1c3d2f9efc521c6b090c96c4",
+      "input": {
+        "allow_downloads": false,
+        "allow_file_choosers": false,
+        "allow_popups": false,
+        "egress_profile": "operator-default",
+        "redaction_policy_id": "rcv1:000000000000000000000000000000000000000000000000000000000000001f"
+      },
+      "type": "SessionProfile",
+      "why": "downloads, popups and file choosers denied by default"
+    },
+    "skipped_assertion": {
+      "hash": "rcv1:cec8bcc74295da7218c91b1893ecf0a8d53f224f994f19fb931f9035369b0f50",
+      "input": {
+        "assertion_id": "a-url",
+        "reason_code": "NOT_REACHED"
+      },
+      "type": "SkippedAssertion",
+      "why": "a skipped assertion with its reason"
+    },
+    "step_resource": {
+      "hash": "rcv1:78b552887575ed15bae9d2a3c5f826e5e9b91848d00e99fe2f503cdca2a3b7b2",
+      "input": {
+        "action": {
+          "kind": "resolve"
+        },
+        "expected_transition": "manifest resolves to a content digest",
+        "idempotency": "IDEMPOTENT",
+        "intent": "Resolve the deployment manifest",
+        "observation_deadline_ms": 2000,
+        "permitted_recovery": [
+          "RETRY_SAME"
+        ],
+        "retry_safety": "SAFE",
+        "side_effect": "NONE",
+        "step_id": "r1",
+        "target": {
+          "kind": "resource",
+          "resource": {
+            "kind": "MANIFEST_PATH",
+            "path": "k8s/deploy.yaml"
+          }
+        }
+      },
+      "type": "Step",
+      "why": "a resource step with a MANIFEST_PATH reference"
+    },
+    "step_result": {
+      "hash": "rcv1:d231f3ab2da7239f403814a03e338bcc41cc3a27ae5372f64b0cdab4d27c1ff4",
+      "input": {
+        "postcondition": "SATISFIED",
+        "receipts": [
+          "rcv1:f3cb21bbb77b5f3924619162bb42b15a16fffdea41e3a71300961bdcc7e50d61"
+        ],
+        "result": "OK",
+        "step_id": "s1"
+      },
+      "type": "StepResult",
+      "why": "how a step ended, with its receipts"
+    },
+    "step_target_resource": {
+      "hash": "rcv1:4076213bed4538dbdab15ac64423a560d1b46464cefd5366528e23632c236052",
+      "input": {
+        "kind": "resource",
+        "resource": {
+          "kind": "MANIFEST_PATH",
+          "path": "k8s/deploy.yaml"
+        }
+      },
+      "type": "StepTarget",
+      "why": "tagged target kind=resource"
+    },
+    "step_target_ui": {
+      "hash": "rcv1:84657f53ff5437f48bab0d1d4649a282aa6a0ad8248ef9dfb3234ac3f51da3d7",
+      "input": {
+        "kind": "ui",
+        "locator": {
+          "frame_path": [],
+          "name": "Save",
+          "role": "button"
+        }
+      },
+      "type": "StepTarget",
+      "why": "tagged target kind=ui"
+    },
+    "step_ui": {
+      "hash": "rcv1:3805417efcdfe7927c74116ed21f2cd756069e94dd1b7a97ed12e1528d8d7b11",
+      "input": {
+        "action": {
+          "kind": "click"
+        },
+        "expected_transition": "url ends /saved",
+        "idempotency": "AT_MOST_ONCE",
+        "intent": "Save the form",
+        "observation_deadline_ms": 5000,
+        "permitted_recovery": [
+          "CHECKPOINT_RESUME",
+          "SEMANTIC_LOCATOR"
+        ],
+        "retry_safety": "UNSAFE",
+        "side_effect": "WRITES_INTERNAL",
+        "step_id": "s1",
+        "target": {
+          "kind": "ui",
+          "locator": {
+            "frame_path": [],
+            "name": "Save",
+            "role": "button"
+          }
+        }
+      },
+      "type": "Step",
+      "why": "a UI step"
+    },
+    "test_target": {
+      "hash": "rcv1:d04f6c1d8f218c39e3661b2fb316de336cf0b59ea08e25d801824f4fdcf94fba",
+      "input": {
+        "app_id": "demo-app",
+        "build_sha": "0123456789abcdef",
+        "environment_profile": "ci-baseline"
+      },
+      "type": "TestTarget",
+      "why": "app, build and environment profile"
+    },
+    "tool_ref": {
+      "hash": "rcv1:71e06c17e177976c1c983a96d9c65d07b4dfde7aee322ce73678c86d826db659",
+      "input": {
+        "name": "qa-playwright",
+        "version": "0.1.0"
+      },
+      "type": "ToolRef",
+      "why": "the tool that acted"
+    },
+    "version_pin": {
+      "hash": "rcv1:bb687f9b535dbdab2c8e74d194f814087b49f0b07652efc3e3f4c486f5e8c608",
+      "input": {
+        "component": "agent-harness",
+        "version": "0.1.0"
+      },
+      "type": "VersionPin",
+      "why": "a pinned dependency"
+    },
+    "workspace_handle": {
+      "hash": "rcv1:00bd2b3a5cd60ef8fb8ecf3c2cbf224c0239495a39a85614ade4280e2365a0f7",
+      "input": {
+        "workspace_id": "ws-1"
+      },
+      "type": "WorkspaceHandle",
+      "why": "opaque workspace id"
+    }
+  }
+}
