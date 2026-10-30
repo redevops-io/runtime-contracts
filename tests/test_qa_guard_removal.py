@@ -44,6 +44,8 @@ GUARDS = {
     "plan_coverage_subset": ("runtime_contracts.qa.plan", "_guard_full_coverage"),
     "recovery_rewrites_the_detection": ("runtime_contracts.qa.fault", "_guard_fault_binding"),
     "unknown_schema_version": ("runtime_contracts.qa.base", "_guard_schema_identity"),
+    "script_without_check_program_ref": ("runtime_contracts.qa.spec", "_guard_check_program_ref"),
+    "playwright_with_check_program_ref": ("runtime_contracts.qa.spec", "_guard_check_program_ref"),
 }
 
 

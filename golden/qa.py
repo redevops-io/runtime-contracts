@@ -106,6 +106,9 @@ def record_cases() -> Dict[str, Any]:
         "assertion_spec_without_requirement_ref": _record_case(
             S.ui_assertion(requirement_ref=None), "absent requirement_ref is null and null is dropped, so this "
                                                   "hashes as an assertion from before the field existed"),
+        "assertion_spec_script": _record_case(
+            S.script_assertion(), "a SCRIPT assertion: executor and check_program_ref (id, version, program_hash) "
+                                  "are hashed"),
         "test_spec_ui": _record_case(SPEC, "a UI spec; author is custody and is not in the hash"),
         "test_spec_resource": _record_case(_resource_spec(), "a spec with a resource-target step (manifest path)"),
         "qa_plan": _record_case(S.plan_for([SPEC.spec_ref, _resource_spec().spec_ref]),
@@ -249,6 +252,13 @@ def assertion_sets() -> Dict[str, Any]:
                                     **_set_form([S.ui_assertion("a-saved", requirement_ref=None), a2])},
         "operator_changed": {"why": "the predicate op is hashed",
                              **_set_form([S.ui_assertion("a-saved", op=PredicateOp.CONTAINS), a2])},
+        "script_assertion": {"why": "a SCRIPT assertion with its program pinned", **_set_form([S.script_assertion()])},
+        "script_program_changed": {"why": "check_program_ref.program_hash is hashed: a different program is a "
+                                          "different assertion",
+                                   **_set_form([S.script_assertion(program_hash=S.d(77))])},
+        "script_replaces_playwright": {"why": "changing the executor changes the set hash",
+                                       **_set_form([dataclasses.replace(
+                                           S.script_assertion(), assertion_id="a-saved")])},
     }
 
 
@@ -259,6 +269,8 @@ RELATIONS: List[Dict[str, Any]] = [
      "differ": [["reference", "expected_changed"], ["reference", "locator_descriptor_changed"],
                 ["reference", "requirement_ref_changed"], ["reference", "requirement_ref_removed"],
                 ["reference", "operator_changed"]]},
+    {"why": "a different check program, or a different executor, changes the set hash",
+     "differ": [["script_assertion", "script_program_changed"], ["reference", "script_replaces_playwright"]]},
 ]
 
 
@@ -416,6 +428,16 @@ def _refusal_fixtures() -> List[Dict[str, Any]]:
          "why": "an executor value this version does not define fails closed",
          "input": {**_json_ready(a1.canonical_form()), "executor": "TELEPATHY"},
          "expect": {"refused": True, "code": "UNKNOWN_ENUM_VALUE"}},
+        {"id": "script_without_check_program_ref", "operation": "parse_assertion_spec",
+         "why": "executor SCRIPT requires check_program_ref, the hashed identity of the program it runs",
+         "input": {k: v for k, v in _json_ready(S.script_assertion().canonical_form()).items()
+                   if k != "check_program_ref"},
+         "expect": {"refused": True, "code": "CHECK_PROGRAM_REF_REQUIRED"}},
+        {"id": "playwright_with_check_program_ref", "operation": "parse_assertion_spec",
+         "why": "check_program_ref is only for executor SCRIPT",
+         "input": {**_json_ready(a1.canonical_form()),
+                   "check_program_ref": _json_ready(S.script_assertion().check_program_ref.canonical_form())},
+         "expect": {"refused": True, "code": "SPEC_INVALID"}},
         {"id": "unknown_schema_version", "operation": "parse_assertion_spec",
          "why": "a reader refuses an unknown major",
          "input": {**_json_ready(a1.canonical_form()), "schema_version": "1.0"},

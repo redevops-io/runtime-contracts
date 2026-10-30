@@ -351,6 +351,114 @@
       "hash": "rcv1:d9566320f66999ee39807a997b7e6a3435ce95c095e28922aab62d334d3f53d7",
       "why": "removing requirement_ref changes the hash"
     },
+    "script_assertion": {
+      "assertions": [
+        {
+          "assertion_id": "a-image-pinned",
+          "check_program_ref": {
+            "id": "image-pinned",
+            "program_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+            "version": "1.0.0"
+          },
+          "determinism": "DETERMINISTIC",
+          "executor": "SCRIPT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "pinned",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-IMG-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [
+              {
+                "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+                "kind": "IMAGE_DIGEST"
+              }
+            ],
+            "kind": "RESOURCE_INPUTS",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:6b5b1c83ef48b43d6536bfe63e7e87f7835ae653b3fb455ff2aff9b7016b55c1",
+      "why": "a SCRIPT assertion with its program pinned"
+    },
+    "script_program_changed": {
+      "assertions": [
+        {
+          "assertion_id": "a-image-pinned",
+          "check_program_ref": {
+            "id": "image-pinned",
+            "program_hash": "sha256:000000000000000000000000000000000000000000000000000000000000004d",
+            "version": "1.0.0"
+          },
+          "determinism": "DETERMINISTIC",
+          "executor": "SCRIPT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "pinned",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-IMG-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [
+              {
+                "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+                "kind": "IMAGE_DIGEST"
+              }
+            ],
+            "kind": "RESOURCE_INPUTS",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:fc0301d4199cab166b53fb7ced0e95e79716a826dc85126f8be36750bcc7ac37",
+      "why": "check_program_ref.program_hash is hashed: a different program is a different assertion"
+    },
+    "script_replaces_playwright": {
+      "assertions": [
+        {
+          "assertion_id": "a-saved",
+          "check_program_ref": {
+            "id": "image-pinned",
+            "program_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+            "version": "1.0.0"
+          },
+          "determinism": "DETERMINISTIC",
+          "executor": "SCRIPT",
+          "on_unresolvable": "INDETERMINATE",
+          "predicate": {
+            "expected": "pinned",
+            "op": "EQUALS"
+          },
+          "requirement_ref": "REQ-IMG-1",
+          "schema_id": "runtime-contracts/qa/assertion-spec",
+          "schema_version": "0.1",
+          "subject": {
+            "inputs": [
+              {
+                "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+                "kind": "IMAGE_DIGEST"
+              }
+            ],
+            "kind": "RESOURCE_INPUTS",
+            "subject_alternates": []
+          },
+          "verifier_id": "det-verifier",
+          "verifier_version_range": ">=1.0,<2"
+        }
+      ],
+      "hash": "rcv1:8e58f1a81fdf0cf7643530d2260da86d048c5ebb15a9ab0c2ed52c93358ae8be",
+      "why": "changing the executor changes the set hash"
+    },
     "unicode_nfc": {
       "assertions": [
         {
@@ -581,6 +689,41 @@
       },
       "schema_id": "runtime-contracts/qa/assertion-spec",
       "why": "a frozen UI assertion: executor, requirement_ref and expected are all hashed"
+    },
+    "assertion_spec_script": {
+      "hash": "rcv1:fe5d8b8e99e6ac80446dd829da0f16bae39c19cd4a6d0f03c90235075ce713f6",
+      "input": {
+        "assertion_id": "a-image-pinned",
+        "check_program_ref": {
+          "id": "image-pinned",
+          "program_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+          "version": "1.0.0"
+        },
+        "determinism": "DETERMINISTIC",
+        "executor": "SCRIPT",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "pinned",
+          "op": "EQUALS"
+        },
+        "requirement_ref": "REQ-IMG-1",
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "0.1",
+        "subject": {
+          "inputs": [
+            {
+              "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+              "kind": "IMAGE_DIGEST"
+            }
+          ],
+          "kind": "RESOURCE_INPUTS",
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "schema_id": "runtime-contracts/qa/assertion-spec",
+      "why": "a SCRIPT assertion: executor and check_program_ref (id, version, program_hash) are hashed"
     },
     "assertion_spec_without_requirement_ref": {
       "hash": "rcv1:59fbf768d0461f9a2c1b18b2dd84fc0e142410509d24ceb41f100c4d884754bd",
@@ -3322,6 +3465,78 @@
     },
     {
       "expect": {
+        "code": "CHECK_PROGRAM_REF_REQUIRED",
+        "refused": true
+      },
+      "id": "script_without_check_program_ref",
+      "input": {
+        "assertion_id": "a-image-pinned",
+        "determinism": "DETERMINISTIC",
+        "executor": "SCRIPT",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "pinned",
+          "op": "EQUALS"
+        },
+        "requirement_ref": "REQ-IMG-1",
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "0.1",
+        "subject": {
+          "inputs": [
+            {
+              "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000005",
+              "kind": "IMAGE_DIGEST"
+            }
+          ],
+          "kind": "RESOURCE_INPUTS",
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "operation": "parse_assertion_spec",
+      "why": "executor SCRIPT requires check_program_ref, the hashed identity of the program it runs"
+    },
+    {
+      "expect": {
+        "code": "SPEC_INVALID",
+        "refused": true
+      },
+      "id": "playwright_with_check_program_ref",
+      "input": {
+        "assertion_id": "a-saved",
+        "check_program_ref": {
+          "id": "image-pinned",
+          "program_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000006",
+          "version": "1.0.0"
+        },
+        "determinism": "DETERMINISTIC",
+        "executor": "PLAYWRIGHT",
+        "on_unresolvable": "INDETERMINATE",
+        "predicate": {
+          "expected": "Saved",
+          "op": "EQUALS"
+        },
+        "requirement_ref": "REQ-SAVE-1",
+        "schema_id": "runtime-contracts/qa/assertion-spec",
+        "schema_version": "0.1",
+        "subject": {
+          "inputs": [],
+          "kind": "UI_ELEMENT",
+          "locator": {
+            "frame_path": [],
+            "test_id": "save-status"
+          },
+          "subject_alternates": []
+        },
+        "verifier_id": "det-verifier",
+        "verifier_version_range": ">=1.0,<2"
+      },
+      "operation": "parse_assertion_spec",
+      "why": "check_program_ref is only for executor SCRIPT"
+    },
+    {
+      "expect": {
         "code": "SCHEMA_VERSION_UNSUPPORTED",
         "refused": true
       },
@@ -3457,6 +3672,19 @@
         ]
       ],
       "why": "any change to expected, locator, requirement_ref or op changes the set hash"
+    },
+    {
+      "differ": [
+        [
+          "script_assertion",
+          "script_program_changed"
+        ],
+        [
+          "reference",
+          "script_replaces_playwright"
+        ]
+      ],
+      "why": "a different check program, or a different executor, changes the set hash"
     }
   ],
   "schema_version": "0.1",
