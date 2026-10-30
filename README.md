@@ -66,7 +66,7 @@ only for repositories that are not public and is not demonstrable from this repo
 ## Docs
 
 [STATUS](STATUS.md) · [IMPLEMENTATION_STATUS](IMPLEMENTATION_STATUS.md) · [canonicalization](docs/CANONICALIZATION.md) ·
-[release discipline](docs/RELEASE_DISCIPLINE.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) ·
+[release discipline](docs/RELEASE_DISCIPLINE.md) · [QA contracts](docs/QA_V1.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) ·
 [CHANGELOG](CHANGELOG.md)
 
 ---
@@ -142,6 +142,13 @@ freshness / license, the `IntelligenceProvider` protocols and registry, the
 evidence-value gate (`decide_acquire` / `gated_acquire`), and the legal
 authority-level ladder (`LegalAuthorityLevel` · `may_auto_execute`). Adapters and
 the gate wiring live in `agentic-os`, never here.
+
+**QA contracts (`runtime_contracts/qa/`, `qa/v1`)** — the schemas for planning, executing and recording a
+verification: `TestSpec` with frozen, hash-referenced assertions, `QAPlan`, run records, `FaultEvent` with separate
+detection and recovery records, `RunManifest` with assertion accounting, and the `QAAdapter` / `CheckAdapter` /
+`BlobStore` protocols. Additive and self-contained: existing hashes are unchanged. Fixtures:
+[`golden/qa.json`](golden/qa.json) and the self-contained
+[`golden/qa_canon_vectors.json`](golden/qa_canon_vectors.json). See [docs/QA_V1.md](docs/QA_V1.md).
 
 **Bounded decision provider protocol (`protocol/decision_provider.py`)** — the
 shared `decision-provider/v1` request/result contract for rules, compact

@@ -93,6 +93,27 @@ implementations:
       gate stays below CONFORMANT. Context Runtime and ReDevOps RAG do not move
       because this application imports them — adoption is per implementation.
 
+  agent-harness:
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: not_applicable
+    repository: redevops-io/agent-harness
+    status: PLANNED
+    contracts: [qa/v1]
+    note: >-
+      Planned: a standalone QA module that executes and records a run. It mirrors qa/v1 with its own plain-data
+      records and its own implementation of the rcv1 canonicalization rules, and imports nothing from this package.
+      It checks itself against golden/qa_canon_vectors.json. No code exists yet, so nothing is claimed.
+
+  redevops-qa:
+    implementation_adoption: NOT_STARTED
+    predecessor_mapping: not_applicable
+    repository: redevops-io/redevops-qa
+    status: PLANNED
+    contracts: [qa/v1]
+    note: >-
+      Planned: the product that implements the QAAdapter and CheckAdapter protocols and bridges qa/v1 to the
+      harness records. Reproducing a golden hash earns ADAPTER_STARTED and nothing more. No code exists yet.
+
   mission-runtime:
     status: NOT_LOCATED
     evidence: zero occurrences in code, docs or config
