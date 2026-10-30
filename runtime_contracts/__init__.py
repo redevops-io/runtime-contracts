@@ -179,6 +179,8 @@ from .world import (  # noqa: E402
     VisualTrace,
 )
 
+from . import qa  # noqa: E402  (qa/v1: importable as runtime_contracts.qa; nothing is re-exported at top level)
+
 __version__ = "0.3.14"
 __all__ = [
     # strict canonical identity
@@ -228,5 +230,6 @@ __all__ = [
     "WorldEvent", "EntityRef", "EntityKind", "GroundTruth", "RealismClass",
     "IdentityGraph", "WorldDescriptor", "WorldRegistry", "default_registry",
     "BusinessBlock", "Capsule", "MilestoneKind", "NeedsYouReason", "TraceMilestone", "VisualTrace",
+    "qa",
     *_model_all,
 ]
