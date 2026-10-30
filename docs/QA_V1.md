@@ -60,7 +60,9 @@ The types enforce this:
 - A recovery payload is parsed into `LocatorCandidate`. Any other key, an `expected` value or an assertion object
   included, is refused as `ASSERTION_INTEGRITY`.
 
-Every integrity refusal ends the run as `INCONCLUSIVE` with reason `ASSERTION_INTEGRITY`.
+Every integrity refusal ends the run as `INCONCLUSIVE` with reason `ASSERTION_INTEGRITY`. A `SCRIPT` assertion with
+no `check_program_ref` is an invalid spec (`CHECK_PROGRAM_REF_REQUIRED`), which classifies as `TEST_DEFECT`; a program
+hash that no longer matches the pinned assertion set is refused before execution as an integrity violation.
 
 ## Assertion accounting
 
@@ -78,7 +80,8 @@ A false alarm, a miss, a mis-recovery and a suppressed recovery are all represen
 
 ## Plans
 
-`QAPlan` is fully resolved and declarative: items in static lanes, gates, `max_parallel`, resource claims and a
+A planner emits a `QAPlan` as this data and the runner reads it as data; neither imports the other's code. `QAPlan` is
+fully resolved and declarative: items in static lanes, gates, `max_parallel`, resource claims and a
 planner. It has no field for work stealing, re-planning or dependency resolution, and `from_json` refuses unknown
 keys. `coverage_contract` is `FULL`. `SUBSET` is a reserved value that every validator rejects with
 `UNSUPPORTED_COVERAGE_CONTRACT`. A plan whose lane order and gates could never start is refused.
@@ -115,6 +118,8 @@ cases and leaves the old ones unchanged.
 
 ## Boundaries
 
-The package imports the standard library only. It holds no information about how a run is scored or judged from
+The package imports the standard library only. A harness that executes `qa/v1` runs mirrors the records with its own
+plain data and its own `rcv1`-rule canonicalization and imports nothing from this package; it checks itself against
+`golden/qa_canon_vectors.json`. It holds no information about how a run is scored or judged from
 outside; that lives with the code that scores runs. The leak-guard test fails on a field, enum, schema id, source
 word or fixture key from that vocabulary.
