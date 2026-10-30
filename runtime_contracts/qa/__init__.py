@@ -10,6 +10,11 @@ Import from here, for example ``from runtime_contracts.qa import TestSpec, Asser
 from .base import (QA_CONTRACT_ID, QA_SCHEMA_VERSION, AssertionIntegrityError, Code, FrozenMap,
                    QAContractError, QARecord, QAValue, UnknownEnumValue, strip_non_identity, value_digest,
                    verify_stored_hash)
+from .adapter import (QA_ADAPTER_API_VERSION, ActionOutcome, ActionRequest, LocateCandidate, LocateResult,
+                      ObserveRequest, QAAdapter, ResetResult, ResolvedTarget, SessionHandle, SessionProfile)
+from .blob import BlobStore, Redactor, blob_digest, require_blob_digest, verify_blob
+from .check_adapter import (CHECK_ADAPTER_API_VERSION, CheckAdapter, CheckProfile, CheckSubject,
+                            ResolvedResource, WorkspaceHandle)
 from .conformance import (check_result_matches_assertion, parse_recovery_candidate,
                           parse_recovery_candidates, verify_manifest_against_spec)
 from .enums import (ActionKind, CaptureKind, CheckTier, ClaimedClass, CoverageContract, EvidenceLevel, Executor,
@@ -17,6 +22,11 @@ from .enums import (ActionKind, CaptureKind, CheckTier, ClaimedClass, CoverageCo
                     PolicyDecisionKind, PostconditionResult, PredicateOp, RecoveryResult, RecoveryStrategy,
                     Resolution, ResetScope, ResourceKind, ResultCode, ReviewDecision, SkipReason, SubjectKind,
                     SuppressedReason, TargetKind)
+from .errors import (ADAPTER_ERRORS, ActionBlockedByPolicy, ActionTimeout, AdapterCrash, BlobDigestInvalid,
+                     BlobDigestMismatch, BlobNotFound, BlobStoreError, BlobTooLarge, BrowserCrash, ClassHint,
+                     EnvironmentUnhealthy, ErrorCategory, LocatorAmbiguous, LocatorNotFound, NavigationDenied,
+                     QAAdapterError, RedactionFailed, ResetFailed, ResourceLimitExceeded, SessionLost,
+                     TargetNotActionable, UnexpectedDialog, UnsupportedOperation, error_for)
 from .fault import FaultDetection, FaultEvent, FaultRecovery, RecoveryCost
 from .integrity import (assertions_changed, classify_coverage, coverage_violations, executor_certifies,
                         integrity_violations, required_approvals, verify_assertion_set)
@@ -39,8 +49,18 @@ __all__ = [
     "ResourceKind", "ResultCode", "ReviewDecision", "SkipReason", "SubjectKind", "SuppressedReason", "TargetKind",
     "assertions_changed", "classify_coverage", "coverage_violations", "executor_certifies",
     "integrity_violations", "required_approvals", "verify_assertion_set",
+    "QA_ADAPTER_API_VERSION", "ActionOutcome", "ActionRequest", "LocateCandidate", "LocateResult",
+    "ObserveRequest", "QAAdapter", "ResetResult", "ResolvedTarget", "SessionHandle", "SessionProfile",
+    "BlobStore", "Redactor", "blob_digest", "require_blob_digest", "verify_blob",
+    "CHECK_ADAPTER_API_VERSION", "CheckAdapter", "CheckProfile", "CheckSubject", "ResolvedResource",
+    "WorkspaceHandle",
     "check_result_matches_assertion", "parse_recovery_candidate", "parse_recovery_candidates",
     "verify_manifest_against_spec",
+    "ADAPTER_ERRORS", "ActionBlockedByPolicy", "ActionTimeout", "AdapterCrash", "BlobDigestInvalid",
+    "BlobDigestMismatch", "BlobNotFound", "BlobStoreError", "BlobTooLarge", "BrowserCrash", "ClassHint",
+    "EnvironmentUnhealthy", "ErrorCategory", "LocatorAmbiguous", "LocatorNotFound", "NavigationDenied",
+    "QAAdapterError", "RedactionFailed", "ResetFailed", "ResourceLimitExceeded", "SessionLost",
+    "TargetNotActionable", "UnexpectedDialog", "UnsupportedOperation", "error_for",
     "FaultDetection", "FaultEvent", "FaultRecovery", "RecoveryCost",
     "Counters", "ModelRef", "RunManifest", "SkippedAssertion", "StepResult", "VersionPin",
     "ActionReceipt", "ActionRecord", "AssertionResult", "Checkpoint", "CleanupReport", "LocatorCandidate",
