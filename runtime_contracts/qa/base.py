@@ -366,9 +366,12 @@ class QAValue:
     def canonical_form(self) -> Dict[str, Any]:
         return _identity(self, full=False)
 
-    @property
-    def content_hash(self) -> str:
-        """``rcv1:`` hash of the identity form. Custody fields never enter it."""
+    def value_hash(self) -> str:
+        """``rcv1:`` hash of the identity form. Custody fields never enter it.
+
+        A method, not ``content_hash``: a nested value may legitimately have a field of that name
+        (``FixtureRef.content_hash``). Independently addressed records expose ``content_hash``.
+        """
         return content_hash(self.canonical_form())
 
     def to_json(self) -> Dict[str, Any]:
@@ -416,6 +419,11 @@ class QARecord(QAValue):
 
     SCHEMA_ID: ClassVar[str] = ""
     SCHEMA_VERSION: ClassVar[str] = QA_SCHEMA_VERSION
+
+    @property
+    def content_hash(self) -> str:
+        """``rcv1:`` hash of the identity form, schema id and version included. Custody never enters it."""
+        return self.value_hash()
 
     @classmethod
     def from_json(cls, data: Any, *, _path: str = "") -> "QARecord":
