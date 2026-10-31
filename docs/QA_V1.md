@@ -97,6 +97,127 @@ a writer within a major checks a received record with `verify_stored_hash`, whic
 `golden/qa.inventory.json` is the committed field inventory and `tests/test_qa_additive_only.py` fails on any
 non-additive difference.
 
+## Clarifications within `qa/v1`
+
+The definitions below were implicit in the code and are now stated. Each is additive: no existing hash, golden case
+or vector changes (the proof is in [QA_V1_COMPATIBILITY_REVIEW.md](QA_V1_COMPATIBILITY_REVIEW.md)), and each has
+vectors an independent implementation can reproduce from
+[`golden/qa_canon_vectors_addendum.json`](../golden/qa_canon_vectors_addendum.json) and
+[`golden/qa_clarifications.json`](../golden/qa_clarifications.json).
+
+### The `expected_hash` of a predicate
+
+`expected_hash` is the `rcv1` hash of the canonical form of the predicate, which is the object `{op, expected}`:
+`op` is the enum value, `expected` is the frozen expected value, and `expected` is omitted for `EXISTS` and `ABSENT`.
+Nothing else of the assertion enters it: not the id, the subject, the verifier, the executor or `requirement_ref`.
+Two assertions with the same predicate share an `expected_hash`, and it never equals `assertion_hash`.
+`expected` is normalized like any canonical value (NFC strings, decimals as canonical strings, no floats).
+`AssertionSpec.expected_hash` is `Predicate.digest`, and an `AssertionResult` repeats it so that a verifier handed a
+different expected value is refused (`EXPECTED_MISMATCH`). `EQUALS "Saved"` hashes to
+`rcv1:1b995d3503f549f89ae235791af06f1923a99bb30ec7904e2e77921cd2830c80`.
+
+### Value digests and state hashes
+
+A record that carries a digest instead of a value (`ActionRecord.value_digest`, `ObservedValue.value_digest`,
+`AssertionResult.actual_digest`) uses one definition: the `rcv1` hash of the canonical JSON text of the value. A
+string is hashed after NFC normalization and with its two quote characters, so `"hunter2"` digests the bytes
+`"hunter2"`. There is no prefix, salt or domain tag, and the action kind does not enter the digest of an action's
+value. `value_digest(str)` and `json_value_digest(any JSON value)` compute it, and `action_value_digest(action)`
+gives `ActionRecord.value_digest`: the value digest of a literal value, or the `SecretRef` fingerprint (the `rcv1` hash
+of the reference's canonical form, never of the secret) for an action that carries a reference.
+
+`state_before_hash`, `state_after_hash` and `Checkpoint.state_hash` are opaque `rcv1` hashes of whatever the producer
+defines as the observable state. `qa/v1` specifies their shape, that they are identity, and one relation: an action
+blocked by policy leaves the two hashes of its receipt equal. It does not specify how a producer derives them, so a
+consumer compares them only with hashes from the same producer and never recomputes one.
+
+### The idempotency key
+
+The key is per step, not per attempt. Every attempt of one step in one run carries the same `idempotency_key`, so a
+target can recognise a replay, and different steps of one run carry different keys. It is an opaque identifier of the
+`Ident` shape, it is identity in `ActionReceipt` and `ActionRequest`, and nothing parses it. The sample key
+`idem-s1-1` is one producer's spelling: its trailing `1` is part of the string and does not count attempts, and
+attempt 2 of the same step carries the same key. A producer SHOULD also make keys differ between runs when the target
+is shared. `idempotency_key_violations(receipts)` returns `IDEMPOTENCY_KEY_CHANGED_ACROSS_ATTEMPTS` or
+`IDEMPOTENCY_KEY_SHARED_ACROSS_STEPS` for a set of receipts that breaks the rule.
+
+### Ordering of set-valued fields
+
+A set-valued field is sorted before hashing and its listed order is not identity; listing it twice is refused
+(`DUPLICATE_ENTRY`). A writer emits a set in canonical order, because `verify_stored_hash` hashes the bytes it is
+given and does not sort. The order depends on the field, and it is not one rule:
+
+| Order | Fields |
+|---|---|
+| By the named key of each element, compared by Unicode code point | `TestSpec.assertions` (`assertion_id`), `TestSpec.fixtures` (`id`), `QAPlan.items` (`spec_ref`), `QAPlan.gates` (`item`), `QAPlan.resource_claims` (`resource`), `RunManifest.versions` (`component`), `assertions_skipped` (`assertion_id`), `step_results` (`step_id`), `assertion_results` (`assertion_id`) |
+| By the canonical JSON text of each element, compared by Unicode code point | `FaultDetection.evidence_refs`, `ReviewItem.evidence_refs` |
+| By the value: strings by Unicode code point after NFC, enums by member value | `TestSpec.depends_on`, `allowed_side_effects`, `sensitivity_labels`; `QAPlan.lanes`; `PlanGate.after`; `QAPolicyDecision.scope`; `RunManifest.assertions_declared`, `assertions_executed`; `CleanupReport.released`, `leaked`; `Step.permitted_recovery`; `ObserveRequest.capture`; the pins of an embedded `Check.evidence_refs` |
+
+Sorting an object set by its canonical text is wrong for every field in the first row except where the key happens to
+be the first key of the element: the canonical text starts with the element's alphabetically first field, which is
+`content_hash` for a `FixtureRef`, `budget` for a `PlanItem`, `after` for a `PlanGate`, `amount` for a
+`ResourceClaim`, `actual` for an `AssertionResult` and `postcondition` for a `StepResult`. Code point order is not
+numeric and not case-folded: `a-1 < a-10 < a-9`, and `B-1` sorts before `a-1`. The ordered fields are `steps`,
+`preconditions`, `cleanup`, `seeds`, `fault_events`, `receipts`, `frame_path`, `candidates_rejected_reasons`, a
+subject's `inputs` and `subject_alternates`, and the candidates of a `LocateResult`; their listed order is identity.
+`Check.evidence_refs` is sorted by the canonical form of `Check` and a pin listed twice is not removed, so a producer
+lists each pin once. The addendum holds a case for every object set where the two orders differ, with the hash each
+order gives.
+
+### Integrity refusal codes
+
+Every integrity refusal ends the run `INCONCLUSIVE` with reason `ASSERTION_INTEGRITY` and halts the batch. Five codes
+were added so that refusals that used to share `ASSERTION_HASH_MISMATCH` can be told apart. `ASSERTION_HASH_MISMATCH`
+keeps its meaning: a content hash recomputed from what was handed over differs from the hash it was pinned or
+recorded under.
+
+| Code | Raised when | Run outcome |
+|---|---|---|
+| `ASSERTION_PIN_MALFORMED` | the pinned `assertion_set_hash` is not `rcv1:` and 64 lowercase hex digits | `INCONCLUSIVE(ASSERTION_INTEGRITY)`, batch halts |
+| `ASSERTION_PIN_NOT_FOUND` | a well-formed pin names an assertion set the spec store does not hold | same |
+| `ASSERTION_PROGRAM_UNREGISTERED` | the check program an assertion names has no registry entry | same |
+| `ASSERTION_PROGRAM_MISMATCH` | the registry holds that program under a different hash than the assertion froze | same |
+| `BATCH_HALTED` | a call was refused because an earlier integrity refusal halted the batch | same |
+
+The checks run in a fixed order: pin shape, then the store, then the recomputed hash
+(`load_pinned_assertion_set`); registry entry, then program hash (`verify_check_program`). The refusal that halts the
+batch keeps its own code and `BATCH_HALTED` is what every later call gets; what did not start is skipped with
+`HALTED_INTEGRITY`. These refusals happen before an assertion is evaluated, so qa/v1 does not require a manifest for
+them: the code, `run_outcome` and `run_reason` travel in the refusal, and the run's `ReviewItem.reason` may name the
+specific code. A manifest's `outcome_reason` stays `ASSERTION_INTEGRITY`. `verify_assertion_set` is unchanged and
+reports any difference, a malformed pinned value included, as `ASSERTION_HASH_MISMATCH`.
+
+A consumer that does not know a refusal code fails closed. `classify_refusal(code)` returns
+`(INCONCLUSIVE, ASSERTION_INTEGRITY)` for every integrity code and for every code it does not know, and `None` for a
+known code that is not an integrity refusal. Every code added here maps to that same classification, so a consumer
+that predates them reaches the outcome a current one reaches. `IntegrityRefusalCode` lists the vocabulary.
+
+### Recovery reasons
+
+`FaultRecovery.candidates_rejected_reasons` is per candidate: one `CodeToken` for each candidate that was considered
+and rejected, in the order they were considered, never more of them than `candidates_considered`. It is an ordered
+list, so order and repeats are identity. Its tokens are not a closed vocabulary; a consumer treats an unknown token as
+opaque. A recovery that stopped before it considered any candidate has no place in that field for its reason, which is
+what `reason_code` is for.
+
+`FaultRecovery.reason_code` is optional, identity, and a closed vocabulary (`RecoveryReason`): why the recovery as a
+whole did not recover. It is absent when `result` is `RECOVERED`. An absent value is null and null is dropped, so a
+recovery that omits it hashes as it did before the field existed. An unknown value is refused as `UNKNOWN_ENUM_VALUE`
+and is non-certifying. The vocabulary is `NO_UI_TARGET`, `NO_ROLE_NAME_ANCHOR`, `RECOVERER_ERROR`,
+`CANDIDATE_CAP_EXCEEDED`, `ELAPSED_CAP`, `KILL_SWITCH`, `NO_CANDIDATE`, `AMBIGUOUS_CANDIDATES`, `RECOVERY_DISABLED`,
+`BUDGET_EXHAUSTED`, `NOT_PERMITTED`, `NOT_RETRYABLE`, `ALREADY_APPLIED`, `RETRY_UNSAFE`,
+`NO_IDEMPOTENCY_OR_POSTCONDITION_GUARD`, `INVALID_INPUT`, `UNKNOWN_SIDE_EFFECT_CLASS` and
+`POSTCONDITION_NOT_VERIFIED`.
+
+### Engine limits and kill-switch state
+
+Engine limits (operator caps, recovery limits, per-step attempt ceilings) and kill-switch state are not manifest
+fields and are outside `qa/v1` identity. A `RunManifest` that carries a key for them is refused as an unknown field.
+The limits a spec grants are in its frozen `Budget`; cost counters are custody (`Counters`, `FaultRecovery.cost`) and
+do not change a hash; `resource_limits` records the sandbox limits the run started under. The effect of the kill
+switch on one fault is recorded where it happened, as `FaultRecovery.suppressed_reason = KILL_SWITCH` (and
+`reason_code = KILL_SWITCH`). The switch's own state, who set it and when, belong to the runner's own records.
+
 ## Fixtures and export
 
 | File | Content |
@@ -105,11 +226,14 @@ non-additive difference.
 | [`golden/qa_canon_vectors.json`](../golden/qa_canon_vectors.json) | Self-contained: canonicalization vectors, every case input with its canonical bytes and SHA-256, and float refusals. An independent implementation of the `rcv1` rules reproduces it without this package |
 | [`golden/qa.schema.json`](../golden/qa.schema.json) | JSON Schema (draft 2020-12) generated from the dataclasses |
 | [`golden/qa.inventory.json`](../golden/qa.inventory.json) | Field inventory for the additive-only check |
+| [`golden/qa_canon_vectors_addendum.json`](../golden/qa_canon_vectors_addendum.json) | Self-contained and additive to `qa_canon_vectors.json`: predicate `expected_hash`, value digests, idempotency receipts, recovery records and the ordering of every set-valued field, with a version note |
+| [`golden/qa_clarifications.json`](../golden/qa_clarifications.json) | Refusal and classification fixtures for the added integrity codes, the idempotency-key rule, `reason_code` and the identity boundary |
 
 ```bash
 python -m golden.qa                                                    # qa.json and qa_canon_vectors.json
 python -m runtime_contracts.qa.schema_export golden/qa.schema.json     # JSON Schema
 python -m runtime_contracts.qa.inventory golden/qa.inventory.json      # field inventory
+python -m golden.qa_clarifications                                 # the two additive fixture files
 python -m pytest -q tests/test_qa_golden.py tests/test_qa_refusals.py
 ```
 
@@ -120,6 +244,6 @@ cases and leaves the old ones unchanged.
 
 The package imports the standard library only. A harness that executes `qa/v1` runs mirrors the records with its own
 plain data and its own `rcv1`-rule canonicalization and imports nothing from this package; it checks itself against
-`golden/qa_canon_vectors.json`. It holds no information about how a run is scored or judged from
+`golden/qa_canon_vectors.json` and `golden/qa_canon_vectors_addendum.json`. It holds no information about how a run is scored or judged from
 outside; that lives with the code that scores runs. The leak-guard test fails on a field, enum, schema id, source
 word or fixture key from that vocabulary.

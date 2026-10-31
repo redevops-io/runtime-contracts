@@ -16,7 +16,8 @@ independently validated.
 | Quantify adapter reproduces golden hashes (`ADAPTER_STARTED`) | `adapters/quantify`, `tests/test_quantify_adapter.py` |
 | Credential gate: tenant binding (request tenant must equal authority tenant; empty tenants and tenant-less authority denied), authority expiry | `tests/test_secret_contracts.py`, `tests/credential_tenant_vectors.json` |
 | `qa/v1` contracts: frozen-assertion types, plan, run records, fault detection/recovery, manifest accounting, adapter and blob protocols | `tests/test_qa_*.py`, `golden/qa.json`, `golden/qa_canon_vectors.json`, `golden/qa.schema.json`, `docs/QA_V1.md` |
-| Whole suite | `python -m pytest -q` -> 442 passed (2026-10-15, Python 3.12, fresh venv); CI: `.github/workflows/tests.yml` |
+| `qa/v1` clarifications (additive): predicate `expected_hash`, value digests, idempotency key, set ordering, distinct integrity refusal codes, `FaultRecovery.reason_code`; existing goldens byte-identical | `tests/test_qa_clarifications.py`, `golden/qa_canon_vectors_addendum.json`, `golden/qa_clarifications.json`, `docs/QA_V1_COMPATIBILITY_REVIEW.md` |
+| Whole suite | `python -m pytest -q` -> 1785 passed, 1 skipped (2026-10-30, Python 3.13, scrubbed environment); CI: `.github/workflows/tests.yml` |
 
 ## Conformance: proposed vs implemented
 
