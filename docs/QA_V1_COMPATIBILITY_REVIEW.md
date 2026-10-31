@@ -2,7 +2,7 @@
 
 **Scope:** additions to the `qa/v1` interface made after its fixtures were first published, at commit
 `13e00f23da74782af091aec607c47358e9814fc6`. **Result:** additive. No existing hash, golden case or vector changes.
-`__version__` stays `0.3.14`; there is no tag.
+These clarifications are released in `v0.3.16`; the fixtures they follow were first released in `v0.3.15`.
 
 ## What changed
 
