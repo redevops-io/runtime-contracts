@@ -250,3 +250,79 @@ class ResetScope(str, Enum):
 class LocateMode(str, Enum):
     EXACT = "EXACT"
     SEMANTIC = "SEMANTIC"
+
+
+class IntegrityRefusalCode(str, Enum):
+    """Every refusal code that ends a run ``INCONCLUSIVE(ASSERTION_INTEGRITY)`` and halts the batch.
+
+    A closed vocabulary, listed so a consumer can enumerate it and so the field inventory records it. No record
+    field has this type: the specific code travels in the refusal that was raised (and may be named in the
+    ``reason`` of the run's ``ReviewItem``); a manifest's ``outcome_reason`` stays ``ASSERTION_INTEGRITY`` whichever
+    member caused it.
+
+    The first six members are the codes of the original ``qa/v1`` text. The last five were added within ``qa/v1``
+    so that refusals which used to share ``ASSERTION_HASH_MISMATCH`` can be told apart. A consumer that has never
+    heard of a member fails closed to the same outcome the member itself maps to (``integrity.classify_refusal``),
+    so adding one cannot change a run outcome anywhere.
+    """
+
+    ASSERTION_INTEGRITY = "ASSERTION_INTEGRITY"
+    """The outcome reason itself. Raised for an accounting breach that has no more specific code."""
+
+    ASSERTION_HASH_MISMATCH = "ASSERTION_HASH_MISMATCH"
+    """A content hash recomputed from what was handed over differs from the hash it was pinned or recorded under."""
+
+    EXECUTOR_MISMATCH = "EXECUTOR_MISMATCH"
+    EXPECTED_MISMATCH = "EXPECTED_MISMATCH"
+    RECOVERY_PAYLOAD_REJECTED = "RECOVERY_PAYLOAD_REJECTED"
+    COVERAGE_VIOLATION = "COVERAGE_VIOLATION"
+
+    ASSERTION_PROGRAM_MISMATCH = "ASSERTION_PROGRAM_MISMATCH"
+    """The registered check program's hash differs from the ``program_hash`` frozen in the assertion."""
+
+    ASSERTION_PROGRAM_UNREGISTERED = "ASSERTION_PROGRAM_UNREGISTERED"
+    """The check program an assertion names has no registry entry."""
+
+    ASSERTION_PIN_NOT_FOUND = "ASSERTION_PIN_NOT_FOUND"
+    """A well-formed pin names an assertion set the spec store does not hold."""
+
+    ASSERTION_PIN_MALFORMED = "ASSERTION_PIN_MALFORMED"
+    """The pin is not ``rcv1:`` and 64 lowercase hex digits."""
+
+    BATCH_HALTED = "BATCH_HALTED"
+    """A call was refused because an earlier integrity refusal in the same batch halted it."""
+
+
+class RecoveryReason(str, Enum):
+    """Why a recovery did not recover, as a whole (``FaultRecovery.reason_code``). A closed vocabulary: an unknown
+    member is non-certifying. Per-candidate reasons are a different thing (``candidates_rejected_reasons``)."""
+
+    NO_UI_TARGET = "NO_UI_TARGET"
+    """The step has no ui locator to recover."""
+
+    NO_ROLE_NAME_ANCHOR = "NO_ROLE_NAME_ANCHOR"
+    """The authored locator has no role and name to compare a candidate against, so identity cannot be verified."""
+
+    RECOVERER_ERROR = "RECOVERER_ERROR"
+    CANDIDATE_CAP_EXCEEDED = "CANDIDATE_CAP_EXCEEDED"
+    ELAPSED_CAP = "ELAPSED_CAP"
+    KILL_SWITCH = "KILL_SWITCH"
+    NO_CANDIDATE = "NO_CANDIDATE"
+    """Candidates were considered and none passed."""
+
+    AMBIGUOUS_CANDIDATES = "AMBIGUOUS_CANDIDATES"
+    """More than one candidate passed; none is picked."""
+
+    RECOVERY_DISABLED = "RECOVERY_DISABLED"
+    BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
+    NOT_PERMITTED = "NOT_PERMITTED"
+    NOT_RETRYABLE = "NOT_RETRYABLE"
+    ALREADY_APPLIED = "ALREADY_APPLIED"
+    """The step's postcondition already held, so nothing was replayed."""
+
+    RETRY_UNSAFE = "RETRY_UNSAFE"
+    NO_IDEMPOTENCY_OR_POSTCONDITION_GUARD = "NO_IDEMPOTENCY_OR_POSTCONDITION_GUARD"
+    INVALID_INPUT = "INVALID_INPUT"
+    UNKNOWN_SIDE_EFFECT_CLASS = "UNKNOWN_SIDE_EFFECT_CLASS"
+    POSTCONDITION_NOT_VERIFIED = "POSTCONDITION_NOT_VERIFIED"
+    """An attempt ran and the step's own postcondition was not satisfied."""

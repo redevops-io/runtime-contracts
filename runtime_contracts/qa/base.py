@@ -61,6 +61,14 @@ class Code:
     EXPECTED_MISMATCH = "EXPECTED_MISMATCH"
     RECOVERY_PAYLOAD_REJECTED = "RECOVERY_PAYLOAD_REJECTED"
     COVERAGE_VIOLATION = "COVERAGE_VIOLATION"
+    # assertion integrity, added within qa/v1 (C4): distinct codes for refusals that used to share
+    # ASSERTION_HASH_MISMATCH. Each ends a run INCONCLUSIVE(ASSERTION_INTEGRITY) and halts the batch. A consumer that
+    # does not know one of them fails closed to exactly that classification (``integrity.classify_refusal``).
+    ASSERTION_PROGRAM_MISMATCH = "ASSERTION_PROGRAM_MISMATCH"
+    ASSERTION_PROGRAM_UNREGISTERED = "ASSERTION_PROGRAM_UNREGISTERED"
+    ASSERTION_PIN_NOT_FOUND = "ASSERTION_PIN_NOT_FOUND"
+    ASSERTION_PIN_MALFORMED = "ASSERTION_PIN_MALFORMED"
+    BATCH_HALTED = "BATCH_HALTED"
     # plan
     UNSUPPORTED_COVERAGE_CONTRACT = "UNSUPPORTED_COVERAGE_CONTRACT"
     PLAN_INVALID = "PLAN_INVALID"
@@ -522,5 +530,19 @@ def verify_stored_hash(payload: Mapping[str, Any]) -> bool:
 
 
 def value_digest(value: str) -> str:
-    """``rcv1`` digest of a (possibly sensitive) string value, for records that carry the digest, not the value."""
+    """``rcv1`` digest of a (possibly sensitive) string value, for records that carry the digest, not the value.
+
+    The digest is ``rcv1`` over the canonical JSON text of the NFC string, quotes included: the bytes hashed for
+    ``"hunter2"`` are ``"hunter2"`` with its two quote characters. There is no prefix, salt or domain tag.
+    """
     return content_hash(unicodedata.normalize("NFC", value))
+
+
+def json_value_digest(value: Any) -> str:
+    """The same digest for any canonical JSON value: ``rcv1`` over its canonical JSON text.
+
+    For a string it equals ``value_digest``. Used for ``ObservedValue.value_digest`` and
+    ``AssertionResult.actual_digest`` when the value read is not a string. Floats are refused; carry decimals as
+    strings.
+    """
+    return content_hash(freeze_json(value, "value"))
