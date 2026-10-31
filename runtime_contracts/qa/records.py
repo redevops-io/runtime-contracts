@@ -20,10 +20,10 @@ from ..models.verification import Check, Determinism, Verdict
 from ..models.capability import SideEffect
 from ..protocol.evidence import EvidenceRef
 from .base import (SCHEMA_ID_PREFIX, AnyDigest, BoundedJson, Code, CodeToken, Ident, Json, NonNeg, Pos,
-                   QAContractError, QARecord, QAValue, Rcv1, Rule, ShortText, Text, Version)
+                   QAContractError, QARecord, QAValue, Rcv1, Rule, ShortText, Text, Version, value_digest)
 from .enums import (VALUE_ACTIONS, ActionKind, Executor, LocatorStrategy, Phase, PolicyDecisionKind,
                     PostconditionResult, Resolution, ResultCode, ReviewDecision)
-from .spec import ComponentRef, LocatorDescriptor, ResourceRef
+from .spec import Action, ComponentRef, LocatorDescriptor, ResourceRef
 
 Url = Annotated[str, Rule(min_length=1, max_length=2048)]
 _BLOB_OR_RECORD = re.compile(r"(rcv1|sha256):[0-9a-f]{64}")
@@ -127,6 +127,17 @@ class ActionRecord(QAValue):
         if (self.kind in VALUE_ACTIONS) != (self.value_digest is not None):
             raise QAContractError(Code.RECORD_INCONSISTENT, f"{self.kind.value} "
                                   f"{'needs' if self.kind in VALUE_ACTIONS else 'takes no'} value_digest")
+
+
+def action_value_digest(action: Action) -> Optional[str]:
+    """``ActionRecord.value_digest`` for an action: the ``value_digest`` of its literal value, or the fingerprint of
+    its ``SecretRef`` (the ``rcv1`` hash of the reference, never of the secret it resolves to), or ``None`` for an
+    action that carries neither. Nothing about the action's kind enters the digest."""
+    if action.value is not None:
+        return value_digest(action.value)
+    if action.secret_ref is not None:
+        return action.secret_ref.fingerprint()
+    return None
 
 
 @dataclass(frozen=True)

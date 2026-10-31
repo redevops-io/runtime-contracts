@@ -16,7 +16,7 @@ from typing import Optional, Tuple
 
 from ..protocol.evidence import EvidenceRef
 from .base import SCHEMA_ID_PREFIX, Code, CodeToken, Ident, NonNeg, QAContractError, QARecord, QAValue, Rcv1
-from .enums import (ClaimedClass, FaultSignal, RecoveryResult, RecoveryStrategy, SuppressedReason)
+from .enums import (ClaimedClass, FaultSignal, RecoveryReason, RecoveryResult, RecoveryStrategy, SuppressedReason)
 from .records import _guard_evidence_refs
 from .spec import ComponentRef
 
@@ -75,9 +75,21 @@ def _guard_result_is_judged_by_the_postcondition(r: "FaultRecovery") -> None:
                               "verified; recovery is never inferred from the run's final outcome")
 
 
+def _guard_reason_code(r: "FaultRecovery") -> None:
+    if r.reason_code is not None and r.result is RecoveryResult.RECOVERED:
+        raise QAContractError(Code.RECORD_INCONSISTENT, "a recovery that RECOVERED carries no reason_code; the "
+                              "reason says why it did not")
+
+
 @dataclass(frozen=True)
 class FaultRecovery(QARecord):
-    """Written second. Binds to the detection it responds to by hash."""
+    """Written second. Binds to the detection it responds to by hash.
+
+    ``candidates_rejected_reasons`` is per candidate: one code for each candidate that was considered and rejected,
+    in the order they were considered (a list, not a set, so order and repeats are identity), and never more of them
+    than ``candidates_considered``. A recovery that stopped before it considered any candidate has nowhere to say
+    why in that field; ``reason_code`` is where the recovery as a whole says why it did not recover.
+    """
 
     SCHEMA_ID = SCHEMA_ID_PREFIX + "fault-recovery"
     CUSTODY = frozenset({"cost"})
@@ -92,10 +104,15 @@ class FaultRecovery(QARecord):
     candidates_considered: NonNeg = 0
     candidates_rejected_reasons: Tuple[CodeToken, ...] = ()
     cost: Optional[RecoveryCost] = None
+    reason_code: Optional[RecoveryReason] = None
+    """Why the recovery as a whole did not recover. Optional, identity, closed vocabulary (``RecoveryReason``);
+    absent equals null, so a recovery that omits it hashes exactly as it did before the field existed. Never set
+    when ``result`` is ``RECOVERED``."""
 
     def validate(self) -> None:
         _guard_recovery_shape(self)
         _guard_result_is_judged_by_the_postcondition(self)
+        _guard_reason_code(self)
 
     def responds_to(self, detection: FaultDetection) -> bool:
         return self.detection_ref == detection.content_hash
