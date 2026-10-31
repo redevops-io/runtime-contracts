@@ -10,10 +10,10 @@ verifier (which recomputes with an independent ``canon-v1``) refuse on exactly t
 """
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Iterable, Optional, Sequence, Tuple
 
 from .base import AssertionIntegrityError, Code, QAContractError
-from .enums import Executor
+from .enums import Executor, Outcome
 from .spec import AssertionSpec, TestSpec, assertion_set_hash
 
 
@@ -63,3 +63,50 @@ def executor_certifies(raw_executor: str) -> bool:
     except ValueError:
         return False
     return True
+
+
+# ── assertion accounting ───────────────────────────────────────────────────────────────────────────────────
+
+def coverage_violations(declared: Iterable[str], executed: Iterable[str], skipped: Iterable[str]) -> Tuple[str, ...]:
+    """Breaches of ``declared == executed | skipped`` with ``executed & skipped == {}``, as stable codes."""
+    declared, executed, skipped = set(declared), set(executed), set(skipped)
+    found = []
+    if executed - declared:
+        found.append("EXECUTED_NOT_DECLARED")
+    if skipped - declared:
+        found.append("SKIPPED_NOT_DECLARED")
+    if executed & skipped:
+        found.append("EXECUTED_AND_SKIPPED")
+    if declared - executed - skipped:
+        found.append("DECLARED_UNACCOUNTED")
+    return tuple(found)
+
+
+def classify_coverage(declared: Iterable[str], executed: Iterable[str],
+                      skipped: Iterable[str]) -> Optional[Tuple[Outcome, str]]:
+    """``(INCONCLUSIVE, ASSERTION_INTEGRITY)`` if the accounting is broken, otherwise ``None``.
+
+    The pure function the classifier applies first: an integrity violation outranks every other outcome and halts
+    the batch.
+    """
+    if coverage_violations(declared, executed, skipped):
+        return Outcome.INCONCLUSIVE, Code.ASSERTION_INTEGRITY
+    return None
+
+
+def _guard_result_accounting(results: Sequence[Tuple[str, str]], assertion_set_hash: str) -> Tuple[str, ...]:
+    found = []
+    if any(h != assertion_set_hash for _, h in results):
+        found.append("RESULT_FOR_A_DIFFERENT_ASSERTION_SET")
+    return tuple(found)
+
+
+def integrity_violations(*, declared: Iterable[str], executed: Iterable[str], skipped: Iterable[str],
+                         results: Sequence[Tuple[str, str]], assertion_set_hash: str) -> Tuple[str, ...]:
+    """Every accounting breach in a run record: coverage, results that do not match the executed set, and results
+    produced under a different assertion set than the run pinned."""
+    found = list(coverage_violations(declared, executed, skipped))
+    if {i for i, _ in results} != set(executed):
+        found.append("RESULTS_DO_NOT_MATCH_EXECUTED")
+    found.extend(_guard_result_accounting(results, assertion_set_hash))
+    return tuple(found)
