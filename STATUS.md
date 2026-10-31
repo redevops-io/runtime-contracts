@@ -40,7 +40,7 @@ independently validated.
 ## Known gaps
 
 - No conformance report artifact; no external review.
-- Tag history has no stable `v0.1.0` (tags `v0.1.0-alpha.1..3`, `v0.2.x`, `v0.3.0..v0.3.14`); there are no GitHub releases.
+- Tag history has no stable `v0.1.0` (tags `v0.1.0-alpha.1..3`, `v0.2.x`, `v0.3.0..v0.3.15`); there are no GitHub releases.
 
 ## Evidence
 

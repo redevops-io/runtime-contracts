@@ -41,7 +41,7 @@ prioritizing opportunities; together the one public product, **ReDevOps Runtime*
 ## 3-minute example
 
 ```bash
-git clone --depth 1 --branch v0.3.14 https://github.com/redevops-io/runtime-contracts.git && cd runtime-contracts
+git clone --depth 1 --branch v0.3.15 https://github.com/redevops-io/runtime-contracts.git && cd runtime-contracts
 python -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
 python -m runtime_contracts.cli status      # per-implementation maturity and gaps
@@ -49,7 +49,7 @@ python -m pytest -q                         # golden fixtures + canonicalization
 ```
 
 To depend on it from another project (not on PyPI):
-`pip install "runtime-contracts @ git+https://github.com/redevops-io/runtime-contracts.git@v0.3.14"`.
+`pip install "runtime-contracts @ git+https://github.com/redevops-io/runtime-contracts.git@v0.3.15"`.
 No ReDevOps package is published on PyPI.
 
 ## Evidence
