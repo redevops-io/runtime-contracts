@@ -143,9 +143,11 @@ class TestNothingFrozenChanged:
         assert CLARIFICATIONS["fault_recovery"]["existing_golden_fault_recovery_hash"] == \
             golden["cases"]["fault_recovery"]["hash"]
 
-    def test_the_package_version_is_unchanged(self):
+    def test_the_package_version_matches_pyproject(self):
+        import re
         import runtime_contracts
-        assert runtime_contracts.__version__ == "0.3.14"
+        text = (pathlib.Path(__file__).resolve().parents[1] / "pyproject.toml").read_text()
+        assert re.search(r'^version = "(.+)"$', text, re.M).group(1) == runtime_contracts.__version__
 
     def test_the_new_fixture_files_are_what_the_documented_command_writes(self):
         assert (GOLDEN / "qa_canon_vectors_addendum.json").read_text() == C._dump(C.addendum())
