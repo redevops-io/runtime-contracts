@@ -181,7 +181,7 @@ from .world import (  # noqa: E402
 
 from . import qa  # noqa: E402  (qa/v1: importable as runtime_contracts.qa; nothing is re-exported at top level)
 
-__version__ = "0.3.15"
+__version__ = "0.3.16"
 __all__ = [
     # strict canonical identity
     "CANONICALIZATION_VERSION", "CONTRACT_VERSION", "CanonicalizationError",
