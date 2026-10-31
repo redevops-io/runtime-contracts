@@ -1,6 +1,6 @@
 # Implementation status
 
-**Contract identity: v0.1** (`CONTRACT_VERSION`) · **package: 0.3.14.** The canonical
+**Contract identity: v0.1** (`CONTRACT_VERSION`) · **package: 0.3.15.** The canonical
 seal is stable. No implementation has reached `CONFORMANT` (see the table below and
 [STATUS.md](STATUS.md)); the contract *spec* has not rev'd past v0.1 because the identity has not changed — the 0.3.x
 work is additive (concurrency-topology vocabulary, partial-order events) with unchanged
