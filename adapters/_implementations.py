@@ -31,6 +31,8 @@ _ROOT_ENV = {
     "agentic-os-enterprise": "AGENTIC_OS_ENTERPRISE_ROOT",
     "redevops-rag": "REDEVOPS_RAG_ROOT",
 }
+#: Public name for the same mapping, so a qualification record can say which variable names which checkout.
+ROOT_ENV = _ROOT_ENV
 
 
 def add_implementation_root(implementation: str) -> Path | None:
@@ -49,6 +51,9 @@ def add_implementation_root(implementation: str) -> Path | None:
 
 def import_module(implementation: str, module: str):
     """Import an implementation module, or explain in one line why the cell cannot run."""
+    # The configured checkout wins. Without this call the ``*_ROOT`` variables above were documentation only:
+    # an installed copy of the plane answered, and the matrix recorded a commit nobody had measured.
+    add_implementation_root(implementation)
     try:
         return importlib.import_module(module)
     except ImportError as exc:
@@ -56,6 +61,21 @@ def import_module(implementation: str, module: str):
         raise AdapterBlocked(
             f"{implementation}: cannot import {module!r} ({exc}). Set {env} to the checkout and re-run; "
             "the cell stays BLOCKED until then.") from exc
+
+
+def imported_root(implementation: str, module: str) -> Path:
+    """The checkout the imported code actually came from, or :class:`AdapterBlocked`.
+
+    A matrix cell records a commit. That record is worth nothing unless it can be traced to the file the
+    decision came out of, so the binding is resolved from the import system (``module.__file__``) and walked
+    up to the containing git working tree — not from an environment variable somebody may or may not have set.
+    """
+    path = Path(getattr(import_module(implementation, module), "__file__", "") or "").resolve()
+    for parent in path.parents:
+        if (parent / ".git").exists():
+            return parent
+    raise AdapterBlocked(f"{implementation}: {path} is not inside a git working tree, so its commit cannot be "
+                         "recorded — install it as a checkout (or point the root variable at one)")
 
 
 class AuditCapture(logging.Handler):

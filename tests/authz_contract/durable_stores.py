@@ -32,7 +32,8 @@ from __future__ import annotations
 
 import secrets
 import sqlite3
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -52,6 +53,18 @@ ENV_REQUIRE_DURABLE_REPLAY = "AGENTIC_OS_REQUIRE_DURABLE_REPLAY"
 ENV_APPROVAL_SECRET = "AGENTIC_OS_APPROVAL_SECRET"
 ENV_CONTROL_TOKEN = "AGENTIC_OS_CONTROL_TOKEN"
 ENV_ALLOW_ANONYMOUS = "AGENTIC_OS_OPERATOR_ALLOW_ANONYMOUS"
+
+#: A production mission must name the tenant whose authority it runs under — the runtime refuses to key an
+#: envelope for a mission that names none. The contract principals are tenant-neutral on purpose (the same
+#: scenario has to run in both editions), so a production run names one here: the same default the enterprise
+#: adapter already gives its missions. This is deployment configuration, not a contract change — the criteria,
+#: the adapters and the pinned matrix are untouched, and a mission this fixture does not provision is still
+#: refused (see ``test_production_profile_without_durable_stores_is_not_reported_as_authorization``).
+PRODUCTION_MISSION_TENANT = "acme"
+
+#: How long an envelope issued for a contract mission stays valid. The product requires every envelope to
+#: state a lifetime; a contract run is minutes long.
+ENVELOPE_TTL_S = 900.0
 
 #: How a cell says "this process was not provisioned" rather than "authority leaked". The two production
 #: refusals by name, plus the variables the product names when it refuses — a detail that quotes one of those
@@ -94,6 +107,8 @@ class DurableStores:
     authority_path: Path
     guard: Any
     replay_guard: Any
+    #: Mission ids this run issued an envelope for, in order — proof the issuance actually happened.
+    issued: list[str] = field(default_factory=list)
 
     def tables(self, path: Path) -> set[str]:
         """The tables a store file actually holds — read the way an auditor reads it, not from the object."""
@@ -157,19 +172,77 @@ def durable_production(tmp_path, monkeypatch) -> Iterator[DurableStores]:
                     f"guard — durable replay protection is not configured by the variable any more")
 
     _install_guard_on_runtimes(monkeypatch, guard)
+    issued: list[str] = []
+    _install_owner_issuance(monkeypatch, guard, authority, issued)
     yield DurableStores(replay_path=root / "replay.db", authority_path=root / "authority.db",
-                        guard=guard, replay_guard=replay)
+                        guard=guard, replay_guard=replay, issued=issued)
+
+
+def family_patterns(policy_refs) -> tuple[str, ...]:
+    """Envelope grant patterns from the authority a mission already declares (``Mission.policy_refs``).
+
+    A mission's ``policy_refs`` are the grants its caller resolved for it — both adapters pass the principal's
+    own grants there, because the compiler's stage-2 check reads them. Turning ``billing.read`` into
+    ``billing.*`` is the product's own family rule (a capability needs its family's read permission, the same
+    rule the adapters document), applied in the other direction. Nothing may appear here that the principal
+    does not hold: an envelope that granted a capability the mission was not given would be the harness
+    laundering privilege, which is one of the invariants under test.
+    """
+    families = {str(ref).split(".", 1)[0] for ref in policy_refs if str(ref).strip()}
+    return tuple(f"{family}.*" for family in sorted(families))
+
+
+def issue_mission_envelope(authority, guard, mission, *, ttl_s: float = ENVELOPE_TTL_S) -> Any:
+    """Issue and store the envelope for one mission, through the product's own owner/platform API.
+
+    ``EnvelopeStore.put`` is what an owner's issuance path calls; ``AuthorityGuard`` then reads it back on
+    every decision. The envelope states its tenant, its principal, its lifetime and only the grants the
+    mission declares — so what production enforces is checked against real issued authority, not against an
+    absent envelope that forces every node to be refused.
+    """
+    tenant = getattr(mission, "tenant", "") or PRODUCTION_MISSION_TENANT
+    patterns = family_patterns(getattr(mission, "policy_refs", []) or [])
+    grants = tuple(authority.Grant(capability=pattern) for pattern in patterns)
+    now = time.time()
+    envelope = authority.AuthorityEnvelope(
+        tenant=tenant, principal=str(getattr(mission, "principal", "") or "authz-contract"),
+        mission_id=str(mission.id), goal=str(getattr(mission, "goal", "") or ""), grants=grants,
+        budget=authority.AutonomyBudget(usd=100.0, tokens=0, wall_clock_s=0.0, max_actions=32,
+                                        max_children=0, max_depth=0, max_parallel=1),
+        issued_at=now, expires_at=now + ttl_s)
+    guard.envelopes.put(envelope)
+    return envelope
+
+
+def _install_owner_issuance(monkeypatch, guard, authority, issued: list[str]) -> None:
+    """Give every mission this run creates the envelope its own declared authority allows.
+
+    The harness has no composition root, so the issuance an Operator would perform at ``create_mission`` time
+    is installed at that same call. It grants nothing beyond ``Mission.policy_refs``; a mission that declares
+    no authority gets an envelope that authorizes nothing, and its nodes are refused exactly as they were
+    before this existed.
+    """
+    for _implementation, runtime_cls in _runtime_classes():
+        original = runtime_cls.create_mission
+
+        def create(self, *args, _original=original, **kwargs):
+            mission = _original(self, *args, **kwargs)
+            if not getattr(mission, "tenant", ""):      # the tenant is part of the authority key, not a label
+                mission.tenant = PRODUCTION_MISSION_TENANT
+            issue_mission_envelope(authority, guard, mission)   # no policy_refs ⇒ no grants ⇒ no authority
+            issued.append(str(mission.id))
+            return mission
+
+        monkeypatch.setattr(runtime_cls, "create_mission", create, raising=False)
 
 
 def _install_guard_on_runtimes(monkeypatch, guard) -> None:
-    """Give every Mission runtime built in this test the durable guard a production deployment must inject.
+    _install_on_runtimes(monkeypatch, "authority", guard)
 
-    ``MissionRuntime.__init__`` calls ``profile.assert_authority(self.authority, …)`` and refuses to start in
-    production without a durable guard. The contract adapters construct runtimes directly — a harness has no
-    composition root — so the guard is installed at the class attribute that call reads. It is the product's own
-    guard over a real file, reverted with the test; it decides nothing the adapters' scenarios do not already ask.
-    """
-    installed = []
+
+def _runtime_classes():
+    """Each edition's ``MissionRuntime`` that this machine can import, with its implementation key."""
+    found = []
     for module_name, implementation in (("agentic_os.mission.runtime", KERNEL),
                                         ("agentic_os_enterprise.mission.runtime", ENTERPRISE)):
         try:
@@ -178,9 +251,22 @@ def _install_guard_on_runtimes(monkeypatch, guard) -> None:
         except AdapterBlocked:
             continue                                  # an overlay that is not checked out is not under test here
         runtime_cls = getattr(module, "MissionRuntime", None)
-        if runtime_cls is None or runtime_cls in installed:
-            continue
-        monkeypatch.setattr(runtime_cls, "authority", guard, raising=False)
+        if runtime_cls is not None and not any(runtime_cls is seen for _impl, seen in found):
+            found.append((implementation, runtime_cls))
+    return found
+
+
+def _install_on_runtimes(monkeypatch, attribute: str, value) -> None:
+    """Give every Mission runtime built in this test the durable guard a production deployment must inject.
+
+    ``MissionRuntime.__init__`` calls ``profile.assert_authority(self.authority, …)`` and refuses to start in
+    production without a durable guard. The contract adapters construct runtimes directly — a harness has no
+    composition root — so the guard is installed at the class attribute that call reads. It is the product's own
+    guard over a real file, reverted with the test; it decides nothing the adapters' scenarios do not already ask.
+    """
+    installed = []
+    for _implementation, runtime_cls in _runtime_classes():
+        monkeypatch.setattr(runtime_cls, attribute, value, raising=False)
         installed.append(runtime_cls)
     if not installed:
         pytest.skip("BLOCKED — no Mission runtime module importable, so there is no production posture to wire")

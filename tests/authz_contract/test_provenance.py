@@ -10,11 +10,42 @@ bookkeeping, so it lives here rather than beside the real implementations.
 """
 from __future__ import annotations
 
+import json
+import os
+import subprocess
+from pathlib import Path
+
 import pytest
 
+from adapters._implementations import ROOT_ENV, imported_root
 from runtime_contracts.authz.decision import (DECISION_EVENT, AuthorizationDecision, PolicyReason, roles_hash)
 from runtime_contracts.authz.qualification import Invariant, Qualification
 from runtime_contracts.authz.suite import AuthzAdapter, Receipt, run_invariant
+
+REPO = Path(__file__).resolve().parents[2]
+EXPECTATIONS = REPO / "tests" / "authz_contract" / "qualification.json"
+
+#: Which package each adapter's verdict is measured against, for the commit binding below.
+_PACKAGE_BY_IMPLEMENTATION = {"agentic-os": "agentic_os.permissions",
+                              "agentic-os-enterprise": "agentic_os_enterprise.identity"}
+
+
+def _git(root: Path, *args: str) -> str:
+    """One git question, or ``''`` when this machine cannot answer it (no git, no history)."""
+    try:
+        out = subprocess.run(("git", "-C", str(root), *args), capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return out.stdout.strip() if out.returncode == 0 else ""
+
+
+def _git_ok(root: Path, *args: str) -> bool:
+    """Whether a git question succeeds, for questions whose answer is the exit status itself."""
+    try:
+        return subprocess.run(("git", "-C", str(root), *args), capture_output=True, text=True,
+                              timeout=30).returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
 
 
 def _envelope(*, principal: str, resource_name: str, action: str = "read",
@@ -126,3 +157,50 @@ def test_an_honest_denial_is_never_reported_as_cross_talk() -> None:
         assert "cross-talk" not in result.detail, (
             f"{invariant.value}: an honestly attributed, correctly bound receipt was rejected as cross-talk "
             f"({result.detail})")
+
+
+# ── the other half of provenance: the checkout a verdict is credited to ─────────────────────────────
+
+
+@pytest.mark.parametrize("reference", sorted(json.loads(EXPECTATIONS.read_text())["implementations"]),
+                         ids=lambda r: r.split(".")[-2])
+def test_a_recorded_commit_is_the_code_that_answered(reference: str) -> None:
+    """``qualification.json`` names a commit per implementation. Nothing in the suite checked that the
+    module which produced the verdict came from that commit — so a machine with a different checkout (or a
+    stale installed copy) could keep printing SHAs it never measured.
+
+    The binding is resolved from the import system: the file the plane was imported from, walked up to its
+    git working tree, compared with what is recorded. An environment variable is not evidence, because a
+    variable nobody reads still looks correct in a report.
+    """
+    recorded = json.loads(EXPECTATIONS.read_text())["implementations"][reference]
+    implementation = recorded["implementation"]
+    module = _PACKAGE_BY_IMPLEMENTATION.get(implementation)
+    if module is None:
+        pytest.skip(f"{implementation}: no package is named for it, so no commit can be bound to it")
+    module_name, _, _cls = reference.partition(":")
+    try:
+        root = imported_root(implementation, module)
+    except Exception as exc:  # noqa: BLE001 — a missing checkout is a statement about this run
+        pytest.skip(f"BLOCKED — {exc}")
+
+    configured = os.environ.get(ROOT_ENV.get(implementation, ""), "").strip()
+    if configured:
+        assert root == Path(configured).expanduser().resolve(), (
+            f"{ROOT_ENV[implementation]} names {configured} but the code answering came from {root}; the "
+            "verdicts in the matrix describe the imported copy, not the one on the command line")
+
+    head = _git(root, "rev-parse", "HEAD")
+    if not head:
+        pytest.skip(f"{implementation}: {root} has no readable git HEAD, so its commit cannot be bound")
+    assert head == recorded["checkout_commit"], (
+        f"{implementation}: the matrix records {recorded['checkout_commit']} but the plane imported from "
+        f"{root} at {head}. Re-measure the matrix against this checkout, or point {ROOT_ENV.get(implementation)}"
+        " at the recorded one — do not edit the recorded SHA to make this pass.")
+    base = recorded.get("base_commit", "")
+    if base:
+        assert _git_ok(root, "cat-file", "-e", base), (
+            f"{implementation}: recorded base {base} does not exist in the measured checkout at {root}")
+        assert _git_ok(root, "merge-base", "--is-ancestor", base, head), (
+            f"{implementation}: recorded base {base} is not an ancestor of the measured {head}; the "
+            "qualification would describe a lineage the checkout does not have")

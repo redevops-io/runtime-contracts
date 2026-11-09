@@ -161,6 +161,19 @@ has its own store, so the failures above are about authorization, not about a ma
 Per-tenant physical separation is a mitigation a shell can apply today; it is not an ACL and it does not
 survive a shared index.
 
+Measured run of the lane itself, against redevops-rag `6e50d6d`:
+
+```bash
+REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest tests/authz_contract/test_retrieval_baseline.py -q
+# 21 collected → 14 passed, 7 xfailed (strict), 0 failed
+```
+
+Without the checkout the lane reports 21 **BLOCKED skips** and nothing else — a real DuckDB run and a skip are
+different states and are kept that way. Before this record the lane could never leave the skip column: the
+probe imported `redevops_rag` before any root variable was applied, so `REDEVOPS_RAG_ROOT` was named in the skip
+message but never read. That is fixed in `adapters/_implementations.py`, and the counts above are the first ones
+this repository has produced against the real library.
+
 ## Ordered remediation
 
 Ordering is by what unblocks the most cells for the least churn, not by severity of wording.
@@ -283,21 +296,91 @@ PYTHONPATH="$AGENTIC_OS_ROOT:$AGENTIC_OS_ENTERPRISE_ROOT:$PWD" \
 ```
 
 What neither test claims: that the pinned verdicts hold under `production`. There every mission node is checked
-against its owner's authority envelope, which the contract scenarios do not mint, so a production run is a posture
-statement — it prints verdicts and does not compare them with `qualification.json`. With the stores provisioned the
-same 14 cells come back with no configuration failure at all, and differ from the pinned matrix in exactly two
-places: `permitted_edges_survive` for both editions, where a fully-authorized plan executes nothing because the
-nodes have no envelope to run under. That is production being stricter than the contract, not a regression, and it
-is the reason the matrix stays measured in the default profile. A `ReplayProtectionNotDurable` detail stays
+against its owner's authority envelope, so a production run is a posture statement — it prints verdicts and does
+not silently inherit the default-profile qualification. A `ReplayProtectionNotDurable` detail stays
 blocked-on-configuration rather than a leak, in either profile.
+
+### Production authority: the two envelopes `permitted_edges_survive` needed
+
+Provisioned but un-issued, the production run used to differ from the pinned matrix in exactly two places —
+`permitted_edges_survive` for both editions — with `dispatched=[]`, a `failed` mission and an `AuthorityDeclined`
+in the timeline. Cause: in production `MissionRuntime._authority_gate` refuses a node unless the mission has an
+`AuthorityEnvelope` in a durable envelope store, and the contract scenarios minted none. That is production being
+stricter than the contract, and neither folding the cells into the default-profile PASS nor leaving them as
+unexplained FAILs was an honest report.
+
+They can be provisioned through the product's own APIs, and now are:
+[durable_stores.py](../tests/authz_contract/durable_stores.py) issues one envelope per mission at
+`create_mission`, through `EnvelopeStore.put` — the call an owner's issuance path makes — with grants derived
+**only** from what the mission already declares in `Mission.policy_refs` (`billing.read` → `billing.*`, the
+kernel's own family rule read in the other direction). A mission that declares nothing is issued an envelope that
+grants nothing, and its nodes are still refused. The mission must also name a tenant, because the tenant is part
+of the authority key: a mission with none is given `PRODUCTION_MISSION_TENANT` (`acme`), the same default the
+enterprise adapter already gives its missions. Neither of these touches a criterion, an adapter, or a pinned
+verdict — it is the composition root's job that a harness has to perform for itself, and it is asserted rather
+than assumed in
+[test_production_authority.py](../tests/authz_contract/test_production_authority.py):
+
+* the authorized plan dispatches exactly the edges it was granted and ends `succeeded`;
+* `secret.exfiltrate` neither dispatches nor goes unrecorded, and `AuthorityGuard.check` answers it
+  `deny / out_of_scope` **on the envelope the run issued** — so the PASS cannot be resting on the harness's own filtering;
+* `guard.envelopes.revoke(mission_id)` stops the permitted edge again (`deny / revoked`), so the allow is live
+  authority and not a cached yes; and revocation is durable — a second `SqliteEnvelopeStore` over the same file
+  reports it;
+* a mission with no issued envelope is refused with `no_authority`, which is the fail-closed control
+  `test_durable_profile.py` already guards, left exactly where it was.
+
+```bash
+# the production-profile matrix, provisioned, compared with (never written into) the pinned default-profile matrix
+AGENTIC_OS_ROOT=/path/to/agentic-os AGENTIC_OS_ENTERPRISE_ROOT=/path/to/agentic-os-enterprise \
+  python scripts/authz_production_matrix.py --json docs/evidence/authz_production_matrix.json
+```
+
+Provisioned and issued, the 14 production cells come back identical to the default-profile matrix — 7 PASS,
+5 FAIL, 2 UNSUPPORTED, 0 BLOCKED — which is a stronger statement than the earlier two deviations, because the
+production run now reaches those two cells through issued authority instead of through an absent gate.
+
+### Qualification record — 2026-11-09 (review follow-up)
+One machine (macOS, Python 3.12 interpreter at `/tmp/kernel-e2-venv`), three implementations at exactly the commits
+`qualification.json` records — agentic-os `c453cd16dcb196cc15a0249a6e3da98fa7e3e98e`, agentic-os-enterprise
+`d88b9adfb781c37592452b583dd145c6e0acd6bd` — plus redevops-rag at `6e50d6db262135f9fa51f8c5cbc9be4b8952179b`,
+whose commit is not recorded in `qualification.json` because no matrix cell is credited to that implementation.
+Runtime-contracts under review at `ad1d9510f7a7ce3e54d647c802419d94b166e665`.
+
+| Matrix | Command | Result |
+|---|---|---|
+| Default profile, 14 cells | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… python scripts/authz_matrix.py --json out.json` then `--check` | 7 PASS / 5 FAIL / 2 UNSUPPORTED / 0 BLOCKED; `--check` exit 0 (no verdict drift) |
+| Production profile + durable stores + issued envelopes, 14 cells | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… python scripts/authz_production_matrix.py --json docs/evidence/authz_production_matrix.json` | 7 PASS / 5 FAIL / 2 UNSUPPORTED / 0 BLOCKED; zero deviations from the default-profile matrix, 8 envelopes issued |
+| Retrieval authorization (#627) | `REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest tests/authz_contract/test_retrieval_baseline.py -q` | 21 collected: 14 PASS / 7 XFAIL (strict) / 0 FAIL |
+| Whole suite, checkouts configured | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… REDEVOPS_RAG_ROOT=… python -m pytest -q` | 1889 passed / 3 skipped / 7 xfailed |
+| Whole suite, no checkouts configured | `python -m pytest tests/authz_contract -q` | 89 passed / 24 skipped, each skip carrying its BLOCKED reason |
+
+Two things in that table were not true before this record, and both are now enforced rather than documented:
+
+* **The checkout variables actually select the code.** `adapters._implementations.import_module` now calls
+  `add_implementation_root` first. Before, `AGENTIC_OS_ROOT` / `AGENTIC_OS_ENTERPRISE_ROOT` /
+  `REDEVOPS_RAG_ROOT` were documentation only — an installed copy answered, and the retrieval lane skipped with
+  a message telling the reader to set a variable that would not have been read.
+* **A recorded commit is bound to the imported code.** `test_a_recorded_commit_is_the_code_that_answered`
+  resolves each plane from `module.__file__`, walks to its git working tree and compares `HEAD` with the SHA in
+  `qualification.json` (plus that `base_commit` is an ancestor). A machine measuring a different checkout now
+  fails the suite instead of reprinting SHAs it never ran.
+
+The evidence artifact `docs/evidence/authz_qualification_matrix.json` is a snapshot, not a reproducible digest:
+grant ids are random per run, so the recorded `detail` for `cross_tenant_denied/agentic-os` does not reproduce
+byte-for-byte. `--check` gates on verdicts, which is the right thing to gate on; a reviewer comparing artifacts
+should diff verdict triples, not bytes.
 
 An implementation checkout that is not configured makes the relevant tests **skip with a BLOCKED reason**. No
 cell is satisfied by the absence of a product, and no skip is reported as a pass.
 
 ## What is out of scope here
 
-- **#45 staging qualification** runs on its own track. Nothing in this suite substitutes stub results for
-  staging evidence, and nothing here changes #45's security assertions.
+- **#45 staging qualification** runs on its own track (agentic-tests `api/test_permissions_postures.py`). Nothing
+  in this suite substitutes stub results for staging evidence, and nothing here changes #45's security
+  assertions. Its deterministic lane passes against a compliant posture and fails, case by case, against a
+  violating one; the journeys against a deployed stack, and any desktop/mobile browser coverage, stay on that
+  track and are not implied by anything in this matrix.
 - **Deployments.** These verdicts are about library seams in a test process. They say nothing about a running
   stack, its configuration, or its network.
 - **Production claims for either plane.** E-2 is reviewed independently; its acceptance is a human decision,
