@@ -17,19 +17,36 @@ import pytest
 from runtime_contracts.authz.qualification import ALL_INVARIANTS, Invariant, Qualification
 from runtime_contracts.authz.suite import run_invariant
 
-from .implementations import (MUTANT_SETS, REAL_ADAPTERS, build, EXPECTATIONS, load_expectations,
-                              mutants_breaking, skip_if_blocked)
+from .implementations import (ADAPTER_REFERENCE, MUTANT_SETS, REAL_ADAPTERS, build, EXPECTATIONS,
+                              load_expectations, mutants_breaking, skip_if_blocked)
 
-REAL_BY_IMPLEMENTATION = {}
-for _reference in REAL_ADAPTERS:
+#: The editions whose shipped adapter this machine can build, and the reasons the others cannot. Both matter:
+#: a control that cannot be compared against an absent checkout measured nothing, and calling that a failure
+#: would report the run as if it were the suite.
+REAL_BY_IMPLEMENTATION: dict[str, str] = {}
+BUILD_FAILURES: dict[str, str] = {}
+for _implementation, _reference in ADAPTER_REFERENCE.items():
     try:
         REAL_BY_IMPLEMENTATION[build(_reference).implementation] = _reference
-    except Exception:  # noqa: BLE001 — resolved per test so one missing checkout does not hide the others
-        continue
+    except Exception as _exc:  # noqa: BLE001 — each edition is resolved on its own, so one gap hides no other
+        BUILD_FAILURES[_implementation] = f"{type(_exc).__name__}: {_exc}"
 
 
 def _sub_statuses(result) -> dict[str, str]:
     return {s["id"]: s["status"] for s in result.evidence.get("sub_criteria", [])}
+
+
+def _skip_blocked_without_checkout(editions: tuple[str, ...], what: str) -> None:
+    """BLOCKED, not FAIL, when an edition this control needs has no checkout here.
+
+    The mutants and reference variants are defined whether or not the product is on this machine, so an empty
+    comparison set has two possible causes and only one of them is a defect in this repo. The classification is
+    the one ``skip_if_blocked`` already gives a cell with nothing to run against: the run did not measure it.
+    """
+    missing = sorted(impl for impl in set(editions) if impl in BUILD_FAILURES)
+    if missing:
+        pytest.skip("BLOCKED — " + "; ".join(f"{impl}: {BUILD_FAILURES[impl]}" for impl in missing)
+                    + f" — with no checkout, {what} has nothing to be compared against")
 
 
 def _mutant_cases(invariant: Invariant):
@@ -42,6 +59,12 @@ def test_every_invariant_can_be_broken(invariant: Invariant) -> None:
     """An invariant with no mutant is an untested assertion. #626 ships a known-bad variant for each one."""
     cases = _mutant_cases(invariant)
     bad = [cls for _impl, cls in cases if cls.variant.startswith("bad_")]
+    if not bad:
+        # Rule out the run before blaming the suite: the mutants belong to an edition, and that edition may
+        # simply not be checked out here.
+        _skip_blocked_without_checkout(tuple(impl for impl, cls in mutants_breaking(invariant)
+                                             if cls.variant.startswith("bad_")),
+                                       f"the known-bad variant of {invariant.value}")
     assert bad, (f"{invariant.value}: no known-bad variant is defined for this invariant, so nothing shows "
                  "the assertion can fail")
 
@@ -99,6 +122,10 @@ def test_a_reference_variant_shows_the_criterion_is_satisfiable(invariant: Invar
         pytest.skip(f"{invariant.value}: {EXPECTATIONS.name} documents no gap here, so nothing needs witnessing")
     for expectation in documented:
         implementation, expected = expectation.implementation, expectation.verdict
+        if implementation not in REAL_BY_IMPLEMENTATION:
+            _skip_blocked_without_checkout((implementation,),
+                                           f"{implementation}'s {invariant.value} cell, which the matrix pins "
+                                           f"as {expected.value}")
         real_result = run_invariant(invariant, skip_if_blocked(REAL_BY_IMPLEMENTATION[implementation]))
         references = [cls for impl, cls in mutants_breaking(invariant)
                       if impl == implementation and cls.variant.startswith("reference_")]

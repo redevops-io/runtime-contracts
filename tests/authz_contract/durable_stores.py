@@ -99,6 +99,23 @@ def authority_module():
     return product_module("agentic_os.mission.authority")
 
 
+def registry_fixture(capabilities) -> Any:
+    """A real ``CapabilityRegistry`` holding a real operator manifest, for issuance that needs a deployment inventory.
+
+    ``capabilities`` is ``(name, provides, permissions)`` per entry. The manifest is built with the product's own SDK
+    (``agentic_os.mission.operator_sdk``) and registered through the product's own registry, so the inventory this
+    yields is product data of the same kind ``MissionRuntime.registry`` holds — a deployment's declared capabilities
+    with the permissions each one declares it demands. It decides nothing: it is the list an issuer reads.
+    """
+    sdk = product_module("agentic_os.mission.operator_sdk")
+    registry = product_module("agentic_os.mission.registry").CapabilityRegistry()
+    registry.register(sdk.Operator("authz_contract", [
+        sdk.capability(name, (lambda _payload=None, _n=name: {"ran": _n}), provides=list(provides),
+                       permissions=list(permissions))
+        for name, provides, permissions in capabilities]).manifest)
+    return registry
+
+
 @dataclass(frozen=True)
 class DurableStores:
     """Where the durable stores were put, and the objects the product opened them with."""
@@ -178,31 +195,67 @@ def durable_production(tmp_path, monkeypatch) -> Iterator[DurableStores]:
                         guard=guard, replay_guard=replay, issued=issued)
 
 
-def family_patterns(policy_refs) -> tuple[str, ...]:
-    """Envelope grant patterns from the authority a mission already declares (``Mission.policy_refs``).
+#: The one spelling that means "every capability in this family". Nothing in this file ever adds it to a grant;
+#: a wildcard reaches an envelope only because a policy_ref states it, which has its own test.
+WILDCARD = "*"
 
-    A mission's ``policy_refs`` are the grants its caller resolved for it — both adapters pass the principal's
-    own grants there, because the compiler's stage-2 check reads them. Turning ``billing.read`` into
-    ``billing.*`` is the product's own family rule (a capability needs its family's read permission, the same
-    rule the adapters document), applied in the other direction. Nothing may appear here that the principal
-    does not hold: an envelope that granted a capability the mission was not given would be the harness
-    laundering privilege, which is one of the invariants under test.
+
+def capability_grants(policy_refs, registry=None) -> tuple[str, ...]:
+    """The envelope's grants: each a single named capability, never a family, never anything unearned.
+
+    Two vocabularies have to be reconciled here, and reconciling them wrongly is a privilege leak. An envelope
+    grant is fnmatch-matched against ``node.capability`` (``Grant.capability`` is a pattern, and the runtime
+    builds the action from the node's capability in ``MissionRuntime._authorize``), while ``Mission.policy_refs``
+    are the *permissions* the mission's caller resolved for it. So the issuer must name capabilities, and it must
+    do so without inventing scope. Only these three sources are allowed, and a name from each stays exactly as
+    wide as the thing it came from:
+
+    * each ``policy_ref`` verbatim. A permission name covers no provider — ``Grant("billing.read")`` matches a
+      capability literally called ``billing.read`` and nothing else — which is what "exact" buys: it grants no
+      family. The ``billing.read`` → ``billing.*`` expansion this replaces used to hand a mission ``billing.delete``
+      as well, and no scenario asked the product to allow that.
+    * each capability the **deployment's registry** declares whose demanded permissions are all held
+      (``CapabilitySpec.permissions`` is the operator's own declaration — the same one the policy plane enforces,
+      and the same one the adapters' scenarios register their providers with). ``billing.invoice`` appears because
+      the deployment registered it as demanding ``billing.read``, which this mission declares. The inventory comes
+      from the runtime's registry, never from a scenario's list of capabilities.
+    * a family pattern only where a policy_ref states one (``billing.*``) — wildcard authority is a policy
+      decision, so it is testable on its own terms and never a fixture default.
+
+    Anything else earns nothing: a name nothing registers grants no capability, and a capability demanding a
+    permission this mission does not declare is never granted. A mission that declares no authority is issued an
+    envelope that authorizes nothing.
     """
-    families = {str(ref).split(".", 1)[0] for ref in policy_refs if str(ref).strip()}
-    return tuple(f"{family}.*" for family in sorted(families))
+    declared = [str(ref).strip() for ref in policy_refs if str(ref).strip()]
+    verbatim = sorted({ref for ref in declared if WILDCARD not in ref})
+    patterns = sorted({ref for ref in declared if WILDCARD in ref})
+    held = set(declared)
+    if registry is None:
+        specs: Any = ()
+    elif hasattr(registry, "all"):
+        specs = registry.all()                # a CapabilityRegistry, which is what MissionRuntime holds
+    else:
+        specs = registry                      # an inventory handed over as its specs (a test's, or a cached list)
+    registered = []
+    for spec in specs:
+        demanded = [str(p) for p in (getattr(spec, "permissions", ()) or ())]
+        if demanded and all(p in held for p in demanded):
+            registered.append(str(spec.name))
+    return tuple(dict.fromkeys(verbatim + sorted(set(registered)) + patterns))
 
 
-def issue_mission_envelope(authority, guard, mission, *, ttl_s: float = ENVELOPE_TTL_S) -> Any:
+def issue_mission_envelope(authority, guard, mission, *, registry=None, ttl_s: float = ENVELOPE_TTL_S) -> Any:
     """Issue and store the envelope for one mission, through the product's own owner/platform API.
 
-    ``EnvelopeStore.put`` is what an owner's issuance path calls; ``AuthorityGuard`` then reads it back on
-    every decision. The envelope states its tenant, its principal, its lifetime and only the grants the
-    mission declares — so what production enforces is checked against real issued authority, not against an
-    absent envelope that forces every node to be refused.
+    ``EnvelopeStore.put`` is what an owner's issuance path calls; ``AuthorityGuard`` reads it back on every
+    decision. The envelope states its tenant, its principal, its lifetime and the exact grants
+    :func:`capability_grants` derives from what the mission declares and what ``registry`` says each registered
+    capability demands — so what production enforces is checked against real issued authority, and against
+    nothing wider than that.
     """
     tenant = getattr(mission, "tenant", "") or PRODUCTION_MISSION_TENANT
-    patterns = family_patterns(getattr(mission, "policy_refs", []) or [])
-    grants = tuple(authority.Grant(capability=pattern) for pattern in patterns)
+    names = capability_grants(getattr(mission, "policy_refs", []) or [], registry)
+    grants = tuple(authority.Grant(capability=name) for name in names)
     now = time.time()
     envelope = authority.AuthorityEnvelope(
         tenant=tenant, principal=str(getattr(mission, "principal", "") or "authz-contract"),
@@ -218,9 +271,10 @@ def _install_owner_issuance(monkeypatch, guard, authority, issued: list[str]) ->
     """Give every mission this run creates the envelope its own declared authority allows.
 
     The harness has no composition root, so the issuance an Operator would perform at ``create_mission`` time
-    is installed at that same call. It grants nothing beyond ``Mission.policy_refs``; a mission that declares
-    no authority gets an envelope that authorizes nothing, and its nodes are refused exactly as they were
-    before this existed.
+    is installed at that same call. The grants are the exact capability names :func:`capability_grants` derives
+    from ``Mission.policy_refs`` and from the runtime's own registry — no family expansion, nothing a mission
+    did not declare. A mission that declares no authority gets an envelope that authorizes nothing, and its
+    nodes are refused exactly as they were before this existed.
     """
     for _implementation, runtime_cls in _runtime_classes():
         original = runtime_cls.create_mission
@@ -229,7 +283,9 @@ def _install_owner_issuance(monkeypatch, guard, authority, issued: list[str]) ->
             mission = _original(self, *args, **kwargs)
             if not getattr(mission, "tenant", ""):      # the tenant is part of the authority key, not a label
                 mission.tenant = PRODUCTION_MISSION_TENANT
-            issue_mission_envelope(authority, guard, mission)   # no policy_refs ⇒ no grants ⇒ no authority
+            # The registry the runtime plans against is the deployment's inventory, and it is the only thing
+            # issuance reads beyond the mission's own declared refs. No policy_refs: no grants, no authority.
+            issue_mission_envelope(authority, guard, mission, registry=getattr(self, "registry", None))
             issued.append(str(mission.id))
             return mission
 

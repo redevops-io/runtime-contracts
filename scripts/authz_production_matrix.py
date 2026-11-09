@@ -77,7 +77,8 @@ def main() -> int:
         return 2
 
     # The composition root's two jobs a harness has to do itself: hand the runtime the durable guard, and issue
-    # each mission the envelope its own declared authority allows. Both are the provisioning that
+    # each mission the envelope its own declared authority allows — exact capability names, no family expansion
+    # (see ``capability_grants``). Both are the provisioning that
     # tests/authz_contract/durable_stores.py performs for a pytest run, so the two measure one posture.
     sys.path.insert(0, str(REPO / "tests"))
     from authz_contract.durable_stores import (PRODUCTION_MISSION_TENANT, _runtime_classes,
@@ -91,7 +92,7 @@ def main() -> int:
             mission = _original(self, *a, **kw)
             if not getattr(mission, "tenant", ""):
                 mission.tenant = PRODUCTION_MISSION_TENANT
-            issue_mission_envelope(authority, guard, mission)
+            issue_mission_envelope(authority, guard, mission, registry=getattr(self, "registry", None))
             issued.append(str(mission.id))
             return mission
 

@@ -1,7 +1,7 @@
 {
   "cells": [
     {
-      "detail": "grant_tenant_tag: the implementation allowed it (allowed=True reason='explicit_grant' grants=['g-2cdf625d7abad5ede94c5794838a4154'])",
+      "detail": "grant_tenant_tag: the implementation allowed it (allowed=True reason='explicit_grant' grants=['g-c74bfc3f201c7c2fd7daffb452aa7861'])",
       "evidence": {
         "sub_criteria": [
           {
@@ -21,17 +21,17 @@
             "status": "PASS"
           },
           {
-            "detail": "the implementation allowed it (allowed=True reason='explicit_grant' grants=['g-2cdf625d7abad5ede94c5794838a4154'])",
+            "detail": "the implementation allowed it (allowed=True reason='explicit_grant' grants=['g-c74bfc3f201c7c2fd7daffb452aa7861'])",
             "envelope": {
               "allowed": true,
               "decision_epoch": 0,
               "event": "authorization_decision",
               "grant_ids": [
-                "g-2cdf625d7abad5ede94c5794838a4154"
+                "g-c74bfc3f201c7c2fd7daffb452aa7861"
               ],
               "grant_tenant": "acme",
               "logged": [
-                "authorization_decision {\"allowed\":true,\"decision_epoch\":0,\"event\":\"authorization_decision\",\"grant_ids\":[\"g-2cdf625d7abad5ede94c5794838a4154\"],\"policy_reason\":\"explicit_grant\",\"principal\":\"bo\",\"principal_kind\":\"user\",\"requested_action\":\"read\",\"resource_kind\":\"table\",\"resource_name\":\"crm.customers\",\"roles_hash\":\"c40dc72b0228e585\",\"tenant\":\"\",\"version\":1}"
+                "authorization_decision {\"allowed\":true,\"decision_epoch\":0,\"event\":\"authorization_decision\",\"grant_ids\":[\"g-c74bfc3f201c7c2fd7daffb452aa7861\"],\"policy_reason\":\"explicit_grant\",\"principal\":\"bo\",\"principal_kind\":\"user\",\"requested_action\":\"read\",\"resource_kind\":\"table\",\"resource_name\":\"crm.customers\",\"roles_hash\":\"c40dc72b0228e585\",\"tenant\":\"\",\"version\":1}"
               ],
               "malformed_audit_lines": [],
               "policy_reason": "explicit_grant",
@@ -101,8 +101,8 @@
           },
           {
             "grant_ids": [
-              "g-e6968b18eb3b5b16056d7d3600a5b47b",
-              "g-5a0c3e03675180e64b84e78c7acead63"
+              "g-4df23d9117e0cc51e0dd813cbdfcce7c",
+              "g-db2198156776a71e8e782eca6002b517"
             ],
             "id": "explicit_grant_is_bounded",
             "seams": [
@@ -415,7 +415,7 @@
           },
           {
             "grant_ids": [
-              "g-101c826854825a6c23f952d0b167710a",
+              "g-6ad69bde5d315de09e2c79fda8da2e04",
               "r-d53d2a49"
             ],
             "id": "explicit_grant_is_bounded",

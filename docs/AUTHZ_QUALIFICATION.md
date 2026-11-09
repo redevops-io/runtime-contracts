@@ -312,15 +312,33 @@ unexplained FAILs was an honest report.
 They can be provisioned through the product's own APIs, and now are:
 [durable_stores.py](../tests/authz_contract/durable_stores.py) issues one envelope per mission at
 `create_mission`, through `EnvelopeStore.put` — the call an owner's issuance path makes — with grants derived
-**only** from what the mission already declares in `Mission.policy_refs` (`billing.read` → `billing.*`, the
-kernel's own family rule read in the other direction). A mission that declares nothing is issued an envelope that
-grants nothing, and its nodes are still refused. The mission must also name a tenant, because the tenant is part
-of the authority key: a mission with none is given `PRODUCTION_MISSION_TENANT` (`acme`), the same default the
-enterprise adapter already gives its missions. Neither of these touches a criterion, an adapter, or a pinned
+**only** from two sources, and every grant names one capability. A mission's `policy_refs` are restated verbatim —
+`Grant("billing.read")` matches a capability literally called `billing.read` and nothing else, so a permission name
+buys no provider — and the capabilities that reach the envelope are the ones the **runtime's own registry**
+declares, one by one, whose demanded permissions (`CapabilitySpec.permissions`, the operator's own declaration,
+the same one the policy plane enforces) are all held by that mission. `billing.invoice` is issued because the
+deployment registered it as demanding `billing.read`, which the mission declares.
+
+There is no family expansion any more. An earlier revision of this fixture turned `billing.read` into `billing.*`
+"because that is the kernel's family rule"; it is not the kernel's rule *at this seam* — an envelope grant is
+fnmatch-matched against `node.capability` in `authority.evaluate` — and the expansion handed every mission
+`billing.delete` and any other name in the family, registered or not. A family pattern now reaches an envelope
+only where a `policy_ref` spells one out, which is a policy decision and has its own test. A mission that declares
+nothing is issued an envelope that grants nothing, and its nodes are still refused. The mission must also name a
+tenant, because the tenant is part of the authority key: a mission with none is given
+`PRODUCTION_MISSION_TENANT` (`acme`), the same default the enterprise adapter already gives its missions. Neither
+of these touches a criterion, an adapter, or a pinned
 verdict — it is the composition root's job that a harness has to perform for itself, and it is asserted rather
 than assumed in
 [test_production_authority.py](../tests/authz_contract/test_production_authority.py):
 
+* issuance is exact: a declared permission grants no capability by itself, the registry's two
+  `billing.read` capabilities are each named separately, and nothing else is granted — a name no operator
+  registered, a capability demanding an unheld permission, and `reports.monthly` are all refused
+  `deny / out_of_scope` by the guard;
+* a family wildcard behaves as the policy that wrote it: with `policy_refs = ["billing.*"]` the envelope reaches
+  `billing.delete` — the name exact issuance cannot reach, which is exactly the width that must not be granted
+  silently — and still stops at `reports.monthly`;
 * the authorized plan dispatches exactly the edges it was granted and ends `succeeded`;
 * `secret.exfiltrate` neither dispatches nor goes unrecorded, and `AuthorityGuard.check` answers it
   `deny / out_of_scope` **on the envelope the run issued** — so the PASS cannot be resting on the harness's own filtering;
@@ -338,22 +356,43 @@ AGENTIC_OS_ROOT=/path/to/agentic-os AGENTIC_OS_ENTERPRISE_ROOT=/path/to/agentic-
 
 Provisioned and issued, the 14 production cells come back identical to the default-profile matrix — 7 PASS,
 5 FAIL, 2 UNSUPPORTED, 0 BLOCKED — which is a stronger statement than the earlier two deviations, because the
-production run now reaches those two cells through issued authority instead of through an absent gate.
+production run now reaches those two cells through issued authority instead of through an absent gate. Re-running
+them after the expansion was replaced by exact grants changed no verdict, no sub-criterion and no cell detail: the
+regenerated artifact differs from the recorded one only in the per-run random grant identifiers (`g-…`), which is
+what "the same measurement twice" looks like here. **No verdict changed in either profile, and no authorized edge
+needed a wider grant to survive.**
 
 ### Qualification record — 2026-11-09 (review follow-up)
 One machine (macOS, Python 3.12 interpreter at `/tmp/kernel-e2-venv`), three implementations at exactly the commits
 `qualification.json` records — agentic-os `c453cd16dcb196cc15a0249a6e3da98fa7e3e98e`, agentic-os-enterprise
 `d88b9adfb781c37592452b583dd145c6e0acd6bd` — plus redevops-rag at `6e50d6db262135f9fa51f8c5cbc9be4b8952179b`,
 whose commit is not recorded in `qualification.json` because no matrix cell is credited to that implementation.
-Runtime-contracts under review at `ad1d9510f7a7ce3e54d647c802419d94b166e665`.
+Runtime-contracts under review: `ad1d9510f7a7ce3e54d647c802419d94b166e665` (the contract, the matrix and the
+fixtures) → `2df123a7740ae7b7daa7213346f233f799c865ac` (production-profile qualification, provenance binding) →
+the follow-up commit on this branch, which replaced family-wildcard issuance with exact capabilities and took
+every row of the table below again. A commit cannot quote its own SHA, so it is named by its position in the
+chain; `git log -1` on the reviewed branch is the authority for it.
 
 | Matrix | Command | Result |
 |---|---|---|
 | Default profile, 14 cells | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… python scripts/authz_matrix.py --json out.json` then `--check` | 7 PASS / 5 FAIL / 2 UNSUPPORTED / 0 BLOCKED; `--check` exit 0 (no verdict drift) |
 | Production profile + durable stores + issued envelopes, 14 cells | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… python scripts/authz_production_matrix.py --json docs/evidence/authz_production_matrix.json` | 7 PASS / 5 FAIL / 2 UNSUPPORTED / 0 BLOCKED; zero deviations from the default-profile matrix, 8 envelopes issued |
 | Retrieval authorization (#627) | `REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest tests/authz_contract/test_retrieval_baseline.py -q` | 21 collected: 14 PASS / 7 XFAIL (strict) / 0 FAIL |
-| Whole suite, checkouts configured | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… REDEVOPS_RAG_ROOT=… python -m pytest -q` | 1889 passed / 3 skipped / 7 xfailed |
-| Whole suite, no checkouts configured | `python -m pytest tests/authz_contract -q` | 89 passed / 24 skipped, each skip carrying its BLOCKED reason |
+| Whole suite, checkouts configured | `env AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… REDEVOPS_RAG_ROOT=… python -m pytest -q` | 1890 passed / 3 skipped / 7 xfailed / 0 failed |
+| Contract subset, no checkouts configured | `env -u AGENTIC_OS_ROOT -u AGENTIC_OS_ENTERPRISE_ROOT -u REDEVOPS_RAG_ROOT python -m pytest tests/authz_contract -q` | 39 passed / 75 skipped / 0 failed, every skip a BLOCKED reason |
+| Whole suite, no checkouts configured | as above, on `python -m pytest -q` | 1825 passed / 75 skipped / 0 failed |
+
+The no-checkout rows are quoted with `env -u` on purpose. An earlier revision of this table reported
+"89 passed / 24 skipped" for a run that was in fact taken in a shell which still had `AGENTIC_OS_ROOT` and
+`AGENTIC_OS_ENTERPRISE_ROOT` exported: it had checkouts, and the row described a posture that had not been
+measured. Unsetting them exposed a real defect, now fixed — the two negative-control tests
+(`test_every_invariant_can_be_broken`, `test_a_reference_variant_shows_the_criterion_is_satisfiable`) raised 11
+failures on a machine with no checkout, because "no known-bad variant survived to be compared" and "this edition
+is not on this machine" were the same empty list. They now distinguish the two: an absent checkout is a BLOCKED
+skip naming the edition and its build error, while the anti-vacuity assertion itself is untouched and still fails
+when the editions *are* here and a mutant has been deleted. With checkouts configured those same cells run: the
+file is 18 passed / 3 skipped, the three skips being the pre-existing "qualification.json documents no gap here"
+skips, not the missing-checkout ones.
 
 Two things in that table were not true before this record, and both are now enforced rather than documented:
 

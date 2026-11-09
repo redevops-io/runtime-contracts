@@ -24,6 +24,11 @@ REAL_ADAPTERS = ("adapters.agentic_os_kernel.adapter:KernelAuthzAdapter",
 
 MUTANT_SETS = {"agentic-os": kernel_mutants.MUTANTS, "agentic-os-enterprise": enterprise_mutants.MUTANTS}
 
+#: Each implementation's shipped adapter, keyed the way the matrix and the mutant sets key them. A test that
+#: finds no control to run needs to say which of two reasons it has: the control does not exist (a defect in
+#: this repo) or the edition is not checked out here (a defect in the run). That distinction needs the name.
+ADAPTER_REFERENCE = {"agentic-os": REAL_ADAPTERS[0], "agentic-os-enterprise": REAL_ADAPTERS[1]}
+
 
 def build(reference: str) -> AuthzAdapter:
     """Instantiate ``module:Class``. An unavailable implementation raises ``AdapterBlocked`` with the reason."""
