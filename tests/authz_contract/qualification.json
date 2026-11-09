@@ -1,0 +1,118 @@
+{
+  "contract": "authz/v1",
+  "observed_on": "2026-11-09",
+  "measured_under_profile": "default (AGENTIC_OS_PROFILE unset)",
+  "profile_note": "Every verdict below is measured in the default profile. Under AGENTIC_OS_PROFILE=production the products demand a durable approval-replay store and a durable authority store first; provisioned, the matrix differs only in permitted_edges_survive for both editions, where a mission node is checked against an authority envelope the contract scenarios do not mint. Unprovisioned, cells fail on ReplayProtectionNotDurable or ProfileError, which is a deployment statement and never a qualification — see tests/authz_contract/test_durable_profile.py and docs/AUTHZ_QUALIFICATION.md.",
+  "implementations": {
+    "adapters.agentic_os_kernel.adapter:KernelAuthzAdapter": {
+      "implementation": "agentic-os",
+      "checkout_commit": "c453cd16dcb196cc15a0249a6e3da98fa7e3e98e",
+      "base_commit": "130fcf9d9e937d171e47e9465a9d2065c45962c5"
+    },
+    "adapters.agentic_os_enterprise.adapter:EnterpriseAuthzAdapter": {
+      "implementation": "agentic-os-enterprise",
+      "checkout_commit": "d88b9adfb781c37592452b583dd145c6e0acd6bd",
+      "base_commit": "048b42ed3d67891e1270da8308f3f6a63ccfa31e"
+    }
+  },
+  "expectations": [
+    {
+      "invariant": "cross_tenant_denied",
+      "implementation": "agentic-os",
+      "verdict": "FAIL",
+      "reason": "The resource plane ignores Grant.tenant entirely: a grant tagged to tenant acme authorizes the same subject's request in tenant globex, and neither GrantStore.add() nor GrantStore.update() can even set the tag. The resource-tenancy gate (OwnerOnlyAuthority) does deny cross-tenant node access; there is no request-tenant parameter anywhere on the resource or capability decision seam.",
+      "remediation": "E-1: give PermissionsPlane.authorize a TenantContext argument, refuse a grant whose tenant is set and differs from the request's, and expose the tag through add()/update(). Until then the tenant field on Grant is vocabulary, and no kernel receipt may be described as tenant-bound."
+    },
+    {
+      "invariant": "no_privilege_laundering",
+      "implementation": "agentic-os",
+      "verdict": "PASS",
+      "reason": "E-2: a role name with no grant of its own buys nothing at the plane or the tool gate; an explicit role grant is honoured only inside what it names; OwnerOnlyAuthority refuses a node acting outside its own tenant; an ungranted principal is shown no candidates. The bad_role_bypass mutant (the pre-E-2 behaviour) fails this cell.",
+      "remediation": ""
+    },
+    {
+      "invariant": "revocation_during_queue",
+      "implementation": "agentic-os",
+      "verdict": "PASS",
+      "reason": "Work queued in ReconcileJobs and dispatched after the grant was removed did not execute, and the tool gate refused it at dispatch with an emitted envelope. The bad_cached_decision_at_enqueue mutant fails this cell.",
+      "remediation": "Keep the ordering requirement in the suite: the kernel itself does not enforce that a dispatcher consults the authorizer at dispatch, so an edition that caches at enqueue still fails."
+    },
+    {
+      "invariant": "stale_epoch_refusal",
+      "implementation": "agentic-os",
+      "verdict": "UNSUPPORTED",
+      "reason": "authz_contract.decision_digest and cache_entry_is_fresh exist and behave correctly as a predicate, but no caller in the kernel caches an authorization decision, so nothing can be refused as stale. The criterion is required, so the cell is not a pass.",
+      "remediation": "E-3: put a decision cache behind the kernel's own seams (or forbid caching explicitly in the contract) and key every entry by (tenant, principal, resource, action, digest, epoch), reading it only through cache_entry_is_fresh."
+    },
+    {
+      "invariant": "authorization_before_limit",
+      "implementation": "agentic-os",
+      "verdict": "FAIL",
+      "reason": "PolicyScopedRegistry.discover over-fetches k*3 from the unscoped registry, then filters, then trims. With fifteen unauthorized capabilities ranked ahead of the one permitted capability and limit=3, the permitted edge is dropped silently: no error, no plan node, no receipt. Nothing unauthorized is ever offered, so the leak direction holds and the availability direction does not.",
+      "remediation": "E-5: filter to permitted candidates before applying the limit (filter-then-trim over the whole scoped set, as the reference_filter_before_limit variant does), and emit a machine-readable signal when permitted candidates are dropped rather than returning a short list."
+    },
+    {
+      "invariant": "permitted_edges_survive",
+      "implementation": "agentic-os",
+      "verdict": "PASS",
+      "reason": "A plan whose every edge is permitted completes; with a competing unauthorized provider ranked first for one outcome, the permitted provider runs and the unauthorized one never dispatches.",
+      "remediation": ""
+    },
+    {
+      "invariant": "adapter_error_fails_closed",
+      "implementation": "agentic-os",
+      "verdict": "FAIL",
+      "reason": "With the grant store unreadable the plane never allows anything — it raises. The refusal is real but unrecorded: no authorization_decision line is emitted, so 'who let this through' has no answer and an operator sees a stack trace instead of a denial. The sealed-store path, by contrast, denies with a receipt.",
+      "remediation": "E-6: convert store failures into a denied AccessDecision with policy_reason (e.g. store_unavailable) inside PermissionsPlane.authorize, so every backend failure is both fail-closed and auditable."
+    },
+    {
+      "invariant": "cross_tenant_denied",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "PASS",
+      "reason": "IdentityPlane refuses a request whose context tenant differs from the principal's, on both the capability and resource paths, and DelegationAuthority denies a cross-tenant node until an explicit capability-scoped Delegation exists (then mints a lease). Condition(tenant=...) binds a grant to its tenant. The bad_tenant_blind mutant fails this cell.",
+      "remediation": "Note the boundary that was NOT proved here: the tenancy gate answers a node's resource ownership; no scenario in this cell measures document or row content crossing a boundary. That is #627."
+    },
+    {
+      "invariant": "no_privilege_laundering",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "PASS",
+      "reason": "E-2: an identity carrying 'admin' with no GrantRule is refused and is shown nothing by scoped_permissions; an explicit rule authorizes exactly its permissions; a cross-tenant delegation confers no capability permission. bad_role_bypass and bad_scoped_all both fail this cell.",
+      "remediation": ""
+    },
+    {
+      "invariant": "revocation_during_queue",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "PASS",
+      "reason": "A mission created under a live grant, whose rule was revoked before the node dispatched, failed at the admission gate with no operator invocation, and the plane logged the refusal. bad_revoke_ignored fails this cell.",
+      "remediation": "Revocation is in-memory rule removal: a restart or a second worker restores the rule from wherever rules were loaded. Persist revocation (with the epoch) before this is trusted across processes."
+    },
+    {
+      "invariant": "stale_epoch_refusal",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "UNSUPPORTED",
+      "reason": "The overlay has no authorization epoch at all: GrantRule and AccessDecision carry none, nothing imports the kernel's authz_contract helpers, and IdentityPlane re-evaluates rules per call so there is no cached decision to invalidate. The absence is not a pass: a deployment that adds a cache tomorrow inherits a criterion it cannot satisfy.",
+      "remediation": "E-3: adopt the kernel's (tenant, epoch) pair on GrantRule and IdentityPlane, bump it on revoke_rule, and make any decision cache key on it."
+    },
+    {
+      "invariant": "authorization_before_limit",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "FAIL",
+      "reason": "Same code, reached through the overlay's own seam: MissionRuntime._scoped builds the same PolicyScopedRegistry, whose discover() filters after a k*3 over-fetch. Fifteen unauthorized candidates ahead of one permitted capability at limit=3 loses the permitted edge. Fixing it in the kernel fixes this cell; nothing in the overlay compensates.",
+      "remediation": "E-5 in the kernel, then re-run this cell against the overlay — the overlay's own suite must not claim this passes on the kernel's behalf."
+    },
+    {
+      "invariant": "permitted_edges_survive",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "PASS",
+      "reason": "The governed runtime completes a fully-authorized plan, and with an unauthorized competing provider ranked first it runs the permitted provider and refuses the other at _pre_exec_ok. bad_scoped_all (the pre-E-2 {'*'} scoping) fails this cell.",
+      "remediation": "Note the wiring this exposed: stage-2 compile authority comes from Mission.policy_refs, which the caller resolves — the identity plane feeds only stage-1 scoping and the dispatch gate. A caller that passes a wider policy_refs is not identity-bound. Name that in the deployment contract."
+    },
+    {
+      "invariant": "adapter_error_fails_closed",
+      "implementation": "agentic-os-enterprise",
+      "verdict": "FAIL",
+      "reason": "The composed resource plane raises through the failure rather than denying, so nothing is allowed — and nothing is recorded either. The ledger gets no entry and no envelope is emitted for the failure.",
+      "remediation": "E-6: catch store failures in IdentityPlane.authorize_resource and return a denied AccessDecision with a policy_reason, ledger entry and envelope, matching the sealed-store path."
+    }
+  ]
+}
