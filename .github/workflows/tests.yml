@@ -3,7 +3,15 @@ on:
   push:
     branches: ["main"]
   pull_request:
-    branches: ["main"]
+    # GitHub matches this filter against the pull request's BASE branch, not its head branch, so a
+    # branch that pull requests are opened against has to appear here or those pull requests get no
+    # pytest gate at all. The authz/v1 stack does exactly that: #42 is stacked on this branch, so
+    # listing only "main" left #42 with docs-check and secret scanning and no test run. Listed by
+    # name on purpose -- no wildcard, so the set of gated base branches stays auditable, and the
+    # push trigger below stays main-only.
+    branches:
+      - "main"
+      - "test/authz-v1-exact-capability-issuance"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

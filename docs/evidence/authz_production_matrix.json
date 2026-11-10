@@ -1,0 +1,715 @@
+{
+  "cells": [
+    {
+      "detail": "grant_tenant_tag: the implementation allowed it (allowed=True reason='explicit_grant' grants=['g-c74bfc3f201c7c2fd7daffb452aa7861'])",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "detail": "agentic-os: the tool gate resolves no request tenant; the kernel has no tenant-bound capability decision",
+            "id": "capability_boundary",
+            "status": "UNSUPPORTED"
+          },
+          {
+            "envelope": {
+              "authority": "delegation",
+              "envelope": "not emitted",
+              "reason": "cross-tenant denied: resource owned by 'globex', mission owner 'acme'; requires the enterprise delegation plane",
+              "resource_tenant": "globex"
+            },
+            "id": "resource_boundary",
+            "seam": "agentic_os.execution_context.resolve_for_node + OwnerOnlyAuthority",
+            "status": "PASS"
+          },
+          {
+            "detail": "the implementation allowed it (allowed=True reason='explicit_grant' grants=['g-c74bfc3f201c7c2fd7daffb452aa7861'])",
+            "envelope": {
+              "allowed": true,
+              "decision_epoch": 0,
+              "event": "authorization_decision",
+              "grant_ids": [
+                "g-c74bfc3f201c7c2fd7daffb452aa7861"
+              ],
+              "grant_tenant": "acme",
+              "logged": [
+                "authorization_decision {\"allowed\":true,\"decision_epoch\":0,\"event\":\"authorization_decision\",\"grant_ids\":[\"g-c74bfc3f201c7c2fd7daffb452aa7861\"],\"policy_reason\":\"explicit_grant\",\"principal\":\"bo\",\"principal_kind\":\"user\",\"requested_action\":\"read\",\"resource_kind\":\"table\",\"resource_name\":\"crm.customers\",\"roles_hash\":\"c40dc72b0228e585\",\"tenant\":\"\",\"version\":1}"
+              ],
+              "malformed_audit_lines": [],
+              "policy_reason": "explicit_grant",
+              "principal": "bo",
+              "principal_kind": "user",
+              "reason": "allow \u00b7 all rows",
+              "request_tenant": "globex",
+              "requested_action": "read",
+              "resource_kind": "table",
+              "resource_name": "crm.customers",
+              "roles_hash": "c40dc72b0228e585",
+              "tenant": "",
+              "version": 1
+            },
+            "grant_id": "kernel-grant-2",
+            "id": "grant_tenant_tag",
+            "seam": "agentic_os.permissions.PermissionsPlane.authorize (tenant-tagged grant)",
+            "status": "FAIL"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "cross_tenant_denied",
+      "verdict": "FAIL"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "envelope": {
+              "allowed": false,
+              "decision_epoch": 0,
+              "event": "authorization_decision",
+              "grant_ids": [],
+              "logged": [
+                "authorization_decision {\"allowed\":false,\"decision_epoch\":0,\"event\":\"authorization_decision\",\"grant_ids\":[],\"policy_reason\":\"missing_explicit_grant\",\"principal\":\"carol\",\"principal_kind\":\"user\",\"requested_action\":\"read\",\"resource_kind\":\"table\",\"resource_name\":\"crm.customers\",\"roles_hash\":\"8c6976e5b5410415\",\"tenant\":\"\",\"version\":1}"
+              ],
+              "malformed_audit_lines": [],
+              "policy_reason": "missing_explicit_grant",
+              "principal": "carol",
+              "principal_kind": "user",
+              "reason": "denied: no 'read' grant for carol on table 'crm.customers'",
+              "requested_action": "read",
+              "resource_kind": "table",
+              "resource_name": "crm.customers",
+              "roles_hash": "8c6976e5b5410415",
+              "tenant": "",
+              "version": 1
+            },
+            "id": "role_name_is_data",
+            "seam": "agentic_os.permissions.PermissionsPlane.authorize",
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "gate_reason": "denied: no 'read' grant for carol on table 'crm.read'",
+              "logged": [
+                "authorization_decision {\"allowed\":false,\"decision_epoch\":0,\"event\":\"authorization_decision\",\"grant_ids\":[],\"policy_reason\":\"missing_explicit_grant\",\"principal\":\"carol\",\"principal_kind\":\"user\",\"requested_action\":\"read\",\"resource_kind\":\"table\",\"resource_name\":\"crm.read\",\"roles_hash\":\"8c6976e5b5410415\",\"tenant\":\"\",\"version\":1}"
+              ],
+              "malformed_audit_lines": []
+            },
+            "id": "capability_plane_role_claim",
+            "seam": "agentic_os.permissions.make_authorizer",
+            "status": "PASS"
+          },
+          {
+            "grant_ids": [
+              "g-4df23d9117e0cc51e0dd813cbdfcce7c",
+              "g-db2198156776a71e8e782eca6002b517"
+            ],
+            "id": "explicit_grant_is_bounded",
+            "seams": [
+              "agentic_os.permissions.PermissionsPlane.authorize",
+              "agentic_os.permissions.make_authorizer"
+            ],
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "authority": "delegation",
+              "envelope": "not emitted",
+              "reason": "cross-tenant denied: resource owned by 'globex', mission owner 'acme'; requires the enterprise delegation plane",
+              "resource_tenant": "globex"
+            },
+            "id": "delegation_cannot_widen",
+            "same_tenant_allowed": true,
+            "seam": "agentic_os.execution_context.resolve_for_node + OwnerOnlyAuthority",
+            "status": "PASS"
+          },
+          {
+            "id": "stage1_scoping_shows_nothing",
+            "seam": "agentic_os.mission.registry.PolicyScopedRegistry.discover",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "no_privilege_laundering",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "denied": [
+              "billing.charge"
+            ],
+            "dispatched": [],
+            "id": "no_side_effect",
+            "ledger": false,
+            "seam": "agentic_os.mission.reconcile_jobs.ReconcileJobs.claim_due + make_authorizer",
+            "state": "queued:1 claimed",
+            "status": "PASS"
+          },
+          {
+            "allowed_before_revocation": true,
+            "id": "refused_at_dispatch",
+            "receipts": [
+              "missing_explicit_grant",
+              "unclassified"
+            ],
+            "seam": "agentic_os.mission.reconcile_jobs.ReconcileJobs.claim_due + make_authorizer",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "revocation_during_queue",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "cached_decision_refused: agentic-os: no authorization decision cache exists to serve from \u2014 authz_contract.decision_digest and cache_entry_is_fresh are defined but have no caller in the kernel, so a stale decision has nothing to be refused by",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "detail": "agentic-os: no authorization decision cache exists to serve from \u2014 authz_contract.decision_digest and cache_entry_is_fresh are defined but have no caller in the kernel, so a stale decision has nothing to be refused by",
+            "id": "cached_decision_refused",
+            "status": "UNSUPPORTED"
+          },
+          {
+            "id": "freshness_predicate",
+            "seam": "agentic_os.authz_contract.cache_entry_is_fresh",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "stale_epoch_refusal",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "detail": "permitted_edge_survives_the_limit: the permitted capabilities ['reports.monthly'] never reached the planner: the limit was applied to the unauthorized queue, so the permitted edge is silently absent (limit=3, unauthorized ranked ahead=15)",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "candidates": [],
+            "id": "no_unauthorized_candidate",
+            "limit": 3,
+            "seam": "agentic_os.mission.registry.PolicyScopedRegistry.discover",
+            "status": "PASS"
+          },
+          {
+            "candidates": [],
+            "detail": "the permitted capabilities ['reports.monthly'] never reached the planner: the limit was applied to the unauthorized queue, so the permitted edge is silently absent (limit=3, unauthorized ranked ahead=15)",
+            "id": "permitted_edge_survives_the_limit",
+            "seam": "agentic_os.mission.registry.PolicyScopedRegistry.discover",
+            "status": "FAIL",
+            "unauthorized_ahead": 15
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "authorization_before_limit",
+      "verdict": "FAIL"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "dispatched": [
+              "billing.invoice",
+              "reports.monthly"
+            ],
+            "id": "authorized_plan_completes",
+            "state": "succeeded",
+            "status": "PASS"
+          },
+          {
+            "denied": [
+              "secret.exfiltrate"
+            ],
+            "dispatched": [
+              "billing.invoice",
+              "reports.monthly"
+            ],
+            "id": "unauthorized_edge_never_dispatches",
+            "state": "succeeded",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "permitted_edges_survive",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "error_is_recorded: the failure surfaced as RuntimeError: grants store backend is unavailable (injected authority failure) with no decision recorded; a refusal nobody can point at is not an auditable one",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "envelope": {
+              "error": "RuntimeError: grants store backend is unavailable (injected authority failure)",
+              "logged": []
+            },
+            "error": "RuntimeError: grants store backend is unavailable (injected authority failure)",
+            "id": "never_allows_on_error",
+            "seam": "agentic_os.permissions.PermissionsPlane.authorize",
+            "status": "PASS"
+          },
+          {
+            "detail": "the failure surfaced as RuntimeError: grants store backend is unavailable (injected authority failure) with no decision recorded; a refusal nobody can point at is not an auditable one",
+            "id": "error_is_recorded",
+            "seam": "agentic_os.permissions.PermissionsPlane.authorize",
+            "status": "FAIL"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os",
+      "invariant": "adapter_error_fails_closed",
+      "verdict": "FAIL"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "envelope": {
+              "allowed": false,
+              "break_glass": false,
+              "envelope_matches_decision_object": true,
+              "event": "authorization_decision",
+              "grant_ids": [],
+              "logged": [
+                "authorization_decision {\"allowed\":false,\"break_glass\":false,\"event\":\"authorization_decision\",\"grant_ids\":[],\"policy_reason\":\"tenant_isolation\",\"principal\":\"user:al\",\"principal_kind\":\"user\",\"requested_action\":\"invoke\",\"resource_kind\":\"capability\",\"resource_name\":\"reports.read\",\"roles_hash\":\"06e55b633481f7bb\",\"tenant\":\"acme\",\"version\":1}"
+              ],
+              "malformed_audit_lines": [],
+              "policy_reason": "tenant_isolation",
+              "principal": "user:al",
+              "principal_kind": "user",
+              "reason": "denied: tenant isolation: principal tenant 'acme' \u2260 resource tenant 'globex'",
+              "requested_action": "invoke",
+              "resource_kind": "capability",
+              "resource_name": "reports.read",
+              "roles_hash": "06e55b633481f7bb",
+              "tenant": "acme",
+              "version": 1
+            },
+            "grant_id": "ent-grant-1",
+            "id": "capability_boundary",
+            "seam": "agentic_os_enterprise.identity.IdentityPlane.authorize",
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "authority": "delegation",
+              "envelope": "not emitted",
+              "lease_ref": null,
+              "reason": "no delegation acme->globex covers capability 'erp.invoice.read'",
+              "resource_tenant": "globex"
+            },
+            "id": "resource_boundary",
+            "seam": "agentic_os_enterprise.tenant_plane.DelegationAuthority (via resolve_for_node)",
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "authority": "delegation",
+              "envelope": "not emitted",
+              "lease_ref": "t:globex/lease/erp.invoice.read/-/1",
+              "reason": "delegation acme->globex",
+              "resource_tenant": "globex"
+            },
+            "id": "delegation_allows_the_exception",
+            "seam": "agentic_os_enterprise.tenant_plane.DelegationAuthority (via resolve_for_node)",
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "allowed": false,
+              "break_glass": false,
+              "envelope_matches_decision_object": true,
+              "event": "authorization_decision",
+              "grant_ids": [],
+              "logged": [
+                "authorization_decision {\"allowed\":false,\"break_glass\":false,\"event\":\"authorization_decision\",\"grant_ids\":[],\"policy_reason\":\"missing_explicit_grant\",\"principal\":\"user:bo\",\"principal_kind\":\"user\",\"requested_action\":\"invoke\",\"resource_kind\":\"capability\",\"resource_name\":\"crm.customers.read\",\"roles_hash\":\"c40dc72b0228e585\",\"tenant\":\"globex\",\"version\":1}"
+              ],
+              "malformed_audit_lines": [],
+              "policy_reason": "missing_explicit_grant",
+              "principal": "user:bo",
+              "principal_kind": "user",
+              "reason": "denied: 'crm.customers.read' needs ['crm.customers.read'] not granted to user:bo",
+              "requested_action": "invoke",
+              "resource_kind": "capability",
+              "resource_name": "crm.customers.read",
+              "roles_hash": "c40dc72b0228e585",
+              "tenant": "globex",
+              "version": 1
+            },
+            "grant_id": "ent-grant-2",
+            "id": "grant_tenant_tag",
+            "seam": "agentic_os_enterprise.identity.IdentityPlane.authorize",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "cross_tenant_denied",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "envelope": {
+              "allowed": false,
+              "decision_epoch": 0,
+              "event": "authorization_decision",
+              "grant_ids": [],
+              "policy_reason": "missing_explicit_grant",
+              "principal": "carol",
+              "principal_kind": "user",
+              "reason": "denied: no 'read' grant for carol on table 'crm.customers'",
+              "requested_action": "read",
+              "resource_kind": "table",
+              "resource_name": "crm.customers",
+              "roles_hash": "8c6976e5b5410415",
+              "tenant": "",
+              "version": 1
+            },
+            "id": "role_name_is_data",
+            "seam": "agentic_os_enterprise.identity.IdentityPlane.authorize_resource",
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "allowed": false,
+              "break_glass": false,
+              "envelope_matches_decision_object": true,
+              "event": "authorization_decision",
+              "grant_ids": [],
+              "logged": [
+                "authorization_decision {\"allowed\":false,\"break_glass\":false,\"event\":\"authorization_decision\",\"grant_ids\":[],\"policy_reason\":\"missing_explicit_grant\",\"principal\":\"user:carol\",\"principal_kind\":\"user\",\"requested_action\":\"invoke\",\"resource_kind\":\"capability\",\"resource_name\":\"crm.customers.read\",\"roles_hash\":\"8c6976e5b5410415\",\"tenant\":\"\",\"version\":1}"
+              ],
+              "malformed_audit_lines": [],
+              "policy_reason": "missing_explicit_grant",
+              "principal": "user:carol",
+              "principal_kind": "user",
+              "reason": "denied: 'crm.customers.read' needs ['crm.read'] not granted to user:carol",
+              "requested_action": "invoke",
+              "resource_kind": "capability",
+              "resource_name": "crm.customers.read",
+              "roles_hash": "8c6976e5b5410415",
+              "tenant": "",
+              "version": 1
+            },
+            "id": "capability_plane_role_claim",
+            "seam": "agentic_os_enterprise.identity.IdentityPlane.authorize",
+            "status": "PASS"
+          },
+          {
+            "grant_ids": [
+              "g-6ad69bde5d315de09e2c79fda8da2e04",
+              "r-d53d2a49"
+            ],
+            "id": "explicit_grant_is_bounded",
+            "seams": [
+              "agentic_os_enterprise.identity.IdentityPlane.authorize_resource",
+              "agentic_os_enterprise.identity.IdentityPlane.authorize"
+            ],
+            "status": "PASS"
+          },
+          {
+            "envelope": {
+              "authority": "delegation",
+              "envelope": "not emitted",
+              "lease_ref": null,
+              "reason": "no delegation acme->globex covers capability 'erp.invoice.read'",
+              "resource_tenant": "globex"
+            },
+            "id": "delegation_cannot_widen",
+            "same_tenant_allowed": true,
+            "seam": "agentic_os_enterprise.tenant_plane.DelegationAuthority (via resolve_for_node)",
+            "status": "PASS"
+          },
+          {
+            "id": "stage1_scoping_shows_nothing",
+            "seam": "agentic_os_enterprise.mission.runtime.MissionRuntime._scoped \u2192 PolicyScopedRegistry.discover",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "no_privilege_laundering",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "denied": [
+              "billing.charge"
+            ],
+            "dispatched": [],
+            "id": "no_side_effect",
+            "ledger": false,
+            "seam": "agentic_os_enterprise.mission.runtime.MissionRuntime.run \u2192 _pre_exec_ok \u2192 _authorize_node",
+            "state": "failed",
+            "status": "PASS"
+          },
+          {
+            "allowed_before_revocation": true,
+            "id": "refused_at_dispatch",
+            "receipts": [
+              "missing_explicit_grant"
+            ],
+            "seam": "agentic_os_enterprise.mission.runtime.MissionRuntime.run \u2192 _pre_exec_ok \u2192 _authorize_node",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "revocation_during_queue",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "cached_decision_refused: agentic-os-enterprise: no authorization decision cache exists \u2014 IdentityPlane re-evaluates its rules on every call and nothing keys a cached decision by tenant/epoch, so the epoch-staleness criterion has no seam; freshness_predicate: agentic-os-enterprise: the overlay has no authorization epoch at all \u2014 GrantRule/AccessDecision carry no revocation epoch and nothing imports the kernel's authz_contract helpers, so there is no freshness rule to consult",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "detail": "agentic-os-enterprise: no authorization decision cache exists \u2014 IdentityPlane re-evaluates its rules on every call and nothing keys a cached decision by tenant/epoch, so the epoch-staleness criterion has no seam",
+            "id": "cached_decision_refused",
+            "status": "UNSUPPORTED"
+          },
+          {
+            "detail": "agentic-os-enterprise: the overlay has no authorization epoch at all \u2014 GrantRule/AccessDecision carry no revocation epoch and nothing imports the kernel's authz_contract helpers, so there is no freshness rule to consult",
+            "id": "freshness_predicate",
+            "status": "UNSUPPORTED"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "stale_epoch_refusal",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "detail": "permitted_edge_survives_the_limit: the permitted capabilities ['reports.monthly'] never reached the planner: the limit was applied to the unauthorized queue, so the permitted edge is silently absent (limit=3, unauthorized ranked ahead=15)",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "candidates": [],
+            "id": "no_unauthorized_candidate",
+            "limit": 3,
+            "seam": "agentic_os_enterprise.mission.runtime.MissionRuntime._scoped \u2192 PolicyScopedRegistry.discover",
+            "status": "PASS"
+          },
+          {
+            "candidates": [],
+            "detail": "the permitted capabilities ['reports.monthly'] never reached the planner: the limit was applied to the unauthorized queue, so the permitted edge is silently absent (limit=3, unauthorized ranked ahead=15)",
+            "id": "permitted_edge_survives_the_limit",
+            "seam": "agentic_os_enterprise.mission.runtime.MissionRuntime._scoped \u2192 PolicyScopedRegistry.discover",
+            "status": "FAIL",
+            "unauthorized_ahead": 15
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "authorization_before_limit",
+      "verdict": "FAIL"
+    },
+    {
+      "detail": "",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "dispatched": [
+              "billing.invoice",
+              "reports.monthly"
+            ],
+            "id": "authorized_plan_completes",
+            "state": "succeeded",
+            "status": "PASS"
+          },
+          {
+            "denied": [
+              "secret.exfiltrate"
+            ],
+            "dispatched": [
+              "billing.invoice",
+              "reports.monthly"
+            ],
+            "id": "unauthorized_edge_never_dispatches",
+            "state": "succeeded",
+            "status": "PASS"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "permitted_edges_survive",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "error_is_recorded: the failure surfaced as RuntimeError: grant store unavailable (injected authority failure) with no decision recorded; a refusal nobody can point at is not an auditable one",
+      "evidence": {
+        "sub_criteria": [
+          {
+            "envelope": {
+              "error": "RuntimeError: grant store unavailable (injected authority failure)",
+              "logged": []
+            },
+            "error": "RuntimeError: grant store unavailable (injected authority failure)",
+            "id": "never_allows_on_error",
+            "seam": "agentic_os_enterprise.identity.IdentityPlane.authorize_resource",
+            "status": "PASS"
+          },
+          {
+            "detail": "the failure surfaced as RuntimeError: grant store unavailable (injected authority failure) with no decision recorded; a refusal nobody can point at is not an auditable one",
+            "id": "error_is_recorded",
+            "seam": "agentic_os_enterprise.identity.IdentityPlane.authorize_resource",
+            "status": "FAIL"
+          }
+        ],
+        "variant": "real"
+      },
+      "implementation": "agentic-os-enterprise",
+      "invariant": "adapter_error_fails_closed",
+      "verdict": "FAIL"
+    }
+  ],
+  "contract": "authz/v1",
+  "expectations": [
+    {
+      "implementation": "agentic-os",
+      "invariant": "cross_tenant_denied",
+      "reason": "The resource plane ignores Grant.tenant entirely: a grant tagged to tenant acme authorizes the same subject's request in tenant globex, and neither GrantStore.add() nor GrantStore.update() can even set the tag. The resource-tenancy gate (OwnerOnlyAuthority) does deny cross-tenant node access; there is no request-tenant parameter anywhere on the resource or capability decision seam.",
+      "remediation": "E-1: give PermissionsPlane.authorize a TenantContext argument, refuse a grant whose tenant is set and differs from the request's, and expose the tag through add()/update(). Until then the tenant field on Grant is vocabulary, and no kernel receipt may be described as tenant-bound.",
+      "verdict": "FAIL"
+    },
+    {
+      "implementation": "agentic-os",
+      "invariant": "no_privilege_laundering",
+      "reason": "E-2: a role name with no grant of its own buys nothing at the plane or the tool gate; an explicit role grant is honoured only inside what it names; OwnerOnlyAuthority refuses a node acting outside its own tenant; an ungranted principal is shown no candidates. The bad_role_bypass mutant (the pre-E-2 behaviour) fails this cell.",
+      "remediation": "",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os",
+      "invariant": "revocation_during_queue",
+      "reason": "Work queued in ReconcileJobs and dispatched after the grant was removed did not execute, and the tool gate refused it at dispatch with an emitted envelope. The bad_cached_decision_at_enqueue mutant fails this cell.",
+      "remediation": "Keep the ordering requirement in the suite: the kernel itself does not enforce that a dispatcher consults the authorizer at dispatch, so an edition that caches at enqueue still fails.",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os",
+      "invariant": "stale_epoch_refusal",
+      "reason": "authz_contract.decision_digest and cache_entry_is_fresh exist and behave correctly as a predicate, but no caller in the kernel caches an authorization decision, so nothing can be refused as stale. The criterion is required, so the cell is not a pass.",
+      "remediation": "E-3: put a decision cache behind the kernel's own seams (or forbid caching explicitly in the contract) and key every entry by (tenant, principal, resource, action, digest, epoch), reading it only through cache_entry_is_fresh.",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "implementation": "agentic-os",
+      "invariant": "authorization_before_limit",
+      "reason": "PolicyScopedRegistry.discover over-fetches k*3 from the unscoped registry, then filters, then trims. With fifteen unauthorized capabilities ranked ahead of the one permitted capability and limit=3, the permitted edge is dropped silently: no error, no plan node, no receipt. Nothing unauthorized is ever offered, so the leak direction holds and the availability direction does not.",
+      "remediation": "E-5: filter to permitted candidates before applying the limit (filter-then-trim over the whole scoped set, as the reference_filter_before_limit variant does), and emit a machine-readable signal when permitted candidates are dropped rather than returning a short list.",
+      "verdict": "FAIL"
+    },
+    {
+      "implementation": "agentic-os",
+      "invariant": "permitted_edges_survive",
+      "reason": "A plan whose every edge is permitted completes; with a competing unauthorized provider ranked first for one outcome, the permitted provider runs and the unauthorized one never dispatches.",
+      "remediation": "",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os",
+      "invariant": "adapter_error_fails_closed",
+      "reason": "With the grant store unreadable the plane never allows anything \u2014 it raises. The refusal is real but unrecorded: no authorization_decision line is emitted, so 'who let this through' has no answer and an operator sees a stack trace instead of a denial. The sealed-store path, by contrast, denies with a receipt.",
+      "remediation": "E-6: convert store failures into a denied AccessDecision with policy_reason (e.g. store_unavailable) inside PermissionsPlane.authorize, so every backend failure is both fail-closed and auditable.",
+      "verdict": "FAIL"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "cross_tenant_denied",
+      "reason": "IdentityPlane refuses a request whose context tenant differs from the principal's, on both the capability and resource paths, and DelegationAuthority denies a cross-tenant node until an explicit capability-scoped Delegation exists (then mints a lease). Condition(tenant=...) binds a grant to its tenant. The bad_tenant_blind mutant fails this cell.",
+      "remediation": "Note the boundary that was NOT proved here: the tenancy gate answers a node's resource ownership; no scenario in this cell measures document or row content crossing a boundary. That is #627.",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "no_privilege_laundering",
+      "reason": "E-2: an identity carrying 'admin' with no GrantRule is refused and is shown nothing by scoped_permissions; an explicit rule authorizes exactly its permissions; a cross-tenant delegation confers no capability permission. bad_role_bypass and bad_scoped_all both fail this cell.",
+      "remediation": "",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "revocation_during_queue",
+      "reason": "A mission created under a live grant, whose rule was revoked before the node dispatched, failed at the admission gate with no operator invocation, and the plane logged the refusal. bad_revoke_ignored fails this cell.",
+      "remediation": "Revocation is in-memory rule removal: a restart or a second worker restores the rule from wherever rules were loaded. Persist revocation (with the epoch) before this is trusted across processes.",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "stale_epoch_refusal",
+      "reason": "The overlay has no authorization epoch at all: GrantRule and AccessDecision carry none, nothing imports the kernel's authz_contract helpers, and IdentityPlane re-evaluates rules per call so there is no cached decision to invalidate. The absence is not a pass: a deployment that adds a cache tomorrow inherits a criterion it cannot satisfy.",
+      "remediation": "E-3: adopt the kernel's (tenant, epoch) pair on GrantRule and IdentityPlane, bump it on revoke_rule, and make any decision cache key on it.",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "authorization_before_limit",
+      "reason": "Same code, reached through the overlay's own seam: MissionRuntime._scoped builds the same PolicyScopedRegistry, whose discover() filters after a k*3 over-fetch. Fifteen unauthorized candidates ahead of one permitted capability at limit=3 loses the permitted edge. Fixing it in the kernel fixes this cell; nothing in the overlay compensates.",
+      "remediation": "E-5 in the kernel, then re-run this cell against the overlay \u2014 the overlay's own suite must not claim this passes on the kernel's behalf.",
+      "verdict": "FAIL"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "permitted_edges_survive",
+      "reason": "The governed runtime completes a fully-authorized plan, and with an unauthorized competing provider ranked first it runs the permitted provider and refuses the other at _pre_exec_ok. bad_scoped_all (the pre-E-2 {'*'} scoping) fails this cell.",
+      "remediation": "Note the wiring this exposed: stage-2 compile authority comes from Mission.policy_refs, which the caller resolves \u2014 the identity plane feeds only stage-1 scoping and the dispatch gate. A caller that passes a wider policy_refs is not identity-bound. Name that in the deployment contract.",
+      "verdict": "PASS"
+    },
+    {
+      "implementation": "agentic-os-enterprise",
+      "invariant": "adapter_error_fails_closed",
+      "reason": "The composed resource plane raises through the failure rather than denying, so nothing is allowed \u2014 and nothing is recorded either. The ledger gets no entry and no envelope is emitted for the failure.",
+      "remediation": "E-6: catch store failures in IdentityPlane.authorize_resource and return a denied AccessDecision with a policy_reason, ledger entry and envelope, matching the sealed-store path.",
+      "verdict": "FAIL"
+    }
+  ],
+  "pinned_matrix_profile": "default",
+  "posture": {
+    "durable_replay_guard": "SqliteReplayGuard",
+    "envelope_store": "SqliteEnvelopeStore",
+    "envelopes_issued": 8,
+    "ledger": "SqliteLedger",
+    "stores": [
+      "authority.db",
+      "replay.db"
+    ]
+  },
+  "profile": "production",
+  "verdict_counts": {
+    "BLOCKED": 0,
+    "FAIL": 5,
+    "PASS": 7,
+    "UNSUPPORTED": 2
+  },
+  "verification_counts": {
+    "FAIL": 5,
+    "INDETERMINATE": 2,
+    "PASS": 7
+  }
+}
