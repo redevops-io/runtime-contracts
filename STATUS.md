@@ -1,6 +1,7 @@
 # Status
 
-Last verification date: **2026-10-15**. Package `0.3.14` (`pyproject.toml`), contract identity `v0.1`, commit `80e727d`.
+Last verification date: **2026-11-10**. Package `0.3.17` (`pyproject.toml`), contract identity `v0.1`, commit
+`91876276689927398fb00546699d3c69bed2f4b9` (the commit the qualification below was measured on).
 
 **Maturity: proposed specification (alpha) with one in-repo reference adapter.** Not a service, not
 independently validated.
@@ -17,7 +18,9 @@ independently validated.
 | Credential gate: tenant binding (request tenant must equal authority tenant; empty tenants and tenant-less authority denied), authority expiry | `tests/test_secret_contracts.py`, `tests/credential_tenant_vectors.json` |
 | `qa/v1` contracts: frozen-assertion types, plan, run records, fault detection/recovery, manifest accounting, adapter and blob protocols | `tests/test_qa_*.py`, `golden/qa.json`, `golden/qa_canon_vectors.json`, `golden/qa.schema.json`, `docs/QA_V1.md` |
 | `qa/v1` clarifications (additive): predicate `expected_hash`, value digests, idempotency key, set ordering, distinct integrity refusal codes, `FaultRecovery.reason_code`; existing goldens byte-identical | `tests/test_qa_clarifications.py`, `golden/qa_canon_vectors_addendum.json`, `golden/qa_clarifications.json`, `docs/QA_V1_COMPATIBILITY_REVIEW.md` |
-| Whole suite | `python -m pytest -q` -> 1785 passed, 1 skipped (2026-10-30, Python 3.13, scrubbed environment); CI: `.github/workflows/tests.yml` |
+| `authz/v1` contract: decision envelope (`AuthorizationDecision`, `parse_envelope`, `validate_envelope`, canonical `roles_hash`), qualification vocabulary (`PASS` / `FAIL` / `UNSUPPORTED` / `BLOCKED`), the seven cross-edition invariants and the runner that classifies them | `runtime_contracts/authz/`, `tests/authz_contract/test_envelope.py`, `tests/authz_contract/test_invariants.py`, `tests/authz_contract/test_negative_controls.py`, `docs/AUTHZ_QUALIFICATION.md` |
+| `authz/v1` qualification of the RAG retrieval lane through its own seams, verdicts pinned so a verdict cannot move silently; the lane measured as a property and proved by mutation (control + four mutants). Scope limits, stated rather than implied: kernel and enterprise cells are **BLOCKED** without sibling checkouts, and the PostgreSQL / pgvector legs are **unverified** — every figure here is the DuckDB path | `docs/evidence/authz_qualification_matrix.json`, `docs/evidence/authz_production_matrix.json`, `tests/authz_contract/qualification.json`, `tests/authz_contract/test_provenance.py`, `tests/authz_contract/test_retrieval_baseline.py`, `scripts/authz_matrix.py`, `docs/AUTHZ_QUALIFICATION.md` (the DuckDB-path limit stated in "#627 retrieval baseline", and "What is out of scope here") |
+| Whole suite | `python -m pytest -q` -> **1825 passed, 83 skipped** (2026-11-10, Python 3.12.16, pytest 9.2.0, duckdb 2.0.0, full-history clone of `9187627` with no sibling checkouts configured). CI on the same content as a merge: 1817 passed / 91 skipped; the eight-test delta is cells that skip when tags and history are absent, itemised in `docs/AUTHZ_QUALIFICATION.md`. `.github/workflows/tests.yml` |
 
 ## Conformance: proposed vs implemented
 
@@ -41,7 +44,7 @@ independently validated.
 ## Known gaps
 
 - No conformance report artifact; no external review.
-- Tag history has no stable `v0.1.0` (tags `v0.1.0-alpha.1..3`, `v0.2.x`, `v0.3.0..v0.3.16`); there are no GitHub releases.
+- Tag history has no stable `v0.1.0` (tags `v0.1.0-alpha.1..3`, `v0.2.x`, `v0.3.0..v0.3.17`); there are no GitHub releases.
 
 ## Evidence
 

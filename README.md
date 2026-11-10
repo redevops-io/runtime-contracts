@@ -41,7 +41,7 @@ prioritizing opportunities; together the one public product, **ReDevOps Runtime*
 ## 3-minute example
 
 ```bash
-git clone --depth 1 --branch v0.3.16 https://github.com/redevops-io/runtime-contracts.git && cd runtime-contracts
+git clone --depth 1 --branch v0.3.17 https://github.com/redevops-io/runtime-contracts.git && cd runtime-contracts
 python -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
 python -m runtime_contracts.cli status      # per-implementation maturity and gaps
@@ -49,7 +49,7 @@ python -m pytest -q                         # golden fixtures + canonicalization
 ```
 
 To depend on it from another project (not on PyPI):
-`pip install "runtime-contracts @ git+https://github.com/redevops-io/runtime-contracts.git@v0.3.16"`.
+`pip install "runtime-contracts @ git+https://github.com/redevops-io/runtime-contracts.git@v0.3.17"`.
 No ReDevOps package is published on PyPI.
 
 ## Evidence
@@ -149,6 +149,18 @@ detection and recovery records, `RunManifest` with assertion accounting, and the
 `BlobStore` protocols. Additive and self-contained: existing hashes are unchanged. Fixtures:
 [`golden/qa.json`](golden/qa.json) and the self-contained
 [`golden/qa_canon_vectors.json`](golden/qa_canon_vectors.json). See [docs/QA_V1.md](docs/QA_V1.md).
+
+**Authorization contracts (`runtime_contracts/authz/`, `authz/v1`)** — one decision receipt and one qualification
+vocabulary for the two places ReDevOps decides authorization: the AGPL kernel's resource-grant plane and the
+enterprise capability plane. `AuthorizationDecision` with `parse_envelope` / `validate_envelope` and the canonical
+`roles_hash` records *what a plane decided and why*; `Qualification`, `Matrix`, `CaseResult` and `Invariant` record,
+per implementation and per criterion, `PASS` / `FAIL` / `UNSUPPORTED` / `BLOCKED`; `suite.run_invariant` drives seven
+cross-edition invariants through the `AuthzAdapter` protocol, so an implementation is tested through its own
+enforcement seams and never through a mocked decision. A receipt is not proof of a data boundary: an honest `DENY`
+saying `tenant_isolation` records a refusal, and only a scenario that measures content — what entered a candidate
+set, a cache, a log, a model's context — shows data stayed inside its boundary, which is why the suite keeps those
+two kinds of evidence apart. Opt-in: import `runtime_contracts.authz`; nothing is re-exported at top level, no
+existing hash, schema or golden file changed. See [docs/AUTHZ_QUALIFICATION.md](docs/AUTHZ_QUALIFICATION.md).
 
 **Bounded decision provider protocol (`protocol/decision_provider.py`)** — the
 shared `decision-provider/v1` request/result contract for rules, compact
