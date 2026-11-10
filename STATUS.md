@@ -1,6 +1,6 @@
 # Status
 
-Last verification date: **2026-11-10**. Package `0.3.16` (`pyproject.toml`), contract identity `v0.1`, commit
+Last verification date: **2026-11-10**. Package `0.3.17` (`pyproject.toml`), contract identity `v0.1`, commit
 `91876276689927398fb00546699d3c69bed2f4b9` (the commit the qualification below was measured on).
 
 **Maturity: proposed specification (alpha) with one in-repo reference adapter.** Not a service, not
@@ -44,7 +44,7 @@ independently validated.
 ## Known gaps
 
 - No conformance report artifact; no external review.
-- Tag history has no stable `v0.1.0` (tags `v0.1.0-alpha.1..3`, `v0.2.x`, `v0.3.0..v0.3.16`); there are no GitHub releases.
+- Tag history has no stable `v0.1.0` (tags `v0.1.0-alpha.1..3`, `v0.2.x`, `v0.3.0..v0.3.17`); there are no GitHub releases.
 
 ## Evidence
 
