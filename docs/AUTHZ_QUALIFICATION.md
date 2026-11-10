@@ -208,6 +208,31 @@ the probe never opens a Postgres connection, the placement test inspects stateme
 candidate's ACL check sits behind the same `Store` seam this lane reaches only through DuckDB. Qualifying those
 legs needs a live Postgres; nothing here, including the mutation results, should be read as covering them.
 
+### Recorded for follow-up, deliberately not fixed here
+
+**`ingest(owners=…)` declares an ACL that authorizes nobody — an availability defect in redevops-rag, not a
+security defect, and not part of this reconciliation.** `ingest()` maps `owners(path)` onto
+`DocumentPolicy.declare(document_id, tenants=…)` (`ingest.py:72`), and `declare` leaves `subjects` and `roles`
+empty (`authority.py:214`). `DocumentAcl.allows` checks tenancy first and then requires a subject or role match
+(`authority.py:96-99`), so a tenants-only ACL denies *every* principal, including the owner. A document indexed
+through the library's own documented ownership path is therefore permanently unreadable, and the refusal looks
+like an authorization bug to whoever hits it. It is fail-closed, so nothing leaks and no #627 criterion is
+affected; the defect belongs to redevops-rag, and the implementation was not modified in this change.
+
+Measured on the candidate `0245d8f`, through `ingest()` rather than by reasoning about the dataclass:
+
+```text
+index with owners=lambda path: ["acme"]   (exactly what ingest(owners=...) declares)
+  read back as tenant acme, its declared owner  -> 0 rows
+re-declare the same document's ACL with subject "agent" as well
+  read back as tenant acme                      -> 1 row
+```
+
+This is why the lane's `owned_store` fixture names a subject beside the tenant and then asserts that each owner
+*can* read its own content before asserting that nobody else can. Without that guard every "no leak" assertion
+in the retrieval lane would be satisfied by a store that returns nothing at all, and the seven strict xfails
+would be measuring an empty index instead of an authorization boundary.
+
 ## Ordered remediation
 
 Ordering is by what unblocks the most cells for the least churn, not by severity of wording.
