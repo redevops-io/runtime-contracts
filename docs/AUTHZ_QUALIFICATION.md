@@ -42,16 +42,16 @@ its whole invariant to `UNSUPPORTED` even when every other sub-criterion passed.
 ### The failures, with the code
 
 **`cross_tenant_denied` — FAIL (kernel).** `PermissionsPlane.authorize`
-([agentic_os/permissions.py:1251](../../tmp/kernel-e2/agentic_os/permissions.py)) takes no tenant argument and
+(`agentic_os/permissions.py:1251`) takes no tenant argument and
 never consults `Grant.tenant`; `GrantStore.add()`/`update()` cannot set the field. A grant tagged `acme`
 authorizes `globex`. What the kernel *does* enforce is resource-tenancy at the execution seam:
-`OwnerOnlyAuthority.authorize` ([agentic_os/execution_context.py:127](../../tmp/kernel-e2/agentic_os/execution_context.py))
+`OwnerOnlyAuthority.authorize` (`agentic_os/execution_context.py:127`)
 denies a node acting on a resource owned by another tenant. The criterion is split accordingly
 (`capability_boundary` / `resource_boundary` / `grant_tenant_tag`) so the passing half cannot carry the
 failing half, and the kernel cell is FAIL on the tag sub-criterion alone.
 
 **`authorization_before_limit` — FAIL (both, one cause).** `PolicyScopedRegistry.discover`
-([agentic_os/mission/registry.py:183](../../tmp/kernel-e2/agentic_os/mission/registry.py)) is three lines:
+(`agentic_os/mission/registry.py:183`) is three lines:
 
 ```python
 return [(c, s) for c, s in self._base.discover(need, k * 3) if self._permitted(c)][:k]
@@ -60,7 +60,7 @@ return [(c, s) for c, s in self._base.discover(need, k * 3) if self._permitted(c
 Over-fetch, filter, trim. With fifteen unauthorized capabilities ranked ahead of one permitted capability at
 `limit=3`, the permitted edge is dropped silently — no error, no plan node, no receipt. The Enterprise
 overlay reaches the same function through `MissionRuntime._scoped`
-([agentic_os_enterprise/mission/runtime.py:93](../../tmp/ent/agentic_os_enterprise/mission/runtime.py)) and
+(`agentic_os_enterprise/mission/runtime.py:93`) and
 inherits the defect unchanged. Nothing unauthorized is ever *offered*, so the confidentiality direction holds;
 availability does not, and an agent that cannot see its own permitted capabilities cannot plan.
 
@@ -75,7 +75,7 @@ the mistake — but today the cell cannot be earned.
 unreadable nothing is allowed, because the failure propagates out of the decision call. The other half does
 not: no `authorization_decision` line is emitted and no ledger entry is written, so "who let this through" has
 no answer and an operator sees a stack trace instead of a denial. Contrast the sealed-store path
-([agentic_os/permissions.py:1254](../../tmp/kernel-e2/agentic_os/permissions.py)), which *does* deny with a
+(`agentic_os/permissions.py:1254`), which *does* deny with a
 `policy_reason` — the pattern exists, it is just not applied to backend failures.
 
 ### What the passing cells do and do not mean
