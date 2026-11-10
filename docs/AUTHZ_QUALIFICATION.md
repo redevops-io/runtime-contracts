@@ -131,14 +131,15 @@ Two honest caveats on that table:
 The two `reference_*` variants are used nowhere in the product. They exist so a FAIL is a statement about the
 product rather than about the test: the criterion is achievable through the same seam the product uses.
 
-## #627 retrieval baseline — recorded, not fixed
+## #627 retrieval baseline — recorded, and re-measured against a fix
 
 [tests/authz_contract/test_retrieval_baseline.py](../tests/authz_contract/test_retrieval_baseline.py) drives
-redevops-rag's real ingest and retrieval paths. Seven criteria are **`xfail(strict=True)`** — they fail today,
-the file knows it, and when somebody fixes the leak the XPASS turns the suite red rather than letting the
-marking rot.
+redevops-rag's real ingest and retrieval paths. Seven criteria are **`xfail(strict=True)`** — they were
+unmet at the baseline, the file knew it, and a marking that rots is caught by the anti-vacuity controls below
+rather than left to decay. The bullets that follow record the baseline, redevops-rag `6e50d6d`; what each of
+them looks like on a protected candidate is the pair of counts further down.
 
-Measured, against the implementation (not asserted from the issue text):
+Measured, against the implementation (not asserted from the issue text), at `6e50d6d`:
 
 - `Store._ensure_schema` columns are `id, document_id, filename, chunk_index, text, embedding, metadata,
   created_at`. No ACL, no tenant, no epoch column.
@@ -161,18 +162,51 @@ has its own store, so the failures above are about authorization, not about a ma
 Per-tenant physical separation is a mitigation a shell can apply today; it is not an ACL and it does not
 survive a shared index.
 
-Measured run of the lane itself, against redevops-rag `6e50d6d`:
+Measured run of the lane itself, against both sides of the fix. `REDEVOPS_RAG_ROOT` must name the `src`
+directory of the checkout being measured: an unset root measures whichever copy of `redevops_rag` happens to
+be importable, and then every number below belongs to some other checkout.
 
 ```bash
 REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest tests/authz_contract/test_retrieval_baseline.py -q
-# 21 collected → 14 passed, 7 xfailed (strict), 0 failed
+# redevops-rag 6e50d6d (insecure baseline)  → 29 collected: 12 passed, 3 failed, 7 xfailed (strict), 7 BLOCKED
+# redevops-rag 0245d8f (protected candidate) → 29 collected: 22 passed, 7 xfailed (strict), 0 failed
 ```
 
-Without the checkout the lane reports 21 **BLOCKED skips** and nothing else — a real DuckDB run and a skip are
+The three failures at `6e50d6d` are the baseline's violations, recorded red rather than as passing
+documentation: no read entry point takes a decision and a decision-less read answers for every principal;
+withdrawal has no interface, only somebody else's `DELETE`; and the caller's own `document_ids` list is the
+only thing scoping a read, so passing nothing reads the whole store. These assertions used to state the leak
+as a fact and pass. Such a test reports a fix and a regression identically — as a failure — so it tells the
+truth in neither direction; the properties above fail on the baseline and hold on the candidate.
+
+The seven `xfail(strict=True)` criteria are untouched, byte for byte. Six now report *denied* instead of a
+leak: the candidate refuses the decision-less read those bodies make, which is #627's fail-closed clause
+arriving, and not a demonstration that an authorized read is scoped. The criteria that need an owner are
+therefore asked again, below the xfail set, against an index whose documents each have one. At `6e50d6d`
+those cells are BLOCKED: the library has no policy register, and an ACL invented by the probe would certify a
+boundary the implementation does not have. The anti-vacuity controls are what make "denied" safe to accept —
+`test_the_denial_classifier_does_not_flatter_a_broken_measurement` pins that a renamed method, a missing
+module or this repo's own `AdapterBlocked` still classify as broken, never as enforcement.
+
+The lane is checked against three deliberately-insecure copies of the candidate, because a green suite is not
+evidence until something insecure makes it red. Removing the predicate from the candidate-producing `SELECT`
+and re-applying it in Python *after* `LIMIT`, with the candidate window widened so every returned result stays
+correct, fails exactly one test — `test_the_decision_is_applied_where_candidates_are_produced` — and passes
+the other twenty-one. That is the whole reason that test exists: results alone cannot tell "the candidates
+were filtered" from "the answer was filtered", and #627 asks for the first. A fail-open gate, and a
+post-filter that also loses rows, are each caught as well.
+
+Without the checkout the lane reports 29 **BLOCKED skips** and nothing else — a real DuckDB run and a skip are
 different states and are kept that way. Before this record the lane could never leave the skip column: the
 probe imported `redevops_rag` before any root variable was applied, so `REDEVOPS_RAG_ROOT` was named in the skip
 message but never read. That is fixed in `adapters/_implementations.py`, and the counts above are the first ones
 this repository has produced against the real library.
+
+Every number in this section was taken on the **DuckDB** storage path, which is what the library opens when no
+backend is configured. The **PostgreSQL / pgvector legs remain unverified and are not qualified by this lane**:
+the probe never opens a Postgres connection, the placement test inspects statements issued to DuckDB, and the
+candidate's ACL check sits behind the same `Store` seam this lane reaches only through DuckDB. Qualifying those
+legs needs a live Postgres; nothing here, including the mutation results, should be read as covering them.
 
 ## Ordered remediation
 
@@ -429,10 +463,24 @@ chain; `git log -1` on the reviewed branch is the authority for it.
 |---|---|---|
 | Default profile, 14 cells | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… python scripts/authz_matrix.py --json out.json` then `--check` | 7 PASS / 5 FAIL / 2 UNSUPPORTED / 0 BLOCKED; `--check` exit 0 (no verdict drift) |
 | Production profile + durable stores + issued envelopes, 14 cells | `AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… python scripts/authz_production_matrix.py --json docs/evidence/authz_production_matrix.json` | 7 PASS / 5 FAIL / 2 UNSUPPORTED / 0 BLOCKED; zero deviations from the default-profile matrix, 8 envelopes issued |
-| Retrieval authorization (#627) | `REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest tests/authz_contract/test_retrieval_baseline.py -q` | 21 collected: 14 PASS / 7 XFAIL (strict) / 0 FAIL |
-| Whole suite, checkouts configured | `env AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… REDEVOPS_RAG_ROOT=… python -m pytest -q` | 1890 passed / 3 skipped / 7 xfailed / 0 failed |
-| Contract subset, no checkouts configured | `env -u AGENTIC_OS_ROOT -u AGENTIC_OS_ENTERPRISE_ROOT -u REDEVOPS_RAG_ROOT python -m pytest tests/authz_contract -q` | 39 passed / 75 skipped / 0 failed, every skip a BLOCKED reason |
-| Whole suite, no checkouts configured | as above, on `python -m pytest -q` | 1825 passed / 75 skipped / 0 failed |
+| Retrieval authorization (#627), insecure baseline `6e50d6d` | `REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest tests/authz_contract/test_retrieval_baseline.py -q` | 29 collected: 12 PASS / 3 FAIL (the baseline's violations) / 7 XFAIL (strict) / 7 BLOCKED |
+| Retrieval authorization (#627), protected candidate `0245d8f` | as above, root pointed at the protected checkout | 29 collected: 22 PASS / 7 XFAIL (strict) / 0 FAIL |
+| Whole suite, all checkouts configured | `env AGENTIC_OS_ROOT=… AGENTIC_OS_ENTERPRISE_ROOT=… REDEVOPS_RAG_ROOT=… python -m pytest -q` | **Historical, not remeasured in the current environment.** 1890 passed / 3 skipped / 7 xfailed / 0 failed, quoted from the earlier record on this branch. Neither agentic-os checkout is available on the machine taking the rows below, so this row could not be re-taken — and the retrieval lane has since grown from 21 to 29 cells, which alone would move it. It is kept for provenance and is not a current claim; no replacement count is offered. |
+| Whole suite, redevops-rag checkout only (`0245d8f`) | `REDEVOPS_RAG_ROOT=/path/to/redevops-rag/src python -m pytest -q`, agentic-os roots unset | 1847 passed / 54 skipped / 7 xfailed / 0 failed. Measured here. The 54 skips are the agentic-os cells, still BLOCKED; this row is a partial checkout configuration and does not stand in for the row above. |
+| Contract subset, no checkouts configured | `env -u AGENTIC_OS_ROOT -u AGENTIC_OS_ENTERPRISE_ROOT -u REDEVOPS_RAG_ROOT python -m pytest tests/authz_contract -q` | 39 passed / 83 skipped / 0 failed, every skip a BLOCKED reason |
+| Whole suite, no checkouts configured | as above, on `python -m pytest -q` | 1825 passed / 83 skipped / 0 failed |
+
+The two no-checkout rows read 75 skipped before this change and 83 after it, and both halves were measured here
+rather than carried over: the same tree at `15f02e3` gives 39 passed / 75 skipped and 1825 passed / 75 skipped,
+the reconciled tree gives 39 passed / 83 skipped and 1825 passed / 83 skipped. The delta is exactly the eight
+cells the retrieval lane gained, each of them a BLOCKED skip, and the pass counts do not move — which is the
+attribution this table asks for before a number is allowed to change.
+
+A whole-suite count is not portable between trees. Re-taking the pre-change row from a `git archive` export read
+1817 passed / 83 skipped: eight release/QA tests skip when there is no `.git` directory to interrogate, and the
+lane's own skip count moved at the same time, so the two deltas hid each other. Both rows above were taken in a
+working clone, and a suite total that crosses a change should be checked per test file rather than read off the
+summary line.
 
 The no-checkout rows are quoted with `env -u` on purpose. An earlier revision of this table reported
 "89 passed / 24 skipped" for a run that was in fact taken in a shell which still had `AGENTIC_OS_ROOT` and
