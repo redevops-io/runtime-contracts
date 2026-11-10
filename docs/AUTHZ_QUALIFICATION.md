@@ -13,8 +13,8 @@ to say, per implementation and per invariant, what is enforced, what is not, and
 
 | Implementation | Commit tested | Base | How reached |
 |---|---|---|---|
-| agentic-os (kernel) | `c453cd16dcb196cc15a0249a6e3da98fa7e3e98e` | `130fcf9d9e937d171e47e9465a9d2065c45962c5` | `adapters/agentic_os_kernel/adapter.py` → `PermissionsPlane`, `ToolExecution.authorizer`, `MissionRuntime._pre_exec_ok`, `ReconcileJobs`, `PolicyScopedRegistry` |
-| agentic-os-enterprise (E-2 overlay) | `d88b9adfb781c37592452b583dd145c6e0acd6bd` | `048b42ed3d67891e1270da8308f3f6a63ccfa31e` | `adapters/agentic_os_enterprise/adapter.py` → `IdentityPlane.authorize/scoped_permissions/authorize_resource`, `MissionRuntime._scoped/_pre_exec_ok`, `DelegationAuthority` |
+| agentic-os (kernel) | `c453cd16dcb196cc15a0249a6e3da98fa7e3e98e` — unpublished, see "Can these commits be reproduced?" | `130fcf9d9e937d171e47e9465a9d2065c45962c5` — published, current head | `adapters/agentic_os_kernel/adapter.py` → `PermissionsPlane`, `ToolExecution.authorizer`, `MissionRuntime._pre_exec_ok`, `ReconcileJobs`, `PolicyScopedRegistry` |
+| agentic-os-enterprise (E-2 overlay) | `d88b9adfb781c37592452b583dd145c6e0acd6bd` — unpublished, see "Can these commits be reproduced?" | `048b42ed3d67891e1270da8308f3f6a63ccfa31e` — published, current head | `adapters/agentic_os_enterprise/adapter.py` → `IdentityPlane.authorize/scoped_permissions/authorize_resource`, `MissionRuntime._scoped/_pre_exec_ok`, `DelegationAuthority` |
 | redevops-rag (retrieval) | `6e50d6d` | — | `adapters/redevops_rag/adapter.py` → `ingest`, `Store.semantic_search/bm25_search`, `hybrid_search`, `RAG.ask` context assembly |
 
 Every adapter drives the implementation's own decision code. The one substituted component anywhere in the
@@ -42,16 +42,16 @@ its whole invariant to `UNSUPPORTED` even when every other sub-criterion passed.
 ### The failures, with the code
 
 **`cross_tenant_denied` — FAIL (kernel).** `PermissionsPlane.authorize`
-(`agentic_os/permissions.py:1251`) takes no tenant argument and
+[`agentic_os/permissions.py:1192`](https://github.com/redevops-io/agentic-os/blob/130fcf9d9e937d171e47e9465a9d2065c45962c5/agentic_os/permissions.py#L1192) takes no tenant argument and
 never consults `Grant.tenant`; `GrantStore.add()`/`update()` cannot set the field. A grant tagged `acme`
 authorizes `globex`. What the kernel *does* enforce is resource-tenancy at the execution seam:
-`OwnerOnlyAuthority.authorize` (`agentic_os/execution_context.py:127`)
+`OwnerOnlyAuthority.authorize` ([`agentic_os/execution_context.py:127`](https://github.com/redevops-io/agentic-os/blob/130fcf9d9e937d171e47e9465a9d2065c45962c5/agentic_os/execution_context.py#L127))
 denies a node acting on a resource owned by another tenant. The criterion is split accordingly
 (`capability_boundary` / `resource_boundary` / `grant_tenant_tag`) so the passing half cannot carry the
 failing half, and the kernel cell is FAIL on the tag sub-criterion alone.
 
 **`authorization_before_limit` — FAIL (both, one cause).** `PolicyScopedRegistry.discover`
-(`agentic_os/mission/registry.py:183`) is three lines:
+[`agentic_os/mission/registry.py:183`](https://github.com/redevops-io/agentic-os/blob/130fcf9d9e937d171e47e9465a9d2065c45962c5/agentic_os/mission/registry.py#L183) is three lines:
 
 ```python
 return [(c, s) for c, s in self._base.discover(need, k * 3) if self._permitted(c)][:k]
@@ -60,7 +60,7 @@ return [(c, s) for c, s in self._base.discover(need, k * 3) if self._permitted(c
 Over-fetch, filter, trim. With fifteen unauthorized capabilities ranked ahead of one permitted capability at
 `limit=3`, the permitted edge is dropped silently — no error, no plan node, no receipt. The Enterprise
 overlay reaches the same function through `MissionRuntime._scoped`
-(`agentic_os_enterprise/mission/runtime.py:93`) and
+[`agentic_os_enterprise/mission/runtime.py:93`](https://github.com/redevops-io/agentic-os-enterprise/blob/048b42ed3d67891e1270da8308f3f6a63ccfa31e/agentic_os_enterprise/mission/runtime.py#L93) and
 inherits the defect unchanged. Nothing unauthorized is ever *offered*, so the confidentiality direction holds;
 availability does not, and an agent that cannot see its own permitted capabilities cannot plan.
 
@@ -75,7 +75,7 @@ the mistake — but today the cell cannot be earned.
 unreadable nothing is allowed, because the failure propagates out of the decision call. The other half does
 not: no `authorization_decision` line is emitted and no ledger entry is written, so "who let this through" has
 no answer and an operator sees a stack trace instead of a denial. Contrast the sealed-store path
-(`agentic_os/permissions.py:1254`), which *does* deny with a
+[`agentic_os/permissions.py:1195`](https://github.com/redevops-io/agentic-os/blob/130fcf9d9e937d171e47e9465a9d2065c45962c5/agentic_os/permissions.py#L1195), which *does* deny with a
 `policy_reason` — the pattern exists, it is just not applied to backend failures.
 
 ### What the passing cells do and do not mean
@@ -178,7 +178,7 @@ this repository has produced against the real library.
 
 Ordering is by what unblocks the most cells for the least churn, not by severity of wording.
 
-1. **E-5 — filter before LIMIT** (`agentic_os/mission/registry.py:183`). Filter the permitted set, then trim,
+1. **E-5 — filter before LIMIT** ([`agentic_os/mission/registry.py:183`](https://github.com/redevops-io/agentic-os/blob/130fcf9d9e937d171e47e9465a9d2065c45962c5/agentic_os/mission/registry.py#L183)). Filter the permitted set, then trim,
    over the whole scoped pool; emit a machine-readable signal when permitted candidates are dropped.
    Unblocks two FAIL cells. `reference_filter_before_limit` shows the shape.
 2. **E-6 — errors must be denials with receipts** (both planes). Convert store failures to a denied
@@ -361,6 +361,58 @@ them after the expansion was replaced by exact grants changed no verdict, no sub
 regenerated artifact differs from the recorded one only in the per-run random grant identifiers (`g-…`), which is
 what "the same measurement twice" looks like here. **No verdict changed in either profile, and no authorized edge
 needed a wider grant to survive.**
+
+### Can these commits be reproduced? (2026-11-10)
+
+The two candidate commits in the table above — `c453cd16dcb196cc15a0249a6e3da98fa7e3e98e` and
+`d88b9adfb781c37592452b583dd145c6e0acd6bd`, both on `fix/e2-explicit-privileged-grants` — are **not
+in either remote**. The branch is gone and the objects do not resolve: `GET
+/repos/…/git/commits/<sha>` is 404 for both, and `…/commit/<sha>` is 404 unauthenticated. They were
+measured in local trees at `/tmp/kernel-e2` and `/tmp/ent`, each with a clean worktree, and each
+candidate's **base commit is a published head** that is still the current head of its repository
+(`130fcf9d…` for agentic-os, `048b42ed…` for the overlay). So the candidates are reconstructible
+rather than lost:
+
+| | base (published) | patch base→candidate | candidate tree |
+|---|---|---|---|
+| kernel | `130fcf9d…` | sha256 `7412308c31349b77…`, 8 files, +216/−22 | `8ebdd04eccecaf0930cbad415fb6dd7eaa8bec92` |
+| enterprise | `048b42ed…` | sha256 `0e5b05bcb2afd48f…`, 5 files, +439/−34 | `ade83e6415638a12a7b7b956d04d8e4158f4c0f9` |
+
+Each patch reverse-applies onto its base cleanly, so base + patch reproduces the measured tree byte-
+for-byte; the full patches are in the review bundle. Applying one yields a *different* commit SHA,
+because committer metadata is not reproduced — which is why the **tree** hashes above are what to
+check, not the candidate SHAs.
+
+Every code citation in this document was then re-checked against the **published base**, not the
+candidate:
+
+| Citation | On the published base | sha256 (first 12) |
+|---|---|---|
+| `agentic_os/execution_context.py:127` | same line, verbatim | `8898c24a53f1` — identical base and candidate |
+| `agentic_os/mission/registry.py:183` and the quoted line 185 | same line, verbatim | `02f013a158d4` — identical base and candidate |
+| `agentic_os_enterprise/mission/runtime.py:93` | same line, verbatim; private repo, so the link resolves only when authenticated | `d5a0e375bf23` — identical base and candidate |
+| `agentic_os/permissions.py`, `authorize` taking no tenant argument | **line 1192** (1251 in the candidate) | base `00c80fcd420c` vs candidate `73c97dbb5b7a` — the one file E-2 rewrote |
+| `agentic_os/permissions.py`, the sealed-store `if sealed:` | **line 1195** (1254 in the candidate) | as above |
+
+Citations point at the published base and quote its line numbers, so they resolve for anybody with
+repository access. Two consequences, stated plainly:
+
+* The **defects** recorded here — `cross_tenant_denied`, `authorization_before_limit`, and
+  `adapter_error_fails_closed` as a property of the code — hold at `130fcf9d` / `048b42ed` and are
+  independently reproducible from published code. * Anything credited to the **candidate** commits
+  is **not independently reproducible** until that branch is pushed. That is chiefly the E-2
+  `cross_tenant_denied = PASS` row, a claim about an unpublished fix. It stays in the matrix marked
+  measured-but-unverifiable rather than being dropped, because dropping it would hide the awkward
+  fact: the only fix ever observed for this defect exists nowhere anybody else can fetch.
+
+The retrieval lane has the same shape, and it is worth naming here because its numbers are quoted in
+#42: the baseline the lane was measured against, `6e50d6db262135f9fa51f8c5cbc9be4b8952179b`,
+**does** resolve as an object in redevops-rag, while the lane commit that carried the fix,
+`0245d8fe315794f1b52a9ad0c252b9bb4482972d`, and the earlier
+`c109240391e78926cb899b0f5cbb193b18afde59` do not — that branch and its pull request have been
+deleted. The retrieval trees survive locally (`/tmp/rag-baseline`, `/tmp/rag-candidate`) and are in
+the review bundle, but every retrieval-lane verdict in this document inherits the same caveat:
+**reproducible from the bundle, not from the remote.**
 
 ### Qualification record — 2026-11-09 (review follow-up)
 One machine (macOS, Python 3.12 interpreter at `/tmp/kernel-e2-venv`), three implementations at exactly the commits
