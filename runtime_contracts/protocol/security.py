@@ -21,10 +21,30 @@ contracts, giving Python↔Go conformance the moment the Go port reproduces the 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 
 from ..canonical import content_hash, decimal_string
+
+
+def _instant(value: str, *, what: str) -> datetime:
+    """``value`` as a point in time. Two expiries are compared as instants, never as text: ``2026-12-31T23:59:59-12:00`` sorts
+    before ``2026-12-31T23:59:59Z`` and is twelve hours later. A value without an offset names no instant and is refused."""
+    try:
+        at = datetime.fromisoformat(value[:-1] + "+00:00" if value.endswith(("Z", "z")) else value)
+    except (TypeError, ValueError):
+        raise DelegationRefused(f"{what} {value!r} is not an ISO 8601 instant") from None
+    if at.tzinfo is None or at.utcoffset() is None:
+        raise DelegationRefused(f"{what} {value!r} has no UTC offset, so it names no instant")
+    return at
+
+
+def _outlasts(child_expiry: str, parent_expiry: str) -> bool:
+    """True when a child with ``child_expiry`` would live longer than a parent that expires at ``parent_expiry`` (not empty)."""
+    if not child_expiry:
+        return True
+    return _instant(child_expiry, what="child expiry") > _instant(parent_expiry, what="parent expiry")
 
 
 class DelegationRefused(ValueError):
@@ -210,7 +230,7 @@ class AuthorityContext:
             raise DelegationRefused(f"child budget {child_cost} would exceed parent budget {self.max_cost}")
 
         child_expiry = self.expires_at if expires_at is None else expires_at
-        if self.expires_at and (not child_expiry or child_expiry > self.expires_at):
+        if self.expires_at and _outlasts(child_expiry, self.expires_at):
             raise DelegationRefused(f"child expiry {child_expiry!r} would outlast parent {self.expires_at!r}")
 
         child_constraints = tuple(sorted(set(self.constraints) | set(constraints)))   # constraints only grow
@@ -277,5 +297,7 @@ def verify_chain(chain: "list[AuthorityContext]") -> None:
             raise DelegationRefused(f"{child.authority_id} drops a parent constraint")
         if parent.max_cost is not None and (child.max_cost is None or child.max_cost > parent.max_cost):
             raise DelegationRefused(f"{child.authority_id} widens budget beyond {parent.authority_id}")
-        if parent.expires_at and (not child.expires_at or child.expires_at > parent.expires_at):
+        if child.depth != parent.depth + 1:
+            raise DelegationRefused(f"{child.authority_id} records depth {child.depth}, not one below {parent.authority_id}")
+        if parent.expires_at and _outlasts(child.expires_at, parent.expires_at):
             raise DelegationRefused(f"{child.authority_id} outlasts {parent.authority_id}")
