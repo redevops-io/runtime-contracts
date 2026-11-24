@@ -186,3 +186,43 @@ def test_admit_enforces_provenance_and_trust_floor():
     assert low.admit(trusted_publishers=("attested",),
                      min_trust=Decimal("0.8")).verdict is SecurityVerdict.REQUIRE_REVIEW
     assert low.admit().verdict is SecurityVerdict.ALLOW      # admission is opt-in; no constraints → allow
+
+
+# ── expiries are instants, not text ──
+
+@pytest.mark.parametrize("later", [
+    "2026-09-01T00:00:00-12:00",          # sorts before the parent's "…Z" as text and is twelve hours later
+    "2026-08-31T23:59:59-01:00",          # an earlier calendar day in its own offset, fifty-nine minutes later in fact
+    "2026-09-01T00:00:00.000001+00:00",
+])
+def test_a_child_expiry_that_is_later_as_an_instant_is_refused_however_it_sorts_as_text(later):
+    root = _root()
+    assert later < root.expires_at or later.startswith("2026-09-01T00:00:00.")     # the text comparison would have let it through
+    with pytest.raises(DelegationRefused):
+        root.narrow(authority_id="c", expires_at=later)
+    forged = AuthorityContext(authority_id="c", principal=root.principal, purpose=root.purpose, scope=root.scope, constraints=root.constraints,
+                              max_cost=root.max_cost, expires_at=later, parent_digest=root.digest(), depth=1)
+    with pytest.raises(DelegationRefused):
+        verify_chain([root, forged])
+
+
+@pytest.mark.parametrize("earlier", ["2026-08-31T23:00:00Z", "2026-09-01T01:00:00+02:00", "2026-09-01T00:00:00+00:00", "2026-08-31T12:00:00-11:00"])
+def test_a_child_expiry_that_is_not_later_is_accepted_in_any_offset(earlier):
+    root = _root()
+    child = root.narrow(authority_id="c", expires_at=earlier)
+    verify_chain([root, child])
+
+
+@pytest.mark.parametrize("vague", ["2026-08-31T00:00:00", "2026-08-31", "soon", "0"])
+def test_an_expiry_that_names_no_instant_is_refused(vague):
+    with pytest.raises(DelegationRefused):
+        _root().narrow(authority_id="c", expires_at=vague)
+
+
+def test_a_chain_link_must_record_a_depth_one_below_its_parent():
+    root = _root()
+    child = root.narrow(authority_id="c", scope=("deploy:read",))
+    flat = AuthorityContext(authority_id="c", principal=child.principal, purpose=child.purpose, scope=child.scope, constraints=child.constraints,
+                            max_cost=child.max_cost, expires_at=child.expires_at, parent_digest=child.parent_digest, depth=0)
+    with pytest.raises(DelegationRefused):
+        verify_chain([root, flat])
