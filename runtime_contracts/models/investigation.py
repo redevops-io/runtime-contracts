@@ -232,31 +232,53 @@ def causal_order(events: Sequence[InvestigationTransitionEvent]) -> list:
     """A linearization that respects partial-order ``parents`` (each event follows all of its declared
     parents), tie-broken by ``sequence``. When no event declares parents this is exactly the sequence
     order — so a concurrent fan-out/join history and a classic total-order history both replay
-    deterministically through the same function. Raises on a cycle or a dangling parent reference.
+    deterministically through the same function. Raises on a cycle. A parent that names no event of this
+    set does not constrain the order (a caller may pass a slice of a history).
+
+    ``transition_id`` is the PROGRAM's transition (``start``, ``pause``), so a real history repeats it: an
+    inquiry that is paused and resumed has two ``start`` events. Events are therefore told apart by their
+    position, never by ``transition_id`` alone (keyed that way, the second ``start`` replaced the first
+    and every such history was refused as "a cycle or a missing event"). A parent reference means the
+    nearest event with that ``transition_id`` that precedes the child by ``sequence``; ``"start@7"`` names
+    the one with sequence 7 exactly.
     """
     import heapq
     from collections import defaultdict
 
-    by_id = {e.transition_id: e for e in events}
-    indeg = {e.transition_id: 0 for e in events}
+    items = list(events)
+    named: dict = defaultdict(list)                    # transition_id -> indices, in sequence order
+    for i, e in sorted(enumerate(items), key=lambda p: (p[1].sequence, p[0])):
+        named[e.transition_id].append(i)
+
+    def resolve(ref: str, child: int):
+        if ref not in named and "@" in ref:
+            tid, _, seq = ref.rpartition("@")
+            hits = [i for i in named.get(tid, ()) if str(items[i].sequence) == seq]
+            return hits[0] if hits else None
+        candidates = [i for i in named.get(ref, ()) if i != child]
+        if not candidates:
+            return None
+        before = [i for i in candidates if items[i].sequence < items[child].sequence]
+        return before[-1] if before else candidates[0]
+
+    indeg = [0] * len(items)
     children: dict = defaultdict(list)
-    for e in events:
-        for p in e.parents:
-            if p in by_id:                     # only edges among this event set constrain the order
-                indeg[e.transition_id] += 1
-                children[p].append(e.transition_id)
-    ready = [(by_id[i].sequence, i) for i, deg in indeg.items() if deg == 0]
+    for child, e in enumerate(items):
+        for parent in {resolve(p, child) for p in e.parents} - {None}:
+            indeg[child] += 1
+            children[parent].append(child)
+    ready = [(items[i].sequence, i) for i, deg in enumerate(indeg) if deg == 0]
     heapq.heapify(ready)
     out: list = []
     while ready:
         _, i = heapq.heappop(ready)
-        out.append(by_id[i])
+        out.append(items[i])
         for c in children[i]:
             indeg[c] -= 1
             if indeg[c] == 0:
-                heapq.heappush(ready, (by_id[c].sequence, c))
-    if len(out) != len(events):
-        raise TransitionRefused("causal_order: parents form a cycle or reference a missing event")
+                heapq.heappush(ready, (items[c].sequence, c))
+    if len(out) != len(items):
+        raise TransitionRefused("causal_order: parents form a cycle")
     return out
 
 

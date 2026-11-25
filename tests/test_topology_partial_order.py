@@ -67,3 +67,22 @@ def test_causal_order_detects_cycle():
     b = _ev("b", 2, parents=("a",))
     with pytest.raises(TransitionRefused):
         causal_order([a, b])
+
+
+def test_a_history_that_repeats_a_transition_is_ordered_not_refused():
+    """transition_id is the program's transition, so a paused-and-resumed inquiry has two ``start`` events. Keyed by
+    transition_id alone, the second replaced the first and the whole history was refused as a cycle."""
+    h = [_ev("assign", 1), _ev("start", 2), _ev("pause", 3), _ev("start", 4), _ev("pause", 5), _ev("start", 6)]
+    assert [(e.transition_id, e.sequence) for e in causal_order(list(reversed(h)))] == [(e.transition_id, e.sequence) for e in h]
+
+
+def test_a_parent_reference_means_the_nearest_preceding_event_of_that_name():
+    first, pause, second = _ev("start", 2), _ev("pause", 3, parents=("start",)), _ev("start", 4, parents=("pause",))
+    late = _ev("note", 1, parents=("start",))            # sequence says first; its parent says after a start
+    exact = _ev("audit", 0, parents=("start@4",))         # names the second start exactly
+    order = [(e.transition_id, e.sequence) for e in causal_order([exact, late, second, pause, first])]
+    assert order.index(("start", 2)) < order.index(("note", 1)) < order.index(("pause", 3)) < order.index(("start", 4)) < order.index(("audit", 0))
+
+
+def test_a_parent_outside_the_given_events_does_not_constrain_the_order():
+    assert [e.transition_id for e in causal_order([_ev("b", 2, parents=("not-here",)), _ev("a", 1)])] == ["a", "b"]
