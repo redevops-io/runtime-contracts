@@ -817,56 +817,64 @@ def intent_from_json(payload: Mapping[str, Any]) -> VerifiedIntent:
     raising is the only answer that does not quietly downgrade someone's
     settled decision into a draft.
     """
-    def evidence(items) -> tuple:
-        return tuple(DecisionEvidence(
-            reader_id=str(e.get("reader_id", "")),
-            kind=ReaderKind(e.get("kind", ReaderKind.PRIOR.value)),
-            value=e.get("value"),
-            confidence=str(e.get("confidence", "1")),
-            source_ref=str(e.get("source_ref", "") or ""))
-            for e in (items or ()))
+    if not isinstance(payload, Mapping):
+        raise CorruptIntent("a stored intent is a JSON object")
+    try:
+        def evidence(items) -> tuple:
+            return tuple(DecisionEvidence(
+                reader_id=str(e.get("reader_id", "")),
+                kind=ReaderKind(e.get("kind", ReaderKind.PRIOR.value)),
+                value=e.get("value"),
+                confidence=str(e.get("confidence", "1")),
+                source_ref=str(e.get("source_ref", "") or ""))
+                for e in (items or ()))
 
-    fields = {}
-    for name, raw in (payload.get("fields") or {}).items():
-        fields[name] = IntentField(
-            value=raw.get("value"),
-            author=Author(raw.get("author", Author.DEFAULT.value)),
-            produced_by=str(raw.get("produced_by", "") or ""),
-            confidence=str(raw.get("confidence", "1")),
-            source_span=str(raw.get("source_span", "") or ""),
-            evidence=evidence(raw.get("evidence")),
-            contested=bool(raw.get("contested", False)))
+        fields = {}
+        for name, raw in (payload.get("fields") or {}).items():
+            fields[name] = IntentField(
+                value=raw.get("value"),
+                author=Author(raw.get("author", Author.DEFAULT.value)),
+                produced_by=str(raw.get("produced_by", "") or ""),
+                confidence=str(raw.get("confidence", "1")),
+                source_span=str(raw.get("source_span", "") or ""),
+                evidence=evidence(raw.get("evidence")),
+                contested=bool(raw.get("contested", False)))
 
-    relations = tuple(
-        IntentRelation(
-            kind=str(r.get("kind", "")),
-            members=tuple(RelationMember(
-                role=str(m.get("role", "")), subject=str(m.get("subject", "")),
-                qualifiers={str(k): str(v)
-                            for k, v in (m.get("qualifiers") or {}).items()},
-                evidence=evidence(m.get("evidence")))
-                for m in (r.get("members") or ())),
-            attributes={str(k): str(v)
-                        for k, v in (r.get("attributes") or {}).items()},
-            author=Author(r.get("author", Author.MODEL.value)),
-            produced_by=str(r.get("produced_by", "") or ""),
-            source_span=str(r.get("source_span", "") or ""))
-        for r in (payload.get("relations") or ()))
+        relations = tuple(
+            IntentRelation(
+                kind=str(r.get("kind", "")),
+                members=tuple(RelationMember(
+                    role=str(m.get("role", "")), subject=str(m.get("subject", "")),
+                    qualifiers={str(k): str(v)
+                                for k, v in (m.get("qualifiers") or {}).items()},
+                    evidence=evidence(m.get("evidence")))
+                    for m in (r.get("members") or ())),
+                attributes={str(k): str(v)
+                            for k, v in (r.get("attributes") or {}).items()},
+                author=Author(r.get("author", Author.MODEL.value)),
+                produced_by=str(r.get("produced_by", "") or ""),
+                source_span=str(r.get("source_span", "") or ""))
+            for r in (payload.get("relations") or ()))
 
-    unresolved = tuple(
-        Unresolved(dimension=str(u.get("dimension", "")),
-                   reason=OpenReason(u.get("reason", OpenReason.NOT_ASKED.value)),
-                   detail=str(u.get("detail", "") or ""),
-                   evidence=evidence(u.get("evidence")),
-                   result_changing=bool(u.get("result_changing", True)))
-        for u in (payload.get("unresolved") or ()))
+        unresolved = tuple(
+            Unresolved(dimension=str(u.get("dimension", "")),
+                       reason=OpenReason(u.get("reason", OpenReason.NOT_ASKED.value)),
+                       detail=str(u.get("detail", "") or ""),
+                       evidence=evidence(u.get("evidence")),
+                       result_changing=bool(u.get("result_changing", True)))
+            for u in (payload.get("unresolved") or ()))
 
-    amendments = tuple(
-        Amendment(dimension=str(a.get("dimension", "")),
-                  from_value=a.get("from_value"), to_value=a.get("to_value"),
-                  author=Author(a.get("author", Author.USER.value)),
-                  at=a.get("at"))
-        for a in (payload.get("amendments") or ()))
+        amendments = tuple(
+            Amendment(dimension=str(a.get("dimension", "")),
+                      from_value=a.get("from_value"), to_value=a.get("to_value"),
+                      author=Author(a.get("author", Author.USER.value)),
+                      at=a.get("at"))
+            for a in (payload.get("amendments") or ()))
+    except (ValueError, TypeError, AttributeError, KeyError) as why:
+        # A field of the wrong shape, an author or a reason this version does not know: the record was not written by this
+        # contract. One exception type means "this stored record is not usable"; a raw ValueError or AttributeError from the
+        # middle of the parse would be caught by nobody, or by a handler written for something else.
+        raise CorruptIntent(f"stored intent cannot be read: {type(why).__name__}: {why}") from why
 
     try:
         restored = VerifiedIntent(
@@ -887,6 +895,10 @@ def intent_from_json(payload: Mapping[str, Any]) -> VerifiedIntent:
         raise CorruptIntent(f"stored intent does not hold together: {why}") from why
 
     stated = str(payload.get("state", IntentState.DRAFT.value))
+    if stated not in {st.value for st in IntentState}:
+        # An unknown state used to fall through as a draft: a sealed decision whose state was misspelt or rewritten came back
+        # as an unsettled one, which is the quiet downgrade this function exists to refuse.
+        raise CorruptIntent(f"stored state {stated!r} is not a state of an intent")
     # STALE / INVALIDATED are sealed conclusions whose dependency later moved: they must still satisfy
     # the seal (they were VERIFIED), then carry their transitioned state. intent_hash is unchanged by
     # the transition, so the hash check below still holds.

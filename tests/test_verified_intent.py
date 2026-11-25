@@ -656,3 +656,46 @@ class TestAnOpenDimensionSurvivesStorage:
             utterance_ref=one.utterance_ref, fields=dict(one.fields),
             unresolved=(replace(one.unresolved[0], detail="a different note"),))
         assert one.intent_hash == other.intent_hash
+
+
+class TestAStoredRecordThatIsNotAnIntent:
+    """Every unusable record is one exception: `CorruptIntent`. Nothing is repaired and nothing is quietly downgraded."""
+
+    def _stored(self):
+        from runtime_contracts.models.intent import intent_from_json
+        sealed = intent(fields={"metric": field("revenue", Author.USER)}).seal()
+        return intent_from_json, sealed.to_json()
+
+    def test_the_control_round_trips(self):
+        load, doc = self._stored()
+        assert load(doc).is_verified and load(doc).intent_hash == doc["intent_hash"]
+
+    @pytest.mark.parametrize("state", ["verified", "VERIFIEDD", "SEALED", "", "0"])
+    def test_an_unknown_state_is_refused_and_never_read_as_a_draft(self, state):
+        from runtime_contracts.models.intent import CorruptIntent
+        load, doc = self._stored()
+        doc["state"] = state
+        with pytest.raises(CorruptIntent):
+            load(doc)
+
+    @pytest.mark.parametrize("mutate", [
+        lambda d: d["fields"]["metric"].__setitem__("author", "somebody"),          # an author this contract does not know
+        lambda d: d.__setitem__("fields", ["metric"]),                              # the wrong shape
+        lambda d: d["fields"].__setitem__("metric", "revenue"),
+        lambda d: d.__setitem__("unresolved", [{"dimension": "period", "reason": "because"}]),
+        lambda d: d.__setitem__("relations", [{"kind": "compare", "members": [7]}]),
+        lambda d: d.__setitem__("amendments", ["x"]),
+    ])
+    def test_a_record_of_the_wrong_shape_is_corrupt_not_a_stray_exception(self, mutate):
+        from runtime_contracts.models.intent import CorruptIntent
+        load, doc = self._stored()
+        doc = json.loads(json.dumps(doc))
+        mutate(doc)
+        with pytest.raises(CorruptIntent):
+            load(doc)
+
+    @pytest.mark.parametrize("payload", [None, [], "intent", 7])
+    def test_something_that_is_not_an_object_is_corrupt(self, payload):
+        from runtime_contracts.models.intent import CorruptIntent, intent_from_json
+        with pytest.raises(CorruptIntent):
+            intent_from_json(payload)
