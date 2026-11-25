@@ -248,7 +248,12 @@ class Criteria:
         (self.ok if held else self.fail)(name, **({"detail": detail} if not held else {}), **evidence)
 
     def resolve(self) -> dict[str, Any]:
-        by_id = {s["id"]: s for s in self.subs}
+        # A sub-criterion may be reported more than once (a scenario that checks it per variant). The last report must
+        # not win: a failure followed by a pass under the same name used to resolve as a pass.
+        by_id: dict[str, dict[str, Any]] = {}
+        for s in self.subs:
+            if by_id.get(s["id"], {}).get("status") != Qualification.FAIL.value:
+                by_id[s["id"]] = s
         required = [by_id.get(n, {"id": n, "status": Qualification.UNSUPPORTED.value,
                                   "detail": "the scenario never reported this sub-criterion"})
                     for n in self.required]
